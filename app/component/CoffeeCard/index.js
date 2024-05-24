@@ -2,7 +2,6 @@ import { LinearGradient } from 'expo-linear-gradient'
 import React from 'react'
 import { Dimensions, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
-import BGIcon from '../BGIcon'
 import CustomIcon from '../CustomIcon'
 
 const CARD_WIDTH = Dimensions.get('window').width * 0.32;
