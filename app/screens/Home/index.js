@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { IcCoffeeOn, IcNonCoffeeOff } from '../../assets';
+import React, { useRef } from 'react';
+import { Dimensions, FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { IcCoffeeOn, IcNonCoffeeOff, ImChocolate, ImCoffAmericano, ImLangitMatcha, ImLangitTaro } from '../../assets';
 import CoffeCard from '../../component/CoffeeCard';
 import HeaderBar from '../../component/HeaderBar';
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
@@ -9,21 +9,20 @@ import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
 const Home = () => {
     const tabBarHeight = useBottomTabBarHeight();
-
+    const ListRef = useRef();
     const BeanList = [
         {
             id: 'B1',
-            name: 'Robusta Beans',
+            name: 'Chocolate',
             description: `Robusta beans are larger and more rounded than the other bean varieties. These plants typically grow much larger than Arabica plants, measuring between 15 and 20 feet. Robusta beans are typically considered to be hardier because they can grow at lower altitudes and resist diseases. But recent research suggests that they don’t handle heat as well as was previously thought.`,
             roasted: 'Medium Roasted',
-            imagelink_square: require('../../assets/coffee_assets/robusta_coffee_beans/robusta_coffee_beans_square.png'),
-            imagelink_portrait: require('../../assets/coffee_assets/robusta_coffee_beans/robusta_coffee_beans_portrait.png'),
+            imagelink_square: ImChocolate,
             ingredients: 'Africa',
-            special_ingredient: 'From Africa',
+            kind: 'Non Coffee',
             prices: [
-                { size: '250gm', price: '5.50', currency: '$' },
-                { size: '500gm', price: '10.50', currency: '$' },
-                { size: '1Kg', price: '18.50', currency: '$' },
+                { size: '250gm', price: '12.000', currency: 'K' },
+                { size: '500gm', price: '13.000', currency: 'K' },
+                { size: '1Kg', price: '15.000', currency: 'K' },
             ],
             average_rating: 4.7,
             ratings_count: '6,879',
@@ -33,17 +32,17 @@ const Home = () => {
         },
         {
             id: 'B2',
-            name: 'Arabica Beans',
+            name: 'Americano',
             description: `Arabica beans are by far the most popular type of coffee beans, making up about 60% of the world’s coffee. These tasty beans originated many centuries ago in the highlands of Ethiopia, and may even be the first coffee beans ever consumed! The name Arabica likely comes from the beans’ popularity in 7th-century Arabia (present-day Yemen).`,
             roasted: 'Medium Roasted',
-            imagelink_square: require('../../assets/coffee_assets/arabica_coffee_beans/arabica_coffee_beans_square.png'),
+            imagelink_square: ImCoffAmericano,
             imagelink_portrait: require('../../assets/coffee_assets/arabica_coffee_beans/arabica_coffee_beans_portrait.png'),
             ingredients: 'Africa',
-            special_ingredient: 'From Africa',
+            kind: 'Coffee',
             prices: [
-                { size: '250gm', price: '5.50', currency: '$' },
-                { size: '500gm', price: '10.50', currency: '$' },
-                { size: '1Kg', price: '18.50', currency: '$' },
+                { size: '250gm', price: '10.000', currency: 'K' },
+                { size: '500gm', price: '10.000', currency: 'K' },
+                { size: '1Kg', price: '18.000', currency: 'K' },
             ],
             average_rating: 4.7,
             ratings_count: '6,879',
@@ -53,17 +52,17 @@ const Home = () => {
         },
         {
             id: 'B3',
-            name: 'Arabica Beans',
+            name: 'Langit Matcha',
             description: `Arabica beans are by far the most popular type of coffee beans, making up about 60% of the world’s coffee. These tasty beans originated many centuries ago in the highlands of Ethiopia, and may even be the first coffee beans ever consumed! The name Arabica likely comes from the beans’ popularity in 7th-century Arabia (present-day Yemen).`,
             roasted: 'Medium Roasted',
-            imagelink_square: require('../../assets/coffee_assets/arabica_coffee_beans/arabica_coffee_beans_square.png'),
+            imagelink_square: ImLangitMatcha,
             imagelink_portrait: require('../../assets/coffee_assets/arabica_coffee_beans/arabica_coffee_beans_portrait.png'),
             ingredients: 'Africa',
-            special_ingredient: 'From Africa',
+            kind: 'Non Coffee',
             prices: [
-                { size: '250gm', price: '5.50', currency: '$' },
-                { size: '500gm', price: '10.50', currency: '$' },
-                { size: '1Kg', price: '18.50', currency: '$' },
+                { size: '250gm', price: '17.000', currency: 'K' },
+                { size: '500gm', price: '19.000', currency: 'K' },
+                { size: '1Kg', price: '20.000', currency: 'K' },
             ],
             average_rating: 4.7,
             ratings_count: '6,879',
@@ -73,17 +72,17 @@ const Home = () => {
         },
         {
             id: 'B4',
-            name: 'Arabica Beans',
+            name: 'Langit Taro',
             description: `Arabica beans are by far the most popular type of coffee beans, making up about 60% of the world’s coffee. These tasty beans originated many centuries ago in the highlands of Ethiopia, and may even be the first coffee beans ever consumed! The name Arabica likely comes from the beans’ popularity in 7th-century Arabia (present-day Yemen).`,
             roasted: 'Medium Roasted',
-            imagelink_square: require('../../assets/coffee_assets/arabica_coffee_beans/arabica_coffee_beans_square.png'),
+            imagelink_square: ImLangitTaro,
             imagelink_portrait: require('../../assets/coffee_assets/arabica_coffee_beans/arabica_coffee_beans_portrait.png'),
             ingredients: 'Africa',
-            special_ingredient: 'From Africa',
+            kind: 'Non Coffee',
             prices: [
-                { size: '250gm', price: '5.50', currency: '$' },
-                { size: '500gm', price: '10.50', currency: '$' },
-                { size: '1Kg', price: '18.50', currency: '$' },
+                { size: '250gm', price: '17.000', currency: 'K' },
+                { size: '500gm', price: '19.000', currency: 'K' },
+                { size: '1Kg', price: '20.000', currency: 'K' },
             ],
             average_rating: 4.7,
             ratings_count: '6,879',
@@ -92,17 +91,21 @@ const Home = () => {
             index: 1,
         },
     ];
+    // console.log(Dimensions.get('window').width, 'width')
     return (
         <View style={styles.ScreenContainer}>
             <StatusBar style='light' />
-            <ScrollView
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.ScrollViewFlex}>
+            <View
+                style={{
+                    flex: 1,
+                    // backgroundColor: 'orange',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between'
+                }}>
                 <HeaderBar />
                 <Text style={styles.ScreenTitle}>
                     Find the best{'\n'}coffee for you
                 </Text>
-                {/* Choose Button */}
                 <View style={styles.KindOuterContainer}>
                     <TouchableOpacity
                         onPress={() => {
@@ -149,72 +152,75 @@ const Home = () => {
                         </Text>
                     </TouchableOpacity>
                 </View>
+            </View>
+            <View
+                style={{
+                    flex: 2,
+                    // backgroundColor: 'blue'
+                }}
+            >
 
-                {/* flatlist */}
-                <ScrollView
-                    showsVerticalScrollIndicator={false}
+                <FlatList
+                    ref={ListRef}
+                    showsHorizontalScrollIndicator={false}
+                    data={BeanList}
                     contentContainerStyle={[
-                        styles.CoffeeScrollViewStyle,
-                        { height: tabBarHeight, flex: 1 },
-                    ]}>
-                    <FlatList
-                        showsHorizontalScrollIndicator={false}
-                        data={BeanList}
-                        contentContainerStyle={[
-                            styles.FlatListContainer,
-                            { marginBottom: tabBarHeight },
-                        ]}
-                        keyExtractor={item => item.id}
-                        renderItem={({ item }) => {
-                            return (
-                                <TouchableOpacity
-                                // onPress={() => {
-                                //     navigation.push('Details', {
-                                //         index: item.index,
-                                //         id: item.id,
-                                //         type: item.type,
-                                //     });
-                                // }}
-                                >
-                                    <CoffeCard
-                                        id={item.id}
-                                        index={item.index}
-                                        type={item.type}
-                                        roasted={item.roasted}
-                                        imagelink_square={item.imagelink_square}
-                                        name={item.name}
-                                        special_ingredient={item.special_ingredient}
-                                        average_rating={item.average_rating}
-                                        price={item.prices[2]}
-                                    // buttonPressHandler={CoffeCardAddToCart}
-                                    />
-                                </TouchableOpacity>
-                            );
-                        }}
-                    />
-                </ScrollView>
-            </ScrollView>
-        </View>
+                        styles.FlatListContainer,
+                        { marginBottom: tabBarHeight },
+                    ]}
+                    ListEmptyComponent={
+                        <View style={styles.EmptyListContainer}>
+                            <Text style={styles.EmptyText}>No Coffee Available</Text>
+                        </View>
+                    }
+                    keyExtractor={item => item.id}
+                    renderItem={({ item }) => {
+                        return (
+
+                            <CoffeCard
+                                id={item.id}
+                                index={item.index}
+                                type={item.type}
+                                roasted={item.roasted}
+                                imagelink_square={item.imagelink_square}
+                                name={item.name}
+                                kind={item.kind}
+                                average_rating={item.average_rating}
+                                price={item.prices[2]}
+                                buttonPressHandler={() => console.log('CoffeCardAddToCart')}
+                            />
+                        );
+                    }}
+                />
+            </View>
+
+        </View >
     )
 }
 
 export default Home
 
 const styles = StyleSheet.create({
-    CoffeeScrollViewStyle: {
-        backgroundColor: 'red'
-    },
     FlatListContainer: {
-        gap: SPACING.space_20,
+        gap: SPACING.space_15,
         paddingVertical: SPACING.space_20,
         paddingHorizontal: SPACING.space_15,
     },
     ScreenContainer: {
-        flex: 1,
         backgroundColor: COLORS.primaryBlackHex,
+        flex: 1,
     },
-    ScrollViewFlex: {
-        flexGrow: 1,
+    EmptyListContainer: {
+        width: Dimensions.get('window').width - SPACING.space_30 * 2,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: SPACING.space_36 * 3.6,
+    },
+    EmptyText: {
+        fontFamily: FONTFAMILY.poppins_semibold,
+        fontSize: FONTSIZE.size_16,
+        color: COLORS.primaryLightGreyHex,
+        marginBottom: SPACING.space_4,
     },
     ScreenTitle: {
         fontSize: FONTSIZE.size_24,
@@ -222,27 +228,20 @@ const styles = StyleSheet.create({
         color: COLORS.primaryWhiteHex,
         paddingLeft: SPACING.space_15,
     },
-    KindContainer: {
-        flexDirection: 'row',
-        paddingLeft: SPACING.space_15,
-        marginTop: SPACING.space_28,
-        backgroundColor: COLORS.primaryDarkGreyHex,
-        alignItems: 'center',
-    },
     KindOuterContainer: {
-        flex: 1,
+        justifyContent: 'flex-end',
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        gap: SPACING.space_20,
-        padding: SPACING.space_15
+        gap: SPACING.space_15,
+        paddingVertical: SPACING.space_15,
+        paddingHorizontal: SPACING.space_15,
+        // backgroundColor: 'red'
     },
     KindBox: {
         flex: 1,
-        backgroundColor: COLORS.
-            primaryDarkGreyHex,
+        backgroundColor: COLORS.primaryDarkGreyHex,
         alignItems: 'center',
         justifyContent: 'center',
-        height: SPACING.space_24 * 2,
+        height: SPACING.space_24 * 2.5,
         borderRadius: BORDERRADIUS.radius_10,
         borderWidth: 2,
     },

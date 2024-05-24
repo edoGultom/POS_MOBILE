@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     },
     HeaderContainer: {
         // padding: SPACING.space_30,
-        paddingTop: SPACING.space_30,
+        paddingTop: SPACING.space_36,
         paddingHorizontal: SPACING.space_15,
         paddingVertical: SPACING.space_15,
         flexDirection: 'row',

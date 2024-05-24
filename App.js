@@ -8,6 +8,14 @@ import * as SplashScreen from 'expo-splash-screen';
 SplashScreen.preventAutoHideAsync();
 
 const MainApp = () => {
+  return (
+    <NavigationContainer >
+      <Router />
+    </NavigationContainer>
+  );
+}
+
+const App = () => {
   const [fontsLoaded, fontError] = useFonts({
     'Poppins-Black': require('./app/assets/Fonts/Poppins-Black.ttf'),
     'Poppins-Bold': require('./app/assets/Fonts/Poppins-Bold.ttf'),
@@ -19,6 +27,7 @@ const MainApp = () => {
     'Poppins-SemiBold': require('./app/assets/Fonts/Poppins-SemiBold.ttf'),
     'Poppins-Thin': require('./app/assets/Fonts/Poppins-Thin.ttf'),
   });
+
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded || fontError) {
       await SplashScreen.hideAsync();
@@ -29,16 +38,7 @@ const MainApp = () => {
     return null;
   }
   return (
-    <NavigationContainer onLayout={onLayoutRootView}>
-      <Router />
-    </NavigationContainer>
-  );
-}
-
-const App = () => {
-
-  return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
       <MainApp />
     </View>
   );
