@@ -1,22 +1,86 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native'
+import { BlurView } from 'expo-blur'
 import React from 'react'
-import { IcHomeOff, IcHomeOn, IcOrderOn } from '../../assets'
+import { Pressable, StyleSheet, TouchableOpacity, View } from 'react-native'
+import { COLORS, FONTSIZE, SPACING } from '../../config'
+import CustomIcon from '../CustomIcon'
 
 const Icon = ({ label, focused }) => {
     switch (label) {
         case 'Home':
-            return focused ? <IcHomeOn /> : <IcHomeOff />
+            return focused ?
+                <CustomIcon
+                    name={'house-chimney-window'}
+                    color={COLORS.primaryOrangeHex}
+                    size={FONTSIZE.size_20}
+                />
+                :
+                <CustomIcon
+                    name={'house-chimney-window'}
+                    color={COLORS.primaryLightGreyHex}
+                    size={FONTSIZE.size_20}
+                />
         case 'Order':
-            return focused ? <IcOrderOn /> : <IcOrderOff />
+            return focused ?
+                <View
+                    style={{
+                        marginTop: -40,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        height: 60,
+                        width: 60,
+                        backgroundColor: 'white',
+                        borderRadius: 50,
+                        elevation: 5,
+                    }}
+                >
+                    <CustomIcon
+                        name={'bag-shopping'}
+                        color={COLORS.primaryOrangeHex}
+                        size={FONTSIZE.size_18 * 2}
+                    />
+                </View> :
+                <View
+                    style={{
+                        marginTop: -40,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        height: 60,
+                        width: 60,
+                        backgroundColor: 'white',
+                        borderRadius: 100,
+                        elevation: 5,
+                    }}
+                >
+                    <CustomIcon
+                        name={'bag-shopping'}
+                        color={COLORS.primaryLightGreyHex}
+                        size={FONTSIZE.size_18 * 2}
+                    />
+                </View>
         case 'Profile':
-            return focused ? <IcProfileOn /> : <IcProfileOff />
+            return focused ?
+                <CustomIcon
+                    name={'user-large'}
+                    color={COLORS.primaryOrangeHex}
+                    size={FONTSIZE.size_20}
+                /> :
+                <CustomIcon
+                    name={'user-large'}
+                    color={COLORS.primaryLightGreyHex}
+                    size={FONTSIZE.size_20}
+                />
         default:
-            return <IcOrderOn />
+            return 'Null'
     }
 }
 const BottomNavigator = ({ state, descriptors, navigation }) => {
+    const focusedOptions = descriptors[state.routes[state.index].key].options;
+
+    if (focusedOptions.tabBarVisible === false) {
+        return null;
+    }
     return (
-        <View style={styles.container}>
+        <View style={styles.tabBarStyle}>
             {
                 state.routes.map((route, index) => {
                     const { options } = descriptors[route.key];
@@ -58,25 +122,35 @@ const BottomNavigator = ({ state, descriptors, navigation }) => {
                             testID={options.tabBarTestID}
                             onPress={onPress}
                             onLongPress={onLongPress}
+                            style={{
+                                padding: SPACING.space_15
+                            }}
                         >
                             <Icon label={label} focused={isFocused} />
                         </Pressable>
                     );
                 })
             }
-        </View >
+        </View>
     )
 }
 
 export default BottomNavigator
 
 const styles = StyleSheet.create({
-    container: {
+    tabBarStyle: {
+        height: 50,
+        left: 0,
+        right: 0,
+        bottom: 0,
         flexDirection: 'row',
-        backgroundColor: 'white',
-        paddingTop: 15,
-        paddingBottom: 13,
-        paddingHorizontal: 50,
-        justifyContent: 'space-between'
-    }
+        position: 'absolute',
+        backgroundColor: COLORS.primaryWhiteHex,
+        // backgroundColor: 'red',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: SPACING.space_28,
+        borderTopRightRadius: SPACING.space_20,
+        borderTopLeftRadius: SPACING.space_20,
+    },
 })

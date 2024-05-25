@@ -95,10 +95,10 @@ const Home = () => {
     return (
         <View style={styles.ScreenContainer}>
             <StatusBar style='light' />
+            {/* <StatusBar backgroundColor={COLORS.primaryBlackHex} /> */}
             <View
                 style={{
                     flex: 1,
-                    // backgroundColor: 'orange',
                     flexDirection: 'column',
                     justifyContent: 'space-between'
                 }}>
@@ -244,6 +244,7 @@ const styles = StyleSheet.create({
         height: SPACING.space_24 * 2.5,
         borderRadius: BORDERRADIUS.radius_10,
         borderWidth: 2,
+        elevation: 1
     },
     SizeText: {
         fontFamily: FONTFAMILY.poppins_medium,

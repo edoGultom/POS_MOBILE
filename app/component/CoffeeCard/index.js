@@ -20,11 +20,11 @@ const CoffeCard = ({ imagelink_square, name, kind, price, buttonPressHandler }) 
                     resizeMode="cover">
                     <View style={styles.CardRatingContainer}>
                         <CustomIcon
-                            name={'star'}
+                            name={'hand-holding-heart'}
                             color={COLORS.primaryOrangeHex}
                             size={FONTSIZE.size_16}
                         />
-                        <Text style={styles.CardRatingText}>Coffee</Text>
+                        {/* <Text style={styles.CardRatingText}>4.3</Text> */}
                     </View>
                 </ImageBackground>
                 <View>
@@ -53,9 +53,9 @@ const CoffeCard = ({ imagelink_square, name, kind, price, buttonPressHandler }) 
             >
 
                 <CustomIcon
-                    name={'add'}
+                    name={'plus'}
                     color={COLORS.primaryWhiteHex}
-                    size={FONTSIZE.size_20}
+                    size={FONTSIZE.size_18}
                 />
             </TouchableOpacity>
         </LinearGradient >
@@ -81,14 +81,14 @@ const styles = StyleSheet.create({
     CardRatingContainer: {
         flexDirection: 'row',
         backgroundColor: COLORS.primaryBlackRGBA,
-        alignItems: 'center',
-        justifyContent: 'center',
+        alignItems: 'flex-end',
+        justifyContent: 'flex-end',
         gap: SPACING.space_10,
         paddingHorizontal: SPACING.space_15,
         position: 'absolute',
-        borderBottomLeftRadius: BORDERRADIUS.radius_20,
-        borderTopRightRadius: BORDERRADIUS.radius_20,
-        top: 0,
+        borderBottomRightRadius: BORDERRADIUS.radius_20,
+        borderTopLeftRadius: BORDERRADIUS.radius_20,
+        bottom: 0,
         right: 0,
     },
     CardRatingText: {
