@@ -80,7 +80,13 @@ const BottomNavigator = ({ state, descriptors, navigation }) => {
         return null;
     }
     return (
+
         <View style={styles.tabBarStyle}>
+            <BlurView
+                overlayColor=""
+                blurAmount={15}
+                style={styles.BlurViewStyles}
+            />
             {
                 state.routes.map((route, index) => {
                     const { options } = descriptors[route.key];
@@ -138,6 +144,7 @@ const BottomNavigator = ({ state, descriptors, navigation }) => {
 export default BottomNavigator
 
 const styles = StyleSheet.create({
+
     tabBarStyle: {
         height: 50,
         left: 0,

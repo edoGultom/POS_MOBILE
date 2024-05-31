@@ -14,20 +14,6 @@ const OrderItem = () => {
                 end={{ x: 1, y: 1 }}
                 colors={[COLORS.primaryGreyHex, COLORS.primaryBlackHex]}
                 style={styles.CartItemSingleLinearGradient}>
-                {/* <View style={styles.CartItemRow}>
-                    <Image source={ImChocolate} style={styles.CartItemImage} />
-                    <View style={styles.CartItemInfo}>
-                        <View>
-                            <Text style={styles.CartItemTitle}>Chocolate</Text>
-                            <Text style={styles.CartItemSubtitle}>
-                                Non Coffee
-                            </Text>
-                        </View>
-                        <View style={styles.CartItemRoastedContainer}>
-                            <Text style={styles.CartItemRoastedText}>Robusta</Text>
-                        </View>
-                    </View>
-                </View> */}
                 <View>
                     <Image
                         source={ImChocolate}

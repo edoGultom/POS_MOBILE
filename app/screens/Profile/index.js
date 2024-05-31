@@ -1,14 +1,77 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, StatusBar, TouchableOpacity } from 'react-native'
 import React from 'react'
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
+import HeaderBar from '../../component/HeaderBar'
+import { Image } from 'expo-image';
+import { ProfileDummy } from '../../assets';
+import ProfileTabSection from '../../component/ProfileTabSection';
 
 const Profile = () => {
     return (
-        <View>
-            <Text>Profile</Text>
+        <View style={styles.ScreenContainer}>
+            <StatusBar style='light' />
+            <HeaderBar title="Profile" />
+
+            <View style={styles.photo}>
+                <TouchableOpacity
+                //    onPress={updatePhoto}
+                >
+                    <View style={styles.borderPhoto}>
+                        <Image
+                            // source={{ uri: userProfile.profile_photo_url }}
+                            source={ProfileDummy}
+                            style={styles.photoContainer}
+                        />
+                    </View>
+                </TouchableOpacity>
+            </View>
+            <Text style={styles.name}>userProfile.name</Text>
+            <Text style={styles.email}>userProfile.email</Text>
+
+            <View style={styles.content}>
+                <ProfileTabSection />
+            </View>
         </View>
     )
 }
 
 export default Profile
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+    content: { flex: 1, marginTop: SPACING.space_24 },
+    name: {
+        fontSize: FONTSIZE.size_18,
+        fontFamily: FONTFAMILY.poppins_medium,
+        color: COLORS.primaryWhiteHex,
+        textAlign: 'center',
+    },
+    email: {
+        fontSize: FONTSIZE.size_14,
+        fontFamily: FONTFAMILY.poppins_light,
+        color: COLORS.primaryLightGreyHex,
+        textAlign: 'center',
+    },
+    photoContainer: {
+        width: 90,
+        height: 90,
+        borderRadius: BORDERRADIUS.radius_25 * 3,
+        backgroundColor: '#F0F0F0',
+        padding: SPACING.space_24,
+    },
+    borderPhoto: {
+        borderWidth: 1,
+        borderColor: '#8D92A3',
+        width: 110,
+        height: 110,
+        borderRadius: BORDERRADIUS.radius_25 * 4,
+        borderStyle: 'dashed',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    photo: { alignItems: 'center', marginTop: SPACING.space_24, marginBottom: SPACING.space_16 },
+    ScreenContainer: {
+        flex: 1,
+        backgroundColor: COLORS.primaryBlackHex,
+    },
+
+})
