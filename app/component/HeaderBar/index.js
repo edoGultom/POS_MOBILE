@@ -9,7 +9,7 @@ const HeaderBar = ({ title }) => {
     return (
         <View style={styles.HeaderContainer}>
             <View style={styles.Container}>
-                <Image source={LogoJPG} style={{ width: 150, height: 50, borderRadius: 5 }} />
+                <Image source={LogoJPG} style={{ width: 100, height: 50, borderRadius: 5 }} />
             </View>
             <Text style={styles.HeaderText}>{title}</Text>
             <View style={styles.ImageContainer}>

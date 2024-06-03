@@ -159,7 +159,6 @@ const Home = () => {
                     // backgroundColor: 'blue'
                 }}
             >
-
                 <FlatList
                     ref={ListRef}
                     showsHorizontalScrollIndicator={false}

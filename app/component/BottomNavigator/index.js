@@ -82,11 +82,6 @@ const BottomNavigator = ({ state, descriptors, navigation }) => {
     return (
 
         <View style={styles.tabBarStyle}>
-            <BlurView
-                overlayColor=""
-                blurAmount={15}
-                style={styles.BlurViewStyles}
-            />
             {
                 state.routes.map((route, index) => {
                     const { options } = descriptors[route.key];
@@ -153,7 +148,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         position: 'absolute',
         backgroundColor: COLORS.primaryWhiteHex,
-        // backgroundColor: 'red',
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingHorizontal: SPACING.space_28,

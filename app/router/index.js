@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import BottomNavigator from '../component/BottomNavigator';
-import { Profile, SignIn, SplashScreen } from '../screens';
+import { Home, Order, Profile, SignIn, SplashScreen } from '../screens';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
