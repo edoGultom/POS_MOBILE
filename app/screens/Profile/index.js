@@ -1,14 +1,23 @@
-import { StyleSheet, Text, View, StatusBar, TouchableOpacity } from 'react-native'
-import React from 'react'
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
-import HeaderBar from '../../component/HeaderBar'
-import { Image } from 'expo-image';
-import { ProfileDummy } from '../../assets';
-import ProfileTabSection from '../../component/ProfileTabSection';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Image } from 'expo-image';
+import React, { useEffect, useState } from 'react';
+import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ProfileDummy } from '../../assets';
+import HeaderBar from '../../component/HeaderBar';
+import ProfileTabSection from '../../component/ProfileTabSection';
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
+import { getData } from '../../utils';
 
-const Profile = () => {
+const Profile = ({ navigation }) => {
+    const [userProfile, setUserProfile] = useState({});
+
+    useEffect(() => {
+        navigation.addListener('focus', () => {
+            getData('userProfile').then(res => {
+                setUserProfile(res);
+            });
+        });
+    }, [navigation]);
     return (
         <View style={styles.ScreenContainer}>
             <BottomSheetModalProvider>
@@ -28,8 +37,8 @@ const Profile = () => {
                         </View>
                     </TouchableOpacity>
                 </View>
-                <Text style={styles.name}>userProfile.name</Text>
-                <Text style={styles.email}>userProfile.email</Text>
+                <Text style={styles.name}>{userProfile.username}</Text>
+                <Text style={styles.email}>{userProfile.email}</Text>
 
                 <View style={styles.content}>
                     <ProfileTabSection />
@@ -52,7 +61,7 @@ const styles = StyleSheet.create({
     email: {
         fontSize: FONTSIZE.size_14,
         fontFamily: FONTFAMILY.poppins_light,
-        color: COLORS.primaryLightGreyHex,
+        color: COLORS.secondaryLightGreyHex,
         textAlign: 'center',
     },
     photoContainer: {

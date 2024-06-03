@@ -5,6 +5,7 @@ import { Animated, StyleSheet, Text, View } from 'react-native';
 import * as Progress from 'react-native-progress';
 import { IcLogo } from '../../assets';
 import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
+import { getData } from '../../utils';
 
 const SplashScreen = ({ navigation }) => {
   const [progress, setProgress] = useState(0);
@@ -14,7 +15,14 @@ const SplashScreen = ({ navigation }) => {
       setProgress((prevProgress) => {
         if (prevProgress >= 1) {
           clearInterval(progressInterval);
-          navigation.replace('SignIn'); // Navigasi ke halaman utama setelah loading selesai
+          getData('token').then(res => {
+            if (res) {
+              // console.log('ada');
+              navigation.reset({ index: 0, routes: [{ name: 'MainApp' }] });
+            } else {
+              navigation.replace('SignIn');
+            }
+          });
           return 1;
         }
         return prevProgress + 0.1;

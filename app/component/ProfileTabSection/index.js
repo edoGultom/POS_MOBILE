@@ -7,6 +7,7 @@ import { SceneMap, TabBar, TabView } from 'react-native-tab-view';
 import { BORDERRADIUS, COLORS, SPACING } from '../../config';
 import BottomSheetCustom from '../BottomSheet';
 import ItemListMenu from '../ItemListMenu';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const renderTabBar = (props) => (
   <TabBar
@@ -27,8 +28,6 @@ const Account = () => {
       navigation.reset({ index: 0, routes: [{ name: 'SignIn' }] });
     });
   };
-
-  const [inputValue, setInputValue] = useState('');
 
   const bottomSheetModalRef = useRef(null);
 

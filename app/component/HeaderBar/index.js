@@ -1,15 +1,32 @@
 import { Image } from 'expo-image';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { LogoJPG, ProfileDummy } from '../../assets';
 import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
+import CustomIcon from '../CustomIcon';
 
-const HeaderBar = ({ title }) => {
+const HeaderBar = ({ title, onBack }) => {
 
     return (
         <View style={styles.HeaderContainer}>
+            {onBack && (
+                <Pressable
+                    android_ripple={{
+                        color: COLORS.primaryOrangeHex,
+                        borderless: false,
+                        foreground: true,
+                    }}
+                    style={styles.back}
+                    onPress={onBack}>
+                    <CustomIcon
+                        name={'chevron-left'}
+                        color={COLORS.primaryOrangeHex}
+                        size={FONTSIZE.size_16}
+                    />
+                </Pressable>
+            )}
             <View style={styles.Container}>
-                <Image source={LogoJPG} style={{ width: 100, height: 50, borderRadius: 5 }} />
+                <Image source={LogoJPG} style={{ width: 120, height: 50, borderRadius: 5 }} />
             </View>
             <Text style={styles.HeaderText}>{title}</Text>
             <View style={styles.ImageContainer}>

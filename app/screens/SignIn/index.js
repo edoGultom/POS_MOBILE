@@ -6,6 +6,8 @@ import TextInput from '../../component/TextInput'
 import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
 import { signInAction } from '../../redux/signInSlice'
 import { useForm } from '../../utils'
+import { Image } from 'expo-image'
+import { IcLogo, LogoJPG } from '../../assets'
 
 const SignIn = ({ navigation }) => {
     const [form, setForm] = useForm({
@@ -28,6 +30,11 @@ const SignIn = ({ navigation }) => {
                 <Text style={styles.HeaderText}>Sign In</Text>
                 <Text style={styles.HeaderTextSubtitle}>Find your best drink!</Text>
             </View>
+            {/* <View style={{ marginTop: 0, marginBottom: 0 }}>
+                <Image
+                    style={{ width: 150, height: 100 }}
+                    source={LogoJPG} />
+            </View> */}
             <View style={styles.container}>
                 <TextInput
                     label="Username"
@@ -59,7 +66,7 @@ export default SignIn
 const styles = StyleSheet.create({
     HeaderText: {
         fontFamily: FONTFAMILY.poppins_semibold,
-        fontSize: FONTSIZE.size_20,
+        fontSize: FONTSIZE.size_28,
         color: COLORS.primaryOrangeHex,
     },
     HeaderTextSubtitle: {

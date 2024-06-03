@@ -66,7 +66,7 @@ export const signInAction = createAsyncThunk(
       })
       .then(res => {
         dispatch(addLoading(false));
-        console.log(res, 'ress');
+        // console.log(res, 'ress');
         //data user
         const profile = res.data.user;
         storeData('userProfile', profile);
