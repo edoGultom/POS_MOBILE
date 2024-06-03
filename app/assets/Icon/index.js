@@ -6,6 +6,7 @@ import IcCoffeeOff from './ic-coffee-off.svg';
 import IcCoffeeOn from './ic-coffee-on.svg';
 import IcNonCoffeeOn from './ic-non-coffee-on.svg';
 import IcNonCoffeeOff from './ic-non-coffee-off.svg';
+import IcLogo from './ic-logo.png';
 export {
     IcHomeOn,
     IcHomeOff,
@@ -15,4 +16,5 @@ export {
     IcCoffeeOn,
     IcNonCoffeeOn,
     IcNonCoffeeOff,
+    IcLogo,
 };

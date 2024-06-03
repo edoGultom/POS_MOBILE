@@ -10,6 +10,7 @@ const TextInput = ({ label, placeholder, ...restProps }) => {
         style={styles.input}
         placeholder={placeholder}
         {...restProps}
+        placeholderTextColor={COLORS.secondaryLightGreyHex}
       />
     </View>
   );
@@ -18,6 +19,6 @@ const TextInput = ({ label, placeholder, ...restProps }) => {
 export default TextInput;
 
 const styles = StyleSheet.create({
-  label: { fontSize: FONTSIZE.size_16, fontFamily: FONTFAMILY.poppins_regular, color: COLORS.primaryBlackHex },
-  input: { borderWidth: 1, borderColor: COLORS.primaryLightGreyHex, borderRadius: BORDERRADIUS.radius_15, padding: SPACING.space_10 },
+  label: { fontSize: FONTSIZE.size_16, fontFamily: FONTFAMILY.poppins_regular, color: COLORS.secondaryLightGreyHex },
+  input: { borderWidth: 1, borderColor: COLORS.secondaryLightGreyHex, borderRadius: BORDERRADIUS.radius_15, padding: SPACING.space_10, color: COLORS.primaryWhiteHex },
 });

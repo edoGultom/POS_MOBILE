@@ -5,32 +5,36 @@ import HeaderBar from '../../component/HeaderBar'
 import { Image } from 'expo-image';
 import { ProfileDummy } from '../../assets';
 import ProfileTabSection from '../../component/ProfileTabSection';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const Profile = () => {
     return (
         <View style={styles.ScreenContainer}>
-            <StatusBar style='light' />
-            <HeaderBar title="Profile" />
+            <BottomSheetModalProvider>
+                <StatusBar style='light' />
+                <HeaderBar title="Profile" />
 
-            <View style={styles.photo}>
-                <TouchableOpacity
-                //    onPress={updatePhoto}
-                >
-                    <View style={styles.borderPhoto}>
-                        <Image
-                            // source={{ uri: userProfile.profile_photo_url }}
-                            source={ProfileDummy}
-                            style={styles.photoContainer}
-                        />
-                    </View>
-                </TouchableOpacity>
-            </View>
-            <Text style={styles.name}>userProfile.name</Text>
-            <Text style={styles.email}>userProfile.email</Text>
+                <View style={styles.photo}>
+                    <TouchableOpacity
+                    //    onPress={updatePhoto}
+                    >
+                        <View style={styles.borderPhoto}>
+                            <Image
+                                // source={{ uri: userProfile.profile_photo_url }}
+                                source={ProfileDummy}
+                                style={styles.photoContainer}
+                            />
+                        </View>
+                    </TouchableOpacity>
+                </View>
+                <Text style={styles.name}>userProfile.name</Text>
+                <Text style={styles.email}>userProfile.email</Text>
 
-            <View style={styles.content}>
-                <ProfileTabSection />
-            </View>
+                <View style={styles.content}>
+                    <ProfileTabSection />
+                </View>
+            </BottomSheetModalProvider>
         </View>
     )
 }

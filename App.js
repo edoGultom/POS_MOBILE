@@ -1,16 +1,23 @@
-// import { StatusBar } from 'expo-status-bar';
-import { View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import Router from './app/router';
 import { useFonts } from 'expo-font';
+import * as SplashScreens from 'expo-splash-screen';
 import { useCallback } from 'react';
-import * as SplashScreen from 'expo-splash-screen';
-SplashScreen.preventAutoHideAsync();
+import { View } from 'react-native';
+import FlashMessage from 'react-native-flash-message';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Provider, useSelector } from 'react-redux';
+import Loading from './app/component/Loading';
+import store from './app/redux/store';
+import Router from './app/router';
+SplashScreens.preventAutoHideAsync();
 
 const MainApp = () => {
+  const { isLoading } = useSelector(state => state.globalReducer);
   return (
     <NavigationContainer >
       <Router />
+      {isLoading && <Loading />}
+      <FlashMessage position="top" />
     </NavigationContainer>
   );
 }
@@ -30,17 +37,23 @@ const App = () => {
 
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded || fontError) {
-      await SplashScreen.hideAsync();
+      await SplashScreens.hideAsync();
     }
   }, [fontsLoaded, fontError]);
 
   if (!fontsLoaded && !fontError) {
     return null;
   }
+
+
   return (
-    <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-      <MainApp />
-    </View>
+    <Provider store={store}>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+          <MainApp />
+        </View>
+      </GestureHandlerRootView>
+    </Provider>
   );
 }
 export default App;

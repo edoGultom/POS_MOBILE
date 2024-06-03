@@ -1,12 +1,12 @@
-import { StyleSheet, Text, View, Dimensions, Modal, TouchableOpacity } from 'react-native'
-import { SceneMap, TabBar, TabView } from 'react-native-tab-view';
-import React, { useState } from 'react'
+import { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useNavigation } from '@react-navigation/native';
+import React, { useCallback, useRef, useState } from 'react';
+import { Button, Dimensions, StyleSheet, Text, View } from 'react-native';
+import { SceneMap, TabBar, TabView } from 'react-native-tab-view';
+import { BORDERRADIUS, COLORS, SPACING } from '../../config';
+import BottomSheetCustom from '../BottomSheet';
 import ItemListMenu from '../ItemListMenu';
-import { COLORS, FONTSIZE, SPACING } from '../../config';
-import CustomIcon from '../CustomIcon';
-import ModalCustom from '../Modal';
-import TextInput from '../TextInput';
 
 const renderTabBar = (props) => (
   <TabBar
@@ -22,34 +22,66 @@ const renderTabBar = (props) => (
 
 const Account = () => {
   const navigation = useNavigation();
-  const [modalVisible, setModalVisible] = useState(false);
-  const [inputValue, setInputValue] = useState('');
-  const toggleModal = () => {
-    setModalVisible(!modalVisible);
-  };
   const signOut = () => {
     AsyncStorage.multiRemove(['userProfile', 'token']).then(() => {
       navigation.reset({ index: 0, routes: [{ name: 'SignIn' }] });
     });
   };
-  return (
-    <View style={styles.containerAccount}>
-      <ItemListMenu
-        text="Edit Profile"
-        // onPress={() => navigation.navigate('EditProfile')}
-        onPress={toggleModal}
+
+  const [inputValue, setInputValue] = useState('');
+
+  const bottomSheetModalRef = useRef(null);
+
+  const openModal = () => {
+    bottomSheetModalRef.current.present();
+  };
+
+  const closeModal = () => {
+    bottomSheetModalRef.current.dismiss();
+  };
+
+  const tabBarHeight = useBottomTabBarHeight();
+  const renderBackdrop = useCallback(
+    props => (
+      <BottomSheetBackdrop
+        {...props}
+        disappearsOnIndex={-1}
+        appearsOnIndex={0}
       />
-      <ItemListMenu text="SignOut" onPress={signOut} />
-      <ModalCustom visible={modalVisible} onClose={toggleModal}>
-        <TextInput
-          label="Full Name"
-          placeholder="Type your full name"
-          value={inputValue}
-          onChangeText={setInputValue}
-        />
-      </ModalCustom>
-    </View >
+    ),
+    []
   );
+
+  return (
+    <>
+      <View style={styles.containerAccount}>
+        <ItemListMenu
+          text="Edit Profile"
+          onPress={openModal}
+        />
+        <ItemListMenu text="SignOut" onPress={signOut} />
+      </View>
+
+      {/* BOTTOM SHEET */}
+      <BottomSheetCustom
+        ref={bottomSheetModalRef}
+        backdropComponent={renderBackdrop}
+      >
+        {/* Render your dynamic content here */}
+        <View style={{ marginBottom: tabBarHeight + 5 }}>
+          <Text style={[styles.text, { color: 'white' }]}>sdsdsdsdsdsdsdsd</Text>
+          <Text style={[styles.text, { color: 'white' }]}>sdsdsdsdsdsdsdsd</Text>
+          <Text style={[styles.text, { color: 'white' }]}>sdsdsdsdsdsdsdsd</Text>
+          <Text style={[styles.text, { color: 'white' }]}>sdsdsdsdsdsdsdsd</Text>
+          <Text style={[styles.text, { color: 'white' }]}>sdsdsdsdsdsdsdsd</Text>
+          <Text style={[styles.text, { color: 'white' }]}>sdsdsdsdsdsdsdsd</Text>
+          <View style={styles.containerButton}>
+            <Button title="Tutup" onPress={closeModal} color={COLORS.primaryLightGreyHex} />
+          </View>
+        </View>
+      </BottomSheetCustom>
+    </>
+  )
 };
 
 const PosApp = () => {
@@ -90,8 +122,16 @@ const ProfileTabSection = () => {
 export default ProfileTabSection
 
 const styles = StyleSheet.create({
+  containerButton: {
+    marginVertical: SPACING.space_15,
+    marginLeft: SPACING.space_2,
+    marginRight: SPACING.space_2,
+    overflow: 'hidden',
+    borderRadius: BORDERRADIUS.radius_25,
+  },
   tabView: {
     backgroundColor: COLORS.primaryBlackHex,
+    position: 'relative'
   },
   indicator: {
     backgroundColor: COLORS.primaryOrangeHex,
