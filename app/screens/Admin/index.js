@@ -6,17 +6,10 @@ import CustomIcon from '../../component/CustomIcon'
 import HeaderBar from '../../component/HeaderBar'
 import { useNavigation } from '@react-navigation/native'
 
-const IconTextView = ({ index, iconName, text, menuIndex, setMenuIndex, onPress }) => {
+const IconTextView = ({ index, iconName, text, menuIndex, onPress }) => {
     return (
         <TouchableOpacity
             onPress={onPress}
-            // onPress={() => {
-            //     setMenuIndex({ index: index, menu: text });
-            //     if (iconName === 'POS') {
-            //         console.log(iconName, 'menuIndex')
-            //         navigation.navigate('Home', item)
-            //     }
-            // }}
             style={[
                 styles.box,
                 menuIndex.index === index
@@ -100,7 +93,7 @@ const Admin = () => {
             }}>
                 {
                     menus.map((item) => (
-                        <IconTextView key={item.key} index={item.key} iconName={item.icon} text={item.label} menuIndex={menuIndex} setMenuIndex={setMenuIndex} onPress={item.onPress} />
+                        <IconTextView key={item.key} index={item.key} iconName={item.icon} text={item.label} menuIndex={menuIndex} onPress={item.onPress} />
                     ))
                 }
             </View>

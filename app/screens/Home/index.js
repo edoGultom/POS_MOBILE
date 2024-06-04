@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Dimensions, FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { IcCoffeeOn, IcNonCoffeeOff, ImChocolate, ImCoffAmericano, ImLangitMatcha, ImLangitTaro } from '../../assets';
+import { IcCoffeeOff, IcCoffeeOn, IcNonCoffeeOff, ImChocolate, ImCoffAmericano, ImLangitMatcha, ImLangitTaro } from '../../assets';
 import CoffeCard from '../../component/CoffeeCard';
 import HeaderBar from '../../component/HeaderBar';
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
@@ -10,6 +10,28 @@ import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 const Home = () => {
     const tabBarHeight = useBottomTabBarHeight();
     const ListRef = useRef();
+    const [catgoryMenu, setCategoryMenu] = useState({
+        index: 1,
+        category: 'Coffee',
+    });
+    const categroyMenu = [
+        {
+            key: 1,
+            label: 'Coffee',
+            icon: <IcCoffeeOn />,
+            onPress: () => {
+                setCategoryMenu({ index: 1, category: 'Coffee' });
+            },
+        },
+        {
+            key: 2,
+            label: 'Non Coffee',
+            icon: <IcNonCoffeeOff />,
+            onPress: () => {
+                setCategoryMenu({ index: 2, category: 'Non Coffee' });
+            },
+        },
+    ];
     const BeanList = [
         {
             id: 'B1',
@@ -106,50 +128,29 @@ const Home = () => {
                     Find the best{'\n'}coffee for you
                 </Text>
                 <View style={styles.KindOuterContainer}>
-                    <TouchableOpacity
-                        onPress={() => {
-                            //   setPrice(data);
-                        }}
-                        style={[
-                            styles.KindBox,
-                            {
-                                borderColor: COLORS.primaryOrangeHex
-                            },
-                        ]}>
-                        <IcCoffeeOn />
-                        <Text
+                    {categroyMenu.map((item) => (
+                        <TouchableOpacity
+                            onPress={item.onPress}
                             style={[
-                                styles.SizeText,
-                                {
-                                    fontSize: FONTSIZE.size_16,
-                                    color: COLORS.primaryOrangeHex
-                                },
+                                styles.KindBox,
+                                catgoryMenu.index === item.key
+                                    ? { borderColor: COLORS.primaryOrangeHex } : {},
                             ]}>
-                            Coffee
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => {
-                            //   setPrice(data);
-                        }}
-                        style={[
-                            styles.KindBox,
-                            {
-                                borderColor: COLORS.primaryDarkGreyHex
-                            },
-                        ]}>
-                        <IcNonCoffeeOff />
-                        <Text
-                            style={[
-                                styles.SizeText,
-                                {
-                                    fontSize: FONTSIZE.size_16,
-                                    color: COLORS.secondaryLightGreyHex
-                                },
-                            ]}>
-                            Non Coffee
-                        </Text>
-                    </TouchableOpacity>
+                            {item.icon}
+                            <Text
+                                style={[
+                                    styles.SizeText,
+                                    {
+                                        fontSize: FONTSIZE.size_16,
+                                    },
+                                    catgoryMenu.index === item.key
+                                        ? { color: COLORS.primaryOrangeHex } : { color: COLORS.primaryWhiteHex },
+                                ]}>
+                                {item.label}
+                            </Text>
+                        </TouchableOpacity>
+                    ))}
+
                 </View>
             </View>
             <View
