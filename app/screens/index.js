@@ -5,6 +5,7 @@ import Order from "./Order";
 import Profile from "./Profile";
 import SplashScreen from "./SplashScreen";
 import SuccessSignUp from "./SuccessSignUp";
+import Admin from "./Admin";
 
 export {
     Home,
@@ -13,5 +14,6 @@ export {
     Order,
     Profile,
     SplashScreen,
-    SuccessSignUp
+    SuccessSignUp,
+    Admin
 };

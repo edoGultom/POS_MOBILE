@@ -95,7 +95,6 @@ const Home = () => {
     return (
         <View style={styles.ScreenContainer}>
             <StatusBar style='light' />
-            {/* <StatusBar backgroundColor={COLORS.primaryBlackHex} /> */}
             <View
                 style={{
                     flex: 1,
@@ -157,16 +156,14 @@ const Home = () => {
                 style={{
                     flex: 2,
                     // backgroundColor: 'blue'
+                    marginBottom: tabBarHeight
                 }}
             >
                 <FlatList
                     ref={ListRef}
                     showsHorizontalScrollIndicator={false}
                     data={BeanList}
-                    contentContainerStyle={[
-                        styles.FlatListContainer,
-                        { marginBottom: tabBarHeight },
-                    ]}
+                    contentContainerStyle={styles.FlatListContainer}
                     ListEmptyComponent={
                         <View style={styles.EmptyListContainer}>
                             <Text style={styles.EmptyText}>No Coffee Available</Text>

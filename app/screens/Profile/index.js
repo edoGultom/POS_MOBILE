@@ -1,23 +1,27 @@
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import { Image } from 'expo-image';
 import React, { useEffect, useState } from 'react';
-import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ProfileDummy } from '../../assets';
 import HeaderBar from '../../component/HeaderBar';
 import ProfileTabSection from '../../component/ProfileTabSection';
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
 import { getData } from '../../utils';
+import { BE_API_HOST } from '@env';
 
 const Profile = ({ navigation }) => {
     const [userProfile, setUserProfile] = useState({});
-
     useEffect(() => {
         navigation.addListener('focus', () => {
-            getData('userProfile').then(res => {
-                setUserProfile(res);
-            });
+            updateUserProfile();
         });
     }, [navigation]);
+
+    const updateUserProfile = () => {
+        getData('userProfile').then((res) => {
+            setUserProfile(res);
+        });
+    };
+
     return (
         <View style={styles.ScreenContainer}>
             <BottomSheetModalProvider>
@@ -30,14 +34,15 @@ const Profile = ({ navigation }) => {
                     >
                         <View style={styles.borderPhoto}>
                             <Image
-                                // source={{ uri: userProfile.profile_photo_url }}
-                                source={ProfileDummy}
+                                source={{ uri: `${BE_API_HOST}/lihat-file/profile?path=${userProfile.profile_photo_path}` }}
+                                // source={photo}
                                 style={styles.photoContainer}
                             />
                         </View>
                     </TouchableOpacity>
                 </View>
-                <Text style={styles.name}>{userProfile.username}</Text>
+                <Text style={styles.name}>
+                    {userProfile.username}</Text>
                 <Text style={styles.email}>{userProfile.email}</Text>
 
                 <View style={styles.content}>
@@ -70,6 +75,8 @@ const styles = StyleSheet.create({
         borderRadius: BORDERRADIUS.radius_25 * 3,
         backgroundColor: '#F0F0F0',
         padding: SPACING.space_24,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     borderPhoto: {
         borderWidth: 1,

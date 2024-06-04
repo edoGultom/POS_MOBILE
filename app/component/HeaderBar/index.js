@@ -1,11 +1,24 @@
-import { Image } from 'expo-image';
-import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { LogoJPG, ProfileDummy } from '../../assets';
 import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
 import CustomIcon from '../CustomIcon';
+import { getData } from '../../utils';
+import { BE_API_HOST } from '@env';
 
 const HeaderBar = ({ title, onBack }) => {
+    const [photo, setPhoto] = useState(ProfileDummy);
+    useEffect(() => {
+        updateUserProfile();
+    }, [title]);
+
+    const updateUserProfile = () => {
+        getData('userProfile').then((res) => {
+            setPhoto({
+                uri: `${BE_API_HOST}/lihat-file/profile?path=${res.profile_photo_path}`,
+            });
+        });
+    };
 
     return (
         <View style={styles.HeaderContainer}>
@@ -31,7 +44,7 @@ const HeaderBar = ({ title, onBack }) => {
             <Text style={styles.HeaderText}>{title}</Text>
             <View style={styles.ImageContainer}>
                 <Image
-                    source={ProfileDummy}
+                    source={photo}
                     style={styles.Image}
                 />
             </View>

@@ -6,6 +6,7 @@ import * as Progress from 'react-native-progress';
 import { IcLogo } from '../../assets';
 import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
 import { getData } from '../../utils';
+import { useRole } from '../../utils/roles';
 
 const SplashScreen = ({ navigation }) => {
   const [progress, setProgress] = useState(0);
@@ -17,8 +18,13 @@ const SplashScreen = ({ navigation }) => {
           clearInterval(progressInterval);
           getData('token').then(res => {
             if (res) {
-              // console.log('ada');
-              navigation.reset({ index: 0, routes: [{ name: 'MainApp' }] });
+              getData('userProfile').then((res) => {
+                if (res.scope.includes('Admin')) {
+                  navigation.reset({ index: 0, routes: [{ name: 'Admin' }] });
+                } else {
+                  navigation.reset({ index: 0, routes: [{ name: 'MainApp' }] });
+                }
+              });
             } else {
               navigation.replace('SignIn');
             }
@@ -40,7 +46,7 @@ const SplashScreen = ({ navigation }) => {
         source={IcLogo}
         style={{ width: 300, height: 280 }}
       />
-      <View style={{ alignItems: 'center' }}>
+      <View style={{ alignItems: 'center', gap: 8 }}>
         <Text style={styles.text}>Point Of Sales</Text>
         <Text style={styles.subTitle}>Langit Coffee Space</Text>
         <Progress.Bar progress={progress} width={200} color={COLORS.primaryOrangeHex} />
