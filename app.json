@@ -15,10 +15,11 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
+      "jsEngine": "jsc",
       "supportsTablet": true
     },
+    "jsEngine": "hermes",
     "android": {
-      "jsEngine": "hermes",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"

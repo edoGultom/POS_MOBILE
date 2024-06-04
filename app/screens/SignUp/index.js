@@ -6,12 +6,15 @@ import Button from '../../component/Button';
 import CustomIcon from '../../component/CustomIcon';
 import TextInput from '../../component/TextInput';
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
+import { signUpAction } from '../../redux/signUpSlice';
 import { useForm } from '../../utils';
+import { useDispatch } from 'react-redux';
 
 const SignUp = ({ navigation }) => {
-    const [photo, setPhoto] = useState('');
+    const [photo, setPhoto] = useState(null);
     const [form, setForm] = useForm({
         name: '',
+        address: '',
         username: '',
         email: '',
         password: '',
@@ -19,22 +22,27 @@ const SignUp = ({ navigation }) => {
     const choosePhoto = async () => {
         // No permissions request is necessary for launching the image library
         let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
             aspect: [4, 4],
             quality: 0.5,
         });
-
-        console.log(result);
-
+        console.log(result)
         if (!result.canceled) {
-            setPhoto(result.assets[0].uri);
+            // setPhoto(result.assets[0].uri);
+            setPhoto(result);
         }
     };
+    const dispatch = useDispatch();
 
     const onSubmit = () => {
-        dispatch(addRegister(form));
-        navigation.navigate('SignUpAddress');
+        const data = {
+            ...form,
+            navigation,
+            photo,
+        };
+        // console.log(data, 'data')
+        dispatch(signUpAction(data));
     };
 
     return (
@@ -80,7 +88,7 @@ const SignUp = ({ navigation }) => {
                                     elevation: 4,
                                 }}>
                                 {photo ? (
-                                    <Image source={{ uri: photo }} style={styles.photoContainer} />
+                                    <Image source={{ uri: photo.assets[0].uri }} style={styles.photoContainer} />
                                 ) : (
                                     <View style={styles.photoContainer}>
                                         <CustomIcon
@@ -103,6 +111,12 @@ const SignUp = ({ navigation }) => {
                             onChangeText={value => setForm('name', value)}
                         />
                         <TextInput
+                            label="Address"
+                            placeholder="Type your address"
+                            value={form.address}
+                            onChangeText={value => setForm('address', value)}
+                        />
+                        <TextInput
                             label="Username"
                             placeholder="Type your username"
                             value={form.username}
@@ -121,7 +135,7 @@ const SignUp = ({ navigation }) => {
                             onChangeText={value => setForm('password', value)}
                             secureTextEntry
                         />
-                        <Button text="Continue" onPress={onSubmit} />
+                        <Button text="Register Now" onPress={onSubmit} />
                     </View>
                 </View>
             </ScrollView>
@@ -170,7 +184,6 @@ const styles = StyleSheet.create({
     },
     photo: {
         alignItems: 'center',
-        marginTop: SPACING.space_24,
         marginBottom: SPACING.space_16,
     },
     HeaderText: {
@@ -186,7 +199,6 @@ const styles = StyleSheet.create({
     HeaderContainer: {
         paddingTop: SPACING.space_36,
         paddingHorizontal: SPACING.space_24,
-        paddingVertical: SPACING.space_15,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-start',
