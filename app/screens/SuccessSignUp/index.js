@@ -1,23 +1,22 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { Button, Gap } from '../../components';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import { IlSuccess } from '../../assets/Ilustration';
+import Button from '../../component/Button';
+import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
+import { StatusBar } from 'expo-status-bar';
 
 const SuccessSignUp = ({ navigation }) => {
     return (
         <View style={styles.page}>
-            <IlSuccess />
-            <Gap height={30} />
-
-            <Text style={styles.title}>Yeay! Completed</Text>
-
-            <Gap height={6} />
+            <StatusBar style='light' />
+            <Image
+                source={IlSuccess}
+                style={styles.image}
+            />
+            <Text style={[styles.title, { marginTop: SPACING.space_10 }]}>Yeay! Completed</Text>
 
             <Text style={styles.subTitle}>Now you are able to login</Text>
-            <Text style={styles.subTitle}>some coffee for today's</Text>
-
-            <Gap height={30} />
-
+            <Text style={[styles.subTitle, { marginBottom: SPACING.space_30 }]}>some coffee for today's</Text>
             <View style={styles.buttonContainer}>
                 <Button
                     text="Continue"
@@ -33,24 +32,30 @@ const SuccessSignUp = ({ navigation }) => {
 export default SuccessSignUp;
 
 const styles = StyleSheet.create({
+    image: {
+        width: 350,
+        height: 250,
+    },
     page: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#fff',
+        backgroundColor: COLORS.primaryBlackHex
+        // backgroundColor: COLORS.primaryOrangeHex
     },
     title: {
-        fontSize: 20,
-        fontFamily: 'Poppins-Regular',
-        color: '#020202',
+        fontSize: FONTSIZE.size_28,
+        fontFamily: FONTFAMILY.poppins_regular,
+        color: COLORS.primaryWhiteHex,
+        marginBottom: SPACING.space_2 * 3
     },
     subTitle: {
-        fontSize: 14,
+        fontSize: FONTSIZE.size_14,
         fontFamily: 'Poppins-Light',
-        color: '#8D92A3',
+        color: COLORS.primaryWhiteHex
     },
     buttonContainer: {
         width: '100%',
-        paddingHorizontal: 80,
+        paddingHorizontal: SPACING.space_20 * 4,
     },
 });

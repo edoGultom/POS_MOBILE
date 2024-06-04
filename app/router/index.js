@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import BottomNavigator from '../component/BottomNavigator';
-import { Home, Order, Profile, SignIn, SignUp, SplashScreen } from '../screens';
+import { Home, Order, Profile, SignIn, SignUp, SplashScreen, SuccessSignUp } from '../screens';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -31,10 +31,15 @@ const Router = () => {
                 name="SignIn"
                 component={SignIn}
                 options={{ headerShown: false }}
-            /> */}
+            />
             <Stack.Screen
                 name="SignUp"
                 component={SignUp}
+                options={{ headerShown: false }}
+            /> */}
+            <Stack.Screen
+                name="SuccessSignUp"
+                component={SuccessSignUp}
                 options={{ headerShown: false }}
             />
             <Stack.Screen name="MainApp" component={MainApp} options={{ headerShown: false }} />

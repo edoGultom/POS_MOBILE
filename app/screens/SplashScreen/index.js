@@ -65,5 +65,5 @@ const styles = StyleSheet.create({
     gap: SPACING.space_30
   },
   text: { fontSize: FONTSIZE.size_18, color: COLORS.primaryWhiteHex, fontFamily: FONTFAMILY.poppins_light },
-  subTitle: { fontSize: FONTSIZE.size_30, color: COLORS.primaryWhiteHex, fontFamily: FONTFAMILY.poppins_medium },
+  subTitle: { marginBottom: SPACING.space_10, fontSize: FONTSIZE.size_30, color: COLORS.primaryWhiteHex, fontFamily: FONTFAMILY.poppins_medium },
 });

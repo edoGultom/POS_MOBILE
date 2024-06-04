@@ -4,6 +4,7 @@ import SignUp from "./SignUp";
 import Order from "./Order";
 import Profile from "./Profile";
 import SplashScreen from "./SplashScreen";
+import SuccessSignUp from "./SuccessSignUp";
 
 export {
     Home,
@@ -12,4 +13,5 @@ export {
     Order,
     Profile,
     SplashScreen,
+    SuccessSignUp
 };
