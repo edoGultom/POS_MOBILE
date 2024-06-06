@@ -13,7 +13,7 @@ import Select from '../../component/Select'
 import TextInput from '../../component/TextInput'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
 import { getKategori } from '../../redux/kategoriSlice'
-import { addMenuState, deleteMenu, getMenu } from '../../redux/menuSlice'
+import { addMenu, addMenuState, deleteMenu, getMenu, updateMenu } from '../../redux/menuSlice'
 import { getData, useForm } from '../../utils'
 import { showMessage } from 'react-native-flash-message'
 import axios from 'axios'
@@ -28,6 +28,7 @@ const AdminMenu = ({ navigation }) => {
     const [dataKategori, setDataKategori] = useState([]);
     const dispatch = useDispatch();
     const [refreshing, setRefreshing] = useState(false);
+    const [selectedMenu, setSelectedMenu] = useState(null);
 
     useEffect(() => {
         if (dataKategori.length < 1 && kategori.length > 0) {
@@ -51,6 +52,34 @@ const AdminMenu = ({ navigation }) => {
             dispatch(getMenu(res.value))
         });
     };
+    const fetchData = useCallback(async () => {
+        setRefreshData(true);
+        try {
+            getDataMenu();
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setRefreshData(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
+
+    const setRefreshData = (val) => {
+        setRefreshing(val);
+    }
+
+    const handleDelete = useCallback(async (id) => {
+        getData('token').then(async (res) => {
+            const token = res.value;
+            const param = { token, id, setRefreshData };
+            dispatch(deleteMenu(param))
+        });
+    }, []);
+
+
     const openModal = () => {
         bottomSheetModalRef.current.present();
     };
@@ -65,20 +94,34 @@ const AdminMenu = ({ navigation }) => {
         ),
         []
     );
+    useEffect(() => {
+        if (selectedMenu) {
+            bottomSheetModalRef.current.present();
+        }
+    }, [selectedMenu])
 
-    const FormComponnt = ({ data }) => {
-        const [photo, setPhoto] = useState(null);
+    const FormComponent = ({ dataKategori, selected }) => {
+
+        const [photo, setPhoto] = useState(selected !== null ? {
+            assets: [
+                { uri: `${BE_API_HOST}/lihat-file/profile?path=${selected.path}` }
+            ]
+        } : null);
+
         const [form, setForm] = useForm({
-            nama_barang: '',
-            id_satuan: '1',
-            id_kategori: '1',
-            harga: '',
-            stok: '',
-            type: 'addition'
+            nama_barang: selected !== null ? selected.nama_barang : '',
+            id_satuan: selected !== null ? selected.id_satuan : 1,
+            id_kategori: selected !== null ? selected.id_kategori : '1',
+            harga: selected !== null ? selected.harga.toString() : null,
+            stok: selected !== null ? selected.stok.toString() : null,
+            type: 'addition',
         });
+        const Title = selected !== null ? 'Ubah Menu' : 'Tambah Menu';
+
         const closeModal = () => {
             bottomSheetModalRef.current.dismiss();
         };
+
         const onSubmit = () => {
             if (photo === null) {
                 showMessage('Please select a file to continue!');
@@ -95,27 +138,16 @@ const AdminMenu = ({ navigation }) => {
                     name: `menu.${fileExtension}`
                 }
                 dataInput.append('file', dataPhoto)
+                closeModal();
                 getData('token').then((resToken) => {
-                    dispatch(addLoading(true));
-                    axios.post(`${BE_API_HOST}/barang/add`, dataInput, {
-                        headers: {
-                            Authorization: resToken.value,
-                            'Content-Type': 'multipart/form-data',
-                        },
-                    })
-                        .then((res) => {
-                            closeModal()
-                            dispatch(addLoading(false));
-                            dispatch(addMenuState(res.data.data))
-                        })
-                        .catch((err) => {
-                            console.log(err, 'error')
-
-                            showMessage(
-                                `${err?.response?.data?.message} on Update Profile API` ||
-                                'Terjadi kesalahan di API Update Menu',
-                            );
-                        });
+                    const token = resToken.value;
+                    const param = { token, dataInput, setRefreshData };
+                    if (selected !== null) {//update
+                        const updatedParam = { ...param, id: selected.id };
+                        dispatch(updateMenu(updatedParam));
+                    } else {//add
+                        dispatch(addMenu(param));
+                    }
                 });
             }
         };
@@ -131,18 +163,19 @@ const AdminMenu = ({ navigation }) => {
                 setPhoto(result);
             }
         };
+
         return (
             <View style={{ marginBottom: 5, gap: 20 }}>
-                <Text style={{ color: COLORS.primaryOrangeHex, fontFamily: FONTFAMILY.poppins_bold, fontSize: FONTSIZE.size_20 }}>Tambah Menu</Text>
+                <Text style={{ color: COLORS.primaryOrangeHex, fontFamily: FONTFAMILY.poppins_bold, fontSize: FONTSIZE.size_20 }}>{Title}</Text>
                 <TextInput
                     label="Menu"
-                    placeholder="Type your menu"
+                    placeholder="Masukkan menu"
                     value={form.nama_barang}
-                    onChangeText={value => setForm('nama_barang', value)}
+                    onChangeText={(value) => setForm('nama_barang', value)}
                 />
                 <Select
                     label="Kategori"
-                    data={data}
+                    data={dataKategori}
                     value={form.id_kategori}
                     onSelectChange={(value) => setForm('id_kategori', value)}
                 />
@@ -157,6 +190,7 @@ const AdminMenu = ({ navigation }) => {
                     label="Stok"
                     keyboardType='numeric'
                     placeholder='Masukkan Stok'
+                    value={form.stok}
                     onChangeText={(value) => setForm('stok', value)}
                 />
                 <Text style={{ color: COLORS.secondaryLightGreyHex }}>Pilih Gambar</Text>
@@ -166,7 +200,7 @@ const AdminMenu = ({ navigation }) => {
                         foreground: true,
                         radius: 50
                     }}
-                    onPress={choosePhoto}
+                    onPress={() => choosePhoto()}
                     style={{
                         width: 80,
                         height: 80,
@@ -182,49 +216,11 @@ const AdminMenu = ({ navigation }) => {
                         )}
                     </View>
                 </Pressable>
-                <Button title="Tutup" onPress={closeModal} color={COLORS.primaryLightGreyHex} />
-                <Button title="Simpan" onPress={onSubmit} color={COLORS.primaryOrangeHex} />
+                <Button title="Tutup" onPress={() => { closeModal() }} color={COLORS.primaryLightGreyHex} />
+                <Button title="Simpan" onPress={() => { onSubmit() }} color={COLORS.primaryOrangeHex} />
             </View>
         );
     }
-
-    const fetchData = useCallback(async () => {
-        setRefreshing(true);
-        try {
-            getDataMenu();
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setRefreshing(false);
-        }
-    }, []);
-
-    useEffect(() => {
-        fetchData();
-    }, [fetchData]);
-
-    const setRefreshData = (val) => {
-        setRefreshing(val);
-    }
-    const handleDelete = useCallback(async (id) => {
-        // setRefreshing(true);
-        getData('token').then(async (res) => {
-            const token = res.value;
-            const param = { token, id, setRefreshData };
-            dispatch(deleteMenu(param))
-            // const response = await axios.delete(`${BE_API_HOST}/barang/delete?id=${id}}`, {
-            //     headers: {
-            //         Authorization: `${res.value}`,
-            //     },
-            // });
-            // if (response.status === 200) {
-            //     return response.data;
-            // } else {
-            //     dispatch(addLoading(false));
-            //     console.error('Response not okay');
-            // }
-        });
-    }, []);
 
     return (
         <BottomSheetModalProvider>
@@ -242,15 +238,21 @@ const AdminMenu = ({ navigation }) => {
                         refreshing={refreshing}
                         showsVerticalScrollIndicator={false}
                         renderItem={({ item }) => (
+                            // <TouchableOpacity
+                            //     activeOpacity={0.4}
+                            //     onPress={() => setSelectedMenu(item)}
+                            // >
                             <ListItem
                                 key={item.id}
                                 id={item.id}
                                 name={item.nama_barang}
-                                uri={item.path}
+                                url={item.path}
                                 kind='Non Coffee'
                                 price={item.harga}
-                                onPress={() => handleDelete(item.id)}
+                                onPressDelete={() => handleDelete(item.id)}
+                                onPressUpdate={() => setSelectedMenu(item)}
                             />
+                            // </TouchableOpacity>
                         )}
                         keyExtractor={item => item.id}
                         contentContainerStyle={{ flexGrow: 1, columnGap: SPACING.space_10 }}
@@ -262,13 +264,16 @@ const AdminMenu = ({ navigation }) => {
                     ref={bottomSheetModalRef}
                     backdropComponent={renderBackdrop}
                 >
-                    <FormComponnt data={dataKategori} />
+                    <FormComponent dataKategori={dataKategori} selected={selectedMenu} />
                 </BottomSheetCustom>
 
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity
                         style={styles.buttonTambah}
-                        onPress={openModal}
+                        onPress={() => {
+                            openModal()
+                            setSelectedMenu(null)
+                        }}
                     >
                         <CustomIcon
                             name={'plus'}
