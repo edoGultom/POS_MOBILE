@@ -31,11 +31,40 @@ export const getMenu = createAsyncThunk('menu/getMenu', async (token, { dispatch
         console.error('Error: ', error);
     }
 });
+export const deleteMenu = createAsyncThunk('menu/deleteMenu', async (param, { dispatch }) => {
+    const { id, setRefreshData, token } = param
+    setRefreshData(true);
+    try {
+        const response = await axios.delete(`${BE_API_HOST}/barang/delete?id=${id}`, {
+            headers: {
+                Authorization: `${token}`,
+            },
+        });
+        if (response.status === 200) {
+            setRefreshData(false);
+            dispatch(deleteMenuState(id))
+        } else {
+            setRefreshData(false)
+            console.error('Response not okay');
+        }
+    } catch (error) {
+        console.error('Error: ', error);
+    }
+});
 
 const menuSlice = createSlice({
     name: 'menuReducer',
     initialState,
-    reducers: {},
+    reducers: {
+        addMenuState: (state, action) => {
+            state.menus = [...state.menus, action.payload]
+        },
+        deleteMenuState: (state, action) => {
+            const current = [...state.menus];
+            const filter = current.filter((item) => item.id !== action.payload)
+            state.menus = filter
+        },
+    },
     extraReducers: (builder) => {
         builder
             .addCase(getMenu.pending, (state) => {
@@ -52,4 +81,5 @@ const menuSlice = createSlice({
             });
     },
 });
+export const { addMenuState, deleteMenuState } = menuSlice.actions;
 export default menuSlice.reducer;

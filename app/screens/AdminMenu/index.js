@@ -1,11 +1,10 @@
-import { BE_API_HOST } from '@env'
 import { BottomSheetBackdrop, BottomSheetModalProvider } from '@gorhom/bottom-sheet'
-import axios from 'axios'
+import * as ImagePicker from 'expo-image-picker'
 import { StatusBar } from 'expo-status-bar'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Button, Image, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Button, Dimensions, FlatList, Image, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
-import { ImChocolate, ImEmpty } from '../../assets'
+import { IEmptyFile, ImChocolate } from '../../assets'
 import BottomSheetCustom from '../../component/BottomSheet'
 import CustomIcon from '../../component/CustomIcon'
 import HeaderBar from '../../component/HeaderBar'
@@ -14,16 +13,21 @@ import Select from '../../component/Select'
 import TextInput from '../../component/TextInput'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
 import { getKategori } from '../../redux/kategoriSlice'
-import { getMenu } from '../../redux/menuSlice'
+import { addMenuState, deleteMenu, getMenu } from '../../redux/menuSlice'
 import { getData, useForm } from '../../utils'
+import { showMessage } from 'react-native-flash-message'
+import axios from 'axios'
+import { BE_API_HOST } from '@env';
+import { addLoading } from '../../redux/globalSlice'
+const windowWidth = Dimensions.get('window').width;
 
 const AdminMenu = ({ navigation }) => {
     const { kategori } = useSelector(state => state.kategoriReducer);
     const bottomSheetModalRef = useRef(null);
     const { menus } = useSelector(state => state.menuReducer);
     const [dataKategori, setDataKategori] = useState([]);
-    const [photo, setPhoto] = useState(null);
     const dispatch = useDispatch();
+    const [refreshing, setRefreshing] = useState(false);
 
     useEffect(() => {
         if (dataKategori.length < 1 && kategori.length > 0) {
@@ -37,23 +41,18 @@ const AdminMenu = ({ navigation }) => {
 
     useEffect(() => {
         navigation.addListener('focus', () => {
-            getToken();
+            getDataMenu();
         });
     }, [navigation]);
 
-    const getToken = () => {
+    const getDataMenu = () => {
         getData('token').then((res) => {
             dispatch(getKategori(res.value))
             dispatch(getMenu(res.value))
         });
     };
-
     const openModal = () => {
         bottomSheetModalRef.current.present();
-    };
-
-    const closeModal = () => {
-        bottomSheetModalRef.current.dismiss();
     };
 
     const renderBackdrop = useCallback(
@@ -67,48 +66,58 @@ const AdminMenu = ({ navigation }) => {
         []
     );
 
-    const Form = ({ data }) => {
+    const FormComponnt = ({ data }) => {
+        const [photo, setPhoto] = useState(null);
         const [form, setForm] = useForm({
             nama_barang: '',
-            id_satuan: 1,
-            id_kategori: 1,
-            harga: 0,
-            stok: 0,
+            id_satuan: '1',
+            id_kategori: '1',
+            harga: '',
+            stok: '',
             type: 'addition'
         });
-
+        const closeModal = () => {
+            bottomSheetModalRef.current.dismiss();
+        };
         const onSubmit = () => {
-            let resultObj = {};
-            Object.keys(form).map((obj) => {
-                if (form[obj]) {
-                    resultObj[obj] = form[obj];
+            if (photo === null) {
+                showMessage('Please select a file to continue!');
+            } else {
+                const dataInput = new FormData();
+                for (const key in form) {
+                    dataInput.append(key, form[key]);
                 }
-            });
-            const dataInput = new FormData();
-            // Append each form field to FormData
-            for (const key in form) {
-                dataInput.append(key, form[key]);
+                let uri = photo.assets[0].uri;
+                let fileExtension = uri.substr(uri.lastIndexOf('.') + 1);
+                const dataPhoto = {
+                    uri: photo.assets[0].uri,
+                    type: photo.assets[0].mimeType,
+                    name: `menu.${fileExtension}`
+                }
+                dataInput.append('file', dataPhoto)
+                getData('token').then((resToken) => {
+                    dispatch(addLoading(true));
+                    axios.post(`${BE_API_HOST}/barang/add`, dataInput, {
+                        headers: {
+                            Authorization: resToken.value,
+                            'Content-Type': 'multipart/form-data',
+                        },
+                    })
+                        .then((res) => {
+                            closeModal()
+                            dispatch(addLoading(false));
+                            dispatch(addMenuState(res.data.data))
+                        })
+                        .catch((err) => {
+                            console.log(err, 'error')
+
+                            showMessage(
+                                `${err?.response?.data?.message} on Update Profile API` ||
+                                'Terjadi kesalahan di API Update Menu',
+                            );
+                        });
+                });
             }
-            console.log(dataInput, 'resultObj')
-            // getData('token').then((resToken) => {
-            //     axios.post(`${BE_API_HOST}/barang/add`, resultObj, {
-            //         headers: {
-            //             Authorization: resToken.value,
-            //             'Content-Type': 'multipart/form-data',
-            //         },
-            //     })
-            //         .then((res) => {
-            //             closeModal
-            //             dispatch(getMenu(res.value))
-            //             console.log(res.data, 'res')
-            //         })
-            //         .catch((err) => {
-            //             showMessage(
-            //                 `${err?.response?.data?.message} on Update Profile API` ||
-            //                 'Terjadi kesalahan di API Update Profile',
-            //             );
-            //         });
-            // });
         };
 
         const choosePhoto = async () => {
@@ -118,9 +127,7 @@ const AdminMenu = ({ navigation }) => {
                 aspect: [4, 4],
                 quality: 0.5,
             });
-            console.log(result)
             if (!result.canceled) {
-                // setPhoto(result.assets[0].uri);
                 setPhoto(result);
             }
         };
@@ -143,7 +150,6 @@ const AdminMenu = ({ navigation }) => {
                     label="Harga"
                     keyboardType='numeric'
                     placeholder='Masukkan Harga'
-                    // value={format(form.harga)}
                     value={form.harga}
                     onChangeText={(value) => setForm('harga', value)}
                 />
@@ -153,10 +159,12 @@ const AdminMenu = ({ navigation }) => {
                     placeholder='Masukkan Stok'
                     onChangeText={(value) => setForm('stok', value)}
                 />
+                <Text style={{ color: COLORS.secondaryLightGreyHex }}>Pilih Gambar</Text>
                 <Pressable
                     android_ripple={{
                         color: 'rgb(224, 224, 224)',
                         foreground: true,
+                        radius: 50
                     }}
                     onPress={choosePhoto}
                     style={{
@@ -166,60 +174,98 @@ const AdminMenu = ({ navigation }) => {
                         alignItems: 'start',
                         elevation: 4,
                     }}>
-                    <Text style={{ color: COLORS.secondaryLightGreyHex }}>Pilih Foto</Text>
                     <View style={styles.photoContainer}>
-                        <Image source={ImEmpty} style={styles.photoMenu} />
-                        {/* <Text
-                            style={{
-                                color: '#808B97',
-                                fontFamily: 'Poppins-Medium',
-                                fontWeight: 500,
-                                marginTop: 10,
-                            }}>
-                            Select Files
-                        </Text> */}
+                        {photo ? (
+                            <Image source={{ uri: photo.assets[0].uri }} style={styles.photoContainer} />
+                        ) : (
+                            <Image source={IEmptyFile} style={styles.photoMenu} />
+                        )}
                     </View>
                 </Pressable>
-                {/* {photo && (
-                    <Image source={{ uri: photo.assets[0].uri }} style={styles.photoMenu} />
-                )} */}
                 <Button title="Tutup" onPress={closeModal} color={COLORS.primaryLightGreyHex} />
                 <Button title="Simpan" onPress={onSubmit} color={COLORS.primaryOrangeHex} />
             </View>
         );
     }
 
+    const fetchData = useCallback(async () => {
+        setRefreshing(true);
+        try {
+            getDataMenu();
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setRefreshing(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
+
+    const setRefreshData = (val) => {
+        setRefreshing(val);
+    }
+    const handleDelete = useCallback(async (id) => {
+        // setRefreshing(true);
+        getData('token').then(async (res) => {
+            const token = res.value;
+            const param = { token, id, setRefreshData };
+            dispatch(deleteMenu(param))
+            // const response = await axios.delete(`${BE_API_HOST}/barang/delete?id=${id}}`, {
+            //     headers: {
+            //         Authorization: `${res.value}`,
+            //     },
+            // });
+            // if (response.status === 200) {
+            //     return response.data;
+            // } else {
+            //     dispatch(addLoading(false));
+            //     console.error('Response not okay');
+            // }
+        });
+    }, []);
+
     return (
         <BottomSheetModalProvider>
             <View style={styles.ScreenContainer}>
                 <StatusBar style='light' />
                 <HeaderBar title="Menu" onBack={() => navigation.goBack()} />
-                <ScrollView
-                    showsVerticalScrollIndicator={false}
-                    contentContainerStyle={styles.ScrollViewFlex}>
-                    <View style={[styles.ScrollViewInnerView, { marginBottom: 10 }]}>
-                        <View style={styles.ItemContainer}>
-                            {menus > 0 && menus.map((item) => (
-                                <ListItem
-                                    id={item.id}
-                                    name={item.nama_baran}
-                                    imagelink_square={ImChocolate}
-                                    kind='Non Coffee'
-                                    price={120000}
-                                />
-                            ))}
-
-                        </View>
+                {!menus ? (
+                    <View style={{ flexGrow: 1, justifyContent: 'center' }}>
+                        <Text style={{ fontSize: FONTSIZE.size_18, color: COLORS.primaryLightGreyHex }}>Tidak ada item yang tersedia</Text>
                     </View>
-                </ScrollView>
+                ) : (
+                    <FlatList
+                        data={menus}
+                        onRefresh={fetchData}
+                        refreshing={refreshing}
+                        showsVerticalScrollIndicator={false}
+                        renderItem={({ item }) => (
+                            <ListItem
+                                key={item.id}
+                                id={item.id}
+                                name={item.nama_barang}
+                                uri={item.path}
+                                kind='Non Coffee'
+                                price={item.harga}
+                                onPress={() => handleDelete(item.id)}
+                            />
+                        )}
+                        keyExtractor={item => item.id}
+                        contentContainerStyle={{ flexGrow: 1, columnGap: SPACING.space_10 }}
+                        vertical
+                    />
+                )}
+
                 <BottomSheetCustom
                     ref={bottomSheetModalRef}
                     backdropComponent={renderBackdrop}
                 >
-                    <Form data={dataKategori} />
+                    <FormComponnt data={dataKategori} />
                 </BottomSheetCustom>
 
-                <View style={{ backgroundColor: COLORS.primaryBlackHex, flex: 1 }}>
+                <View style={styles.buttonContainer}>
                     <TouchableOpacity
                         style={styles.buttonTambah}
                         onPress={openModal}
@@ -232,7 +278,7 @@ const AdminMenu = ({ navigation }) => {
                     </TouchableOpacity>
                 </View>
             </View>
-        </BottomSheetModalProvider>
+        </BottomSheetModalProvider >
     )
 }
 
@@ -258,7 +304,6 @@ const styles = StyleSheet.create({
     },
     ScrollViewFlex: {
         flexGrow: 1,
-        backgroundColor: 'grey'
     },
     containerButton: {
         marginVertical: SPACING.space_15,
@@ -272,21 +317,27 @@ const styles = StyleSheet.create({
         flex: 1,
         gap: SPACING.space_16
     },
+    buttonContainer: {
+        position: 'absolute',
+        width: '100%',
+        height: '8%',
+        bottom: 0,
+    },
     buttonTambah: {
         borderWidth: 1,
         borderColor: COLORS.primaryOrangeHex,
         alignItems: 'center',
         justifyContent: 'center',
-        width: '100%',
+        height: '100%',
         position: 'absolute',
         bottom: SPACING.space_20,
-        // left: SPACING.space_10,
-        // right: SPACING.space_10,
-        height: 60,
-        backgroundColor: COLORS.primaryBlackRGBA,
-        borderRadius: BORDERRADIUS.radius_25 * 4
+        left: 30,
+        right: 30,
+        backgroundColor: COLORS.secondaryBlackRGBA,
+        borderRadius: BORDERRADIUS.radius_25
     },
     ScreenContainer: {
+        position: 'relative',
         backgroundColor: COLORS.primaryBlackHex,
         flex: 1,
     },
