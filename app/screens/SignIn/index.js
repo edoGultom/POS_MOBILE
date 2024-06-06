@@ -30,11 +30,6 @@ const SignIn = ({ navigation }) => {
                 <Text style={styles.HeaderText}>Sign In</Text>
                 <Text style={styles.HeaderTextSubtitle}>Find your best drink!</Text>
             </View>
-            {/* <View style={{ marginTop: 0, marginBottom: 0 }}>
-                <Image
-                    style={{ width: 150, height: 100 }}
-                    source={LogoJPG} />
-            </View> */}
             <View style={styles.container}>
                 <TextInput
                     label="Username"

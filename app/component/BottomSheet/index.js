@@ -1,7 +1,7 @@
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import React, { forwardRef, useCallback, useRef, useState } from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
-import { COLORS, SPACING } from '../../config';
+import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
+import React, { forwardRef, useCallback, useMemo, useRef, useState } from 'react';
+import { Button, Dimensions, KeyboardAvoidingView, ScrollView, StyleSheet, View } from 'react-native';
+import { BORDERRADIUS, COLORS, SPACING } from '../../config';
 
 const BottomSheetCustom = forwardRef(({ children, ...rest }, ref) => {
     const [contentHeight, setContentHeight] = useState(0);
@@ -21,19 +21,28 @@ const BottomSheetCustom = forwardRef(({ children, ...rest }, ref) => {
             });
         }
     };
-
     return (
-        <View style={{ flex: 1 }}>
+        <View style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+        }}>
             <BottomSheetModal
                 ref={ref}
                 snapPoints={calculateSnapPoints()}
                 {...rest}
             >
-                <View ref={contentRef} onLayout={onLayoutContent} style={styles.content}>
-                    {children}
-                </View>
+                <BottomSheetView>
+                    <ScrollView>
+                        <KeyboardAvoidingView behavior="padding" >
+                            <View ref={contentRef} onLayout={onLayoutContent} style={styles.content}>
+                                {children}
+                            </View>
+                        </KeyboardAvoidingView>
+                    </ScrollView>
+                </BottomSheetView>
             </BottomSheetModal >
-        </View>
+        </View >
     );
 });
 const styles = StyleSheet.create({

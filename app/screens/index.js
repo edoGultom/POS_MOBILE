@@ -6,6 +6,7 @@ import Profile from "./Profile";
 import SplashScreen from "./SplashScreen";
 import SuccessSignUp from "./SuccessSignUp";
 import Admin from "./Admin";
+import AdminMenu from "./AdminMenu";
 
 export {
     Home,
@@ -15,5 +16,6 @@ export {
     Profile,
     SplashScreen,
     SuccessSignUp,
-    Admin
+    Admin,
+    AdminMenu
 };

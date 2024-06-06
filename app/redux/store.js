@@ -1,9 +1,12 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { globalSlice } from "./globalSlice";
-import signUpSlice from "./signUpSlice";
+import kategoriSlice from "./kategoriSlice";
+import menuSlice from "./menuSlice";
 
 const reducers = combineReducers({
-    [globalSlice.name]: globalSlice.reducer
+    [globalSlice.name]: globalSlice.reducer,
+    kategoriReducer: kategoriSlice,
+    menuReducer: menuSlice
 });
 const store = configureStore({
     reducer: reducers,

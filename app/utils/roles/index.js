@@ -4,7 +4,7 @@ import { getData } from '../storage';
 const RoleContext = createContext();
 
 export const RoleProvider = ({ children }) => {
-    const [roles, setRoles] = useState(null);
+    const [roles, setRoles] = useState('User');
 
     useEffect(() => {
         getUser();

@@ -19,6 +19,8 @@ const SplashScreen = ({ navigation }) => {
           getData('token').then(res => {
             if (res) {
               getData('userProfile').then((res) => {
+                // console.log(res, 'roles')
+
                 if (res.scope.includes('Admin')) {
                   navigation.reset({ index: 0, routes: [{ name: 'Admin' }] });
                 } else {

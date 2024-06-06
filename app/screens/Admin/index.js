@@ -6,20 +6,18 @@ import CustomIcon from '../../component/CustomIcon'
 import HeaderBar from '../../component/HeaderBar'
 import { useNavigation } from '@react-navigation/native'
 
-const IconTextView = ({ index, iconName, text, menuIndex, onPress }) => {
+const IconTextView = ({ iconName, text, onPress }) => {
     return (
         <TouchableOpacity
             onPress={onPress}
             style={[
                 styles.box,
-                menuIndex.index === index
-                    ? { borderColor: COLORS.primaryOrangeHex } : {},
+                { borderColor: COLORS.primaryOrangeHex }
             ]}>
 
             <CustomIcon
                 name={iconName}
-                color={menuIndex.index === index
-                    ? COLORS.primaryOrangeHex : COLORS.primaryLightGreyHex}
+                color={COLORS.primaryOrangeHex}
                 size={FONTSIZE.size_30}
             />
             <Text
@@ -28,8 +26,7 @@ const IconTextView = ({ index, iconName, text, menuIndex, onPress }) => {
                     {
                         fontSize: FONTSIZE.size_18,
                     },
-                    menuIndex.index === index
-                        ? { color: COLORS.primaryOrangeHex } : { color: COLORS.primaryLightGreyHex },
+                    { color: COLORS.primaryOrangeHex }
                 ]}>
                 {text}
             </Text>
@@ -45,7 +42,7 @@ const Admin = () => {
             label: 'Menu',
             icon: 'pen-to-square',
             onPress: () => {
-                setMenuIndex({ index: 1, menu: 'Menu' });
+                navigation.navigate('AdminMenu')
             },
         },
         {
@@ -62,7 +59,7 @@ const Admin = () => {
             label: 'Laporan',
             icon: 'print',
             onPress: () => {
-                setMenuIndex({ index: 3, menu: 'Laporan' });
+                // setMenuIndex({ index: 3, menu: 'Laporan' });
             },
         },
         {
@@ -70,33 +67,35 @@ const Admin = () => {
             label: 'Riwayat',
             icon: 'chart-simple',
             onPress: () => {
-                setMenuIndex({ index: 4, menu: 'Riwayat' });
+                // setMenuIndex({ index: 4, menu: 'Riwayat' });
             },
         },
 
     ]
-    const [menuIndex, setMenuIndex] = useState({
-        index: 0,
-        menu: 'Menu',
-    });
+    // const [menuIndex, setMenuIndex] = useState({
+    //     index: 0,
+    //     menu: '',
+    // });
     return (
         <View style={styles.ScreenContainer}>
             <StatusBar style='light' />
             <HeaderBar />
-
             <View style={{
                 paddingVertical: 15,
                 paddingHorizontal: 15,
                 flexDirection: 'row',
                 gap: 10,
                 flexWrap: 'wrap',
+                justifyContent: 'center',
             }}>
                 {
                     menus.map((item) => (
-                        <IconTextView key={item.key} index={item.key} iconName={item.icon} text={item.label} menuIndex={menuIndex} onPress={item.onPress} />
+                        <IconTextView key={item.key} index={item.key} iconName={item.icon} text={item.label} onPress={item.onPress} />
                     ))
                 }
             </View>
+
+
         </View>
     )
 }
@@ -111,29 +110,13 @@ const styles = StyleSheet.create({
     SizeText: {
         fontFamily: FONTFAMILY.poppins_medium,
     },
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    item: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginVertical: 10,
-    },
+
     text: {
         marginLeft: 10,
         fontSize: 18,
         color: COLORS.secondaryLightGreyHex
     },
-    KindOuterContainer: {
-        justifyContent: 'flex-end',
-        flexDirection: 'row',
-        gap: SPACING.space_15,
-        paddingVertical: SPACING.space_15,
-        paddingHorizontal: SPACING.space_15,
-        backgroundColor: 'red',
-    },
+
     box: {
         flexGrow: 1,
         gap: 4,

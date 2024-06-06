@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { LogoJPG, ProfileDummy } from '../../assets';
-import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
 import CustomIcon from '../CustomIcon';
 import { getData } from '../../utils';
 import { BE_API_HOST } from '@env';
@@ -38,9 +38,12 @@ const HeaderBar = ({ title, onBack }) => {
                     />
                 </Pressable>
             )}
-            <View style={styles.Container}>
-                <Image source={LogoJPG} style={{ width: 120, height: 50, borderRadius: 5 }} />
-            </View>
+            {!onBack && (
+                <View style={styles.Container}>
+                    <Image source={LogoJPG} style={{ width: 120, height: 50, borderRadius: 5 }} />
+                </View>
+            )}
+
             <Text style={styles.HeaderText}>{title}</Text>
             <View style={styles.ImageContainer}>
                 <Image
@@ -55,6 +58,14 @@ const HeaderBar = ({ title, onBack }) => {
 export default HeaderBar
 
 const styles = StyleSheet.create({
+    back: {
+        padding: SPACING.space_16,
+        marginRight: SPACING.space_16,
+        marginLeft: -10,
+        backgroundColor: COLORS.secondaryDarkGreyHex,
+        borderRadius: BORDERRADIUS.radius_10,
+        marginLeft: SPACING.space_10
+    },
     Container: {
         borderWidth: 2,
         borderColor: COLORS.secondaryDarkGreyHex,
