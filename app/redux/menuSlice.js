@@ -42,7 +42,6 @@ export const addMenu = createAsyncThunk('menu/addMenu', async (param, { dispatch
             },
         });
         if (response.status === 200) {
-            console.log(response.data.data, 'resssppsss')
             setRefreshData(false);
             dispatch(addMenuState(response.data.data))
         } else {
@@ -101,7 +100,12 @@ const menuSlice = createSlice({
     initialState,
     reducers: {
         addMenuState: (state, action) => {
-            state.menus.push(action.payload)
+            // Memastikan state.menus sudah diinisialisasi
+            if (!Array.isArray(state.menus)) {
+                state.menus = [];
+            }
+            // Menambahkan menu ke dalam state.menus
+            state.menus.push(action.payload);
         },
         updateMenuState: (state, action) => {
             const { id } = action.payload;
