@@ -3,19 +3,21 @@ import React from 'react'
 import { Dimensions, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
 import CustomIcon from '../CustomIcon'
+import { BE_API_HOST } from '@env'
 
 const CARD_WIDTH = Dimensions.get('window').width * 0.32;
 
-const CoffeCard = ({ imagelink_square, name, kind, price, buttonPressHandler }) => {
+const CoffeCard = ({ id, link, name, kind, price, buttonPressHandler }) => {
     return (
         <LinearGradient
+            key={id}
             start={{ x: 0, y: 0 }}
             end={{ x: 0.9, y: 0.7 }}
             style={styles.CardLinearGradientContainer}
             colors={[COLORS.primaryBlackHex, COLORS.primaryOrangeHex]}>
             <View style={{ padding: SPACING.space_10, flex: 1, flexDirection: 'row', gap: SPACING.space_15 }}>
                 <ImageBackground
-                    source={imagelink_square}
+                    source={{ uri: `${BE_API_HOST}/lihat-file/profile?path=${link}` }}
                     style={styles.CardImageBG}
                     resizeMode="cover">
                     <View style={styles.CardRatingContainer}>
@@ -24,7 +26,6 @@ const CoffeCard = ({ imagelink_square, name, kind, price, buttonPressHandler }) 
                             color={COLORS.primaryOrangeHex}
                             size={FONTSIZE.size_16}
                         />
-                        {/* <Text style={styles.CardRatingText}>4.3</Text> */}
                     </View>
                 </ImageBackground>
                 <View>
@@ -32,7 +33,7 @@ const CoffeCard = ({ imagelink_square, name, kind, price, buttonPressHandler }) 
                     <Text style={styles.CardSubtitle}>{kind}</Text>
                     <View style={styles.CardFooterRow}>
                         <Text style={styles.CardPriceCurrency}>
-                            IDR <Text style={styles.CardPrice}>{price.price}</Text>
+                            IDR <Text style={styles.CardPrice}>{price}</Text>
                         </Text>
                     </View>
                 </View>

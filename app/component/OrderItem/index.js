@@ -1,12 +1,12 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
-import { ImChocolate } from '../../assets'
+import { BE_API_HOST } from '@env'
+import { Image } from 'expo-image'
 import { LinearGradient } from 'expo-linear-gradient'
-import { Image } from 'expo-image';
+import React from 'react'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
 import CustomIcon from '../CustomIcon'
 
-const OrderItem = () => {
+const OrderItem = ({ name, link, kind, price, qty }) => {
     return (
         <View>
             <LinearGradient
@@ -16,18 +16,18 @@ const OrderItem = () => {
                 style={styles.CartItemSingleLinearGradient}>
                 <View>
                     <Image
-                        source={ImChocolate}
+                        source={{ uri: `${BE_API_HOST}/lihat-file/profile?path=${link}` }}
                         style={styles.CartItemSingleImage}
                     />
                 </View>
                 <View style={styles.CartItemSingleInfoContainer}>
                     <View>
-                        <Text style={styles.CartItemTitle}>Chocolate</Text>
-                        <Text style={styles.CartItemSubtitle}>Non Coffee</Text>
+                        <Text style={styles.CartItemTitle}>{name}</Text>
+                        <Text style={styles.CartItemSubtitle}>{kind}</Text>
                     </View>
                     <View style={styles.CartItemSingleSizeValueContainer}>
                         <Text style={styles.SizeCurrency}>
-                            IDR <Text style={styles.SizePrice}>12.000</Text>
+                            IDR <Text style={styles.SizePrice}>{price}</Text>
                         </Text>
                     </View>
                     <View style={styles.CartItemSingleQuantityContainer}>
@@ -45,7 +45,7 @@ const OrderItem = () => {
                         </TouchableOpacity>
                         <View style={styles.CartItemQuantityContainer}>
                             <Text style={styles.CartItemQuantityText}>
-                                3
+                                {qty}
                             </Text>
                         </View>
                         <TouchableOpacity

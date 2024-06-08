@@ -1,10 +1,15 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
+import React, { useEffect, useRef, useState } from 'react'
+import { Dimensions, FlatList, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
+import { useDispatch, useSelector } from 'react-redux'
+import { IcCoffeeOff, IcCoffeeOn, IcNonCoffeeOff, IcNonCoffeeOn } from '../../assets'
+import CoffeCard from '../../component/CoffeeCard'
 import CustomIcon from '../../component/CustomIcon'
 import HeaderBar from '../../component/HeaderBar'
-import { useNavigation } from '@react-navigation/native'
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
+import { getMenu } from '../../redux/menuSlice'
+import { addToChartList } from '../../redux/orderSlice'
+import { getData } from '../../utils'
 
 const IconTextView = ({ iconName, text, onPress }) => {
     return (
@@ -33,10 +38,38 @@ const IconTextView = ({ iconName, text, onPress }) => {
         </TouchableOpacity>
     );
 }
+const getMenuList = (category, data) => {
+    let coffeelist = data.filter((item) => item.nama_kategori == category);
+    return coffeelist;
+};
+const Admin = ({ navigation }) => {
+    const ListRef = useRef();
+    const dispatch = useDispatch();
+    const { menus } = useSelector(state => state.menuReducer);
+    const { CartList } = useSelector(state => state.orderReducer);
+    const [catgoryMenu, setCategoryMenu] = useState({
+        index: 0,
+        category: 'Coffee',
+    });
+    const [sortedMenu, setSortedMenu] = useState(null);
 
-const Admin = () => {
-    const navigation = useNavigation();
-    const menus = [
+    useEffect(() => {
+        // navigation.addListener('focus', () => {
+        getDataMenu();
+        // });
+    }, []);
+
+    useEffect(() => {
+        setSortedMenu([...getMenuList(catgoryMenu.category, menus)])
+    }, [menus]);
+
+    const getDataMenu = () => {
+        getData('token').then((res) => {
+            dispatch(getMenu(res.value))
+        });
+    };
+
+    const navMenu = [
         {
             key: 1,
             label: 'Menu',
@@ -51,7 +84,7 @@ const Admin = () => {
             icon: 'shop',
             onPress: (label) => {
                 // setMenuIndex({ index: 2, menu: 'POS' });
-                navigation.navigate('MainApp')
+                navigation.navigate('AdminOrder')
             },
         },
         {
@@ -72,10 +105,34 @@ const Admin = () => {
         },
 
     ]
-    // const [menuIndex, setMenuIndex] = useState({
-    //     index: 0,
-    //     menu: '',
-    // });
+
+    const categroyMenu = [
+        {
+            key: 0,
+            label: 'Coffee',
+            iconOff: <IcCoffeeOff />,
+            iconOn: <IcCoffeeOn />,
+        },
+        {
+            key: 1,
+            label: 'Non Coffee',
+            iconOff: <IcNonCoffeeOff />,
+            iconOn: <IcNonCoffeeOn />,
+        },
+    ];
+
+    const CoffeCardAddToCart = (item) => {
+        const { id, nama_barang, path, nama_kategori, harga } = item
+        const data = {
+            id, nama_barang, path, nama_kategori, harga
+        }
+        dispatch(addToChartList(data))
+        ToastAndroid.showWithGravity(
+            `${nama_barang} is Added to Cart`,
+            ToastAndroid.SHORT,
+            ToastAndroid.CENTER,
+        )
+    };
     return (
         <View style={styles.ScreenContainer}>
             <StatusBar style='light' />
@@ -89,13 +146,73 @@ const Admin = () => {
                 justifyContent: 'center',
             }}>
                 {
-                    menus.map((item) => (
+                    navMenu.map((item) => (
                         <IconTextView key={item.key} index={item.key} iconName={item.icon} text={item.label} onPress={item.onPress} />
                     ))
                 }
             </View>
+            <View style={styles.containerMenuAdmin}>
+                <Text style={styles.titleMenuAdmin}>Coffee Available</Text>
+                <View style={styles.KindOuterContainer}>
+                    {categroyMenu.map((item, index) => (
+                        <TouchableOpacity
+                            key={item.key}
+                            onPress={() => {
+                                ListRef?.current?.scrollToOffset({
+                                    animated: true,
+                                    offset: 0,
+                                });
+                                setCategoryMenu({ index: item.key, category: item.label })
+                                setSortedMenu([
+                                    ...getMenuList(item.label, menus),
+                                ]);
+                            }}
+                            style={[
+                                styles.KindBox,
+                                catgoryMenu.index === item.key
+                                    ? { borderColor: COLORS.primaryOrangeHex } : {},
+                            ]}>
+                            {catgoryMenu.index === item.key ? item.iconOn : item.iconOff}
+                            <Text
+                                style={[
+                                    styles.SizeText,
+                                    {
+                                        fontSize: FONTSIZE.size_16,
+                                    },
+                                    catgoryMenu.index === item.key
+                                        ? { color: COLORS.primaryOrangeHex } : { color: COLORS.primaryWhiteHex },
+                                ]}>
+                                {item.label}
+                            </Text>
+                        </TouchableOpacity>
+                    ))}
 
-
+                </View>
+                <FlatList
+                    ref={ListRef}
+                    showsHorizontalScrollIndicator={false}
+                    data={sortedMenu}
+                    contentContainerStyle={styles.FlatListContainer}
+                    ListEmptyComponent={
+                        <View style={styles.EmptyListContainer}>
+                            <Text style={styles.EmptyText}>No Coffee Available</Text>
+                        </View>
+                    }
+                    keyExtractor={item => item.id}
+                    renderItem={({ item }) => {
+                        return (
+                            <CoffeCard
+                                id={item.id}
+                                link={item.path}
+                                name={item.nama_barang}
+                                kind={item.nama_kategori}
+                                price={item.harga}
+                                buttonPressHandler={() => CoffeCardAddToCart(item)}
+                            />
+                        );
+                    }}
+                />
+            </View>
         </View>
     )
 }
@@ -103,6 +220,48 @@ const Admin = () => {
 export default Admin
 
 const styles = StyleSheet.create({
+    FlatListContainer: {
+        gap: SPACING.space_15,
+        paddingVertical: SPACING.space_20,
+    },
+    EmptyListContainer: {
+        width: Dimensions.get('window').width - SPACING.space_30 * 2,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: SPACING.space_36 * 3.6,
+    },
+    EmptyText: {
+        fontFamily: FONTFAMILY.poppins_semibold,
+        fontSize: FONTSIZE.size_16,
+        color: COLORS.primaryLightGreyHex,
+        marginBottom: SPACING.space_4,
+    },
+    KindOuterContainer: {
+        justifyContent: 'flex-end',
+        flexDirection: 'row',
+        gap: SPACING.space_15,
+    },
+    KindBox: {
+        flex: 1,
+        backgroundColor: COLORS.primaryDarkGreyHex,
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: SPACING.space_24 * 2.5,
+        borderRadius: BORDERRADIUS.radius_10,
+        borderWidth: 2,
+        elevation: 1
+    },
+    titleMenuAdmin: {
+        fontSize: FONTSIZE.size_20,
+        fontFamily: FONTFAMILY.poppins_semibold,
+        color: COLORS.primaryWhiteHex,
+        marginBottom: 10
+    },
+    containerMenuAdmin: {
+        paddingVertical: 15,
+        paddingHorizontal: 15,
+        flexGrow: 1
+    },
     ScreenContainer: {
         backgroundColor: COLORS.primaryBlackHex,
         flex: 1,

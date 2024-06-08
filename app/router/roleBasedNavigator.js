@@ -5,6 +5,7 @@ import { StyleSheet } from 'react-native';
 import BottomNavigator from '../component/BottomNavigator';
 import { Admin, AdminMenu, Home, Order, Profile, SignIn, SplashScreen } from '../screens';
 import { useRole } from '../utils/roles';
+import AdminOrder from '../screens/AdminOrder';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -24,7 +25,7 @@ const RoleBasedNavigator = () => {
     const { roles } = useRole();
     return (
         <Stack.Navigator initialRouteName="Splash">
-            <Stack.Screen
+            {/* <Stack.Screen
                 name="SplashScreen"
                 component={SplashScreen}
                 options={{ headerShown: false }}
@@ -33,7 +34,7 @@ const RoleBasedNavigator = () => {
                 name="SignIn"
                 component={SignIn}
                 options={{ headerShown: false }}
-            />
+            /> */}
             {/*        
             <Stack.Screen
                 name="SignUp"
@@ -48,12 +49,17 @@ const RoleBasedNavigator = () => {
             <Stack.Screen
                 name="Admin"
                 component={Admin}
-                options={{ headerShown: false }}
+                options={{ headerShown: false, animation: 'slide_from_bottom' }}
             />
             <Stack.Screen
                 name="AdminMenu"
                 component={AdminMenu}
-                options={{ headerShown: false }}
+                options={{ headerShown: false, animation: 'slide_from_bottom' }}
+            />
+            <Stack.Screen
+                name="AdminOrder"
+                component={AdminOrder}
+                options={{ headerShown: false, animation: 'slide_from_bottom' }}
             />
 
             <Stack.Screen name="MainApp" component={MainApp} options={{ headerShown: false }} />

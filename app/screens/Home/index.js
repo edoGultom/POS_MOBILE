@@ -1,11 +1,11 @@
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
 import React, { useRef, useState } from 'react';
-import { Dimensions, FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { IcCoffeeOff, IcCoffeeOn, IcNonCoffeeOff, ImChocolate, ImCoffAmericano, ImLangitMatcha, ImLangitTaro } from '../../assets';
+import { Dimensions, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { IcCoffeeOff, IcCoffeeOn, IcNonCoffeeOff, IcNonCoffeeOn, ImChocolate, ImCoffAmericano, ImLangitMatcha, ImLangitTaro } from '../../assets';
 import CoffeCard from '../../component/CoffeeCard';
 import HeaderBar from '../../component/HeaderBar';
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
 const Home = () => {
     const tabBarHeight = useBottomTabBarHeight();
@@ -18,7 +18,8 @@ const Home = () => {
         {
             key: 1,
             label: 'Coffee',
-            icon: <IcCoffeeOn />,
+            iconOff: <IcCoffeeOff />,
+            iconOn: <IcCoffeeOn />,
             onPress: () => {
                 setCategoryMenu({ index: 1, category: 'Coffee' });
             },
@@ -26,7 +27,8 @@ const Home = () => {
         {
             key: 2,
             label: 'Non Coffee',
-            icon: <IcNonCoffeeOff />,
+            iconOff: <IcNonCoffeeOff />,
+            iconOn: <IcNonCoffeeOn />,
             onPress: () => {
                 setCategoryMenu({ index: 2, category: 'Non Coffee' });
             },
@@ -136,7 +138,7 @@ const Home = () => {
                                 catgoryMenu.index === item.key
                                     ? { borderColor: COLORS.primaryOrangeHex } : {},
                             ]}>
-                            {item.icon}
+                            {catgoryMenu.index === item.key ? item.iconOn : item.iconOff}
                             <Text
                                 style={[
                                     styles.SizeText,
@@ -173,7 +175,6 @@ const Home = () => {
                     keyExtractor={item => item.id}
                     renderItem={({ item }) => {
                         return (
-
                             <CoffeCard
                                 id={item.id}
                                 index={item.index}

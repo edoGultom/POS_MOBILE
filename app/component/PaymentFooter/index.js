@@ -6,9 +6,9 @@ const PaymentFooter = ({ price, buttonTitle }) => {
     return (
         <View style={styles.PriceFooter}>
             <View style={styles.PriceContainer}>
-                <Text style={styles.PriceTitle}>Total</Text>
+                <Text style={styles.PriceTitle}>Total Price</Text>
                 <Text style={styles.PriceText}>
-                    {price.currency} <Text style={styles.Price}>{price.price}</Text>
+                    {price.currency} <Text style={styles.Price}>{price.totalBayar}</Text>
                 </Text>
             </View>
             <TouchableOpacity
