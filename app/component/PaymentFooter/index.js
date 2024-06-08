@@ -12,7 +12,8 @@ const PaymentFooter = ({ price, buttonTitle }) => {
                 </Text>
             </View>
             <TouchableOpacity
-                style={styles.PayButton}
+                disabled={price.totalBayar === 0}
+                style={[styles.PayButton, (price.totalBayar === 0) ? { backgroundColor: COLORS.secondaryLightGreyHex } : {}]}
                 onPress={() => buttonPressHandler()}>
                 <Text style={styles.ButtonText}>{buttonTitle}</Text>
             </TouchableOpacity>
