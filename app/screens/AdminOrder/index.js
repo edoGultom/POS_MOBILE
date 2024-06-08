@@ -34,33 +34,28 @@ const AdminOrder = ({ navigation }) => {
         <View style={styles.ScreenContainer}>
             <StatusBar style='light' />
             <HeaderBar title="Order Detail" onBack={() => navigation.goBack()} />
-            {/* <ScrollView
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.ScrollViewFlex}> */}
-            {/* <View style={[styles.orderContainer, { marginBottom: SPACING.space_2 }]}> */}
-            {/* <View style={styles.orderItemFlatlist}> */}
-            <FlatList
-                ref={ListRef}
-                showsHorizontalScrollIndicator={false}
-                data={CartList}
-                contentContainerStyle={styles.FlatListContainer}
-                ListEmptyComponent={
-                    <View style={styles.EmptyListContainer}>
-                        <Text style={styles.EmptyText}>No Ordered Coffee</Text>
-                    </View>
-                }
-                keyExtractor={item => item.id}
-                renderItem={renderItem}
-            />
-            {/* </View> */}
-            <PaymentFooter
-                // buttonPressHandler={buttonPressHandler}
-                buttonTitle="Pay"
-                price={{ totalBayar: totalBayar, currency: 'IDR' }}
-            />
-            {/* </View> */}
-
-            {/* </ScrollView> */}
+            <View style={[styles.orderContainer, { marginBottom: SPACING.space_2 }]}>
+                <View style={styles.orderItemFlatlist}>
+                    <FlatList
+                        ref={ListRef}
+                        showsHorizontalScrollIndicator={false}
+                        data={CartList}
+                        contentContainerStyle={styles.FlatListContainer}
+                        ListEmptyComponent={
+                            <View style={styles.EmptyListContainer}>
+                                <Text style={styles.EmptyText}>No Ordered Coffee</Text>
+                            </View>
+                        }
+                        keyExtractor={item => item.id}
+                        renderItem={renderItem}
+                    />
+                </View>
+                <PaymentFooter
+                    // buttonPressHandler={buttonPressHandler}
+                    buttonTitle="Pay"
+                    price={{ totalBayar: totalBayar, currency: 'IDR' }}
+                />
+            </View>
         </View>
 
     )
@@ -84,9 +79,9 @@ const styles = StyleSheet.create({
     FlatListContainer: {
         gap: SPACING.space_10,
         paddingVertical: SPACING.space_20,
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center'
+        // flex: 1,
+        // alignItems: 'center',
+        // justifyContent: 'center'
     },
     ScreenContainer: {
         flex: 1,
@@ -97,7 +92,6 @@ const styles = StyleSheet.create({
     },
     orderItemFlatlist: {
         flex: 1,
-        backgroundColor: 'red'
     },
     orderContainer: {
         flex: 1,

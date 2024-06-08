@@ -1,6 +1,7 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
+import CustomIcon from '../CustomIcon'
 
 const PaymentFooter = ({ price, buttonTitle }) => {
     return (
@@ -15,6 +16,11 @@ const PaymentFooter = ({ price, buttonTitle }) => {
                 disabled={price.totalBayar === 0}
                 style={[styles.PayButton, (price.totalBayar === 0) ? { backgroundColor: COLORS.secondaryLightGreyHex } : {}]}
                 onPress={() => buttonPressHandler()}>
+                <CustomIcon
+                    name={'sack-dollar'}
+                    color={COLORS.primaryBlackRGBA}
+                    size={FONTSIZE.size_30}
+                />
                 <Text style={styles.ButtonText}>{buttonTitle}</Text>
             </TouchableOpacity>
         </View>
@@ -51,8 +57,10 @@ const styles = StyleSheet.create({
     PayButton: {
         backgroundColor: COLORS.primaryOrangeHex,
         flex: 1,
+        flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
+        gap: 10,
         height: SPACING.space_36 * 2,
         borderRadius: BORDERRADIUS.radius_20,
     },
