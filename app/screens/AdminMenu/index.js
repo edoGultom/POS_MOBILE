@@ -4,7 +4,6 @@ import * as ImagePicker from 'expo-image-picker'
 import { StatusBar } from 'expo-status-bar'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Button, Dimensions, FlatList, Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { showMessage } from 'react-native-flash-message'
 import { useDispatch, useSelector } from 'react-redux'
 import { IEmptyFile } from '../../assets'
 import BottomSheetCustom from '../../component/BottomSheet'
@@ -16,7 +15,7 @@ import TextInput from '../../component/TextInput'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
 import { getKategori } from '../../redux/kategoriSlice'
 import { addMenu, deleteMenu, getMenu, updateMenu } from '../../redux/menuSlice'
-import { getData, useForm } from '../../utils'
+import { getData, showMessage, useForm } from '../../utils'
 import mime from 'mime'
 
 const windowWidth = Dimensions.get('window').width;
@@ -142,7 +141,7 @@ const AdminMenu = ({ navigation }) => {
 
         const onSubmit = () => {
             if (photo === null) {
-                showMessage('Please select a file to continue!');
+                showMessage('Please select a file to continue!', 'danger');
             } else {
                 const dataInput = new FormData();
                 for (const key in form) {
