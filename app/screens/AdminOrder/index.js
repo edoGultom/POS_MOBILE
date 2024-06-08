@@ -6,7 +6,7 @@ import OrderItem from '../../component/OrderItem';
 import PaymentFooter from '../../component/PaymentFooter';
 import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
 
-const AdminOrder = () => {
+const AdminOrder = ({ navigation }) => {
     const { CartList } = useSelector(state => state.orderReducer);
     const ListRef = useRef();
     const totalBayar = CartList.reduce((acc, curr) => acc + curr.totalHarga, 0);
@@ -33,7 +33,7 @@ const AdminOrder = () => {
     return (
         <View style={styles.ScreenContainer}>
             <StatusBar style='light' />
-            <HeaderBar title="Orders Detail" />
+            <HeaderBar title="Order Detail" onBack={() => navigation.goBack()} />
             {/* <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.ScrollViewFlex}> */}
