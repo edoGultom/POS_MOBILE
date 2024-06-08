@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import BottomNavigator from '../component/BottomNavigator';
-import { Admin, AdminMenu, Home, Order, Profile, SignIn, SignUp, SplashScreen, SuccessSignUp } from '../screens';
+import { Admin, AdminMenu, Home, Order, Profile, SignIn, SplashScreen } from '../screens';
 import { useRole } from '../utils/roles';
 
 const Stack = createNativeStackNavigator();
@@ -24,7 +24,7 @@ const RoleBasedNavigator = () => {
     const { roles } = useRole();
     return (
         <Stack.Navigator initialRouteName="Splash">
-            {/* <Stack.Screen
+            <Stack.Screen
                 name="SplashScreen"
                 component={SplashScreen}
                 options={{ headerShown: false }}
@@ -33,7 +33,7 @@ const RoleBasedNavigator = () => {
                 name="SignIn"
                 component={SignIn}
                 options={{ headerShown: false }}
-            /> */}
+            />
             {/*        
             <Stack.Screen
                 name="SignUp"
@@ -45,11 +45,11 @@ const RoleBasedNavigator = () => {
                 component={SuccessSignUp}
                 options={{ headerShown: false }}
             /> */}
-            {/* <Stack.Screen
+            <Stack.Screen
                 name="Admin"
                 component={Admin}
                 options={{ headerShown: false }}
-            /> */}
+            />
             <Stack.Screen
                 name="AdminMenu"
                 component={AdminMenu}

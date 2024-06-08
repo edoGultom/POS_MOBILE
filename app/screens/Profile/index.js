@@ -1,13 +1,11 @@
+import { BE_API_HOST } from '@env';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import React, { useEffect, useState } from 'react';
 import { Image, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { ProfileDummy } from '../../assets';
 import HeaderBar from '../../component/HeaderBar';
 import ProfileTabSection from '../../component/ProfileTabSection';
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
 import { getData } from '../../utils';
-import { BE_API_HOST } from '@env';
-
 const Profile = ({ navigation }) => {
     const [userProfile, setUserProfile] = useState({});
     useEffect(() => {
@@ -27,7 +25,6 @@ const Profile = ({ navigation }) => {
             <BottomSheetModalProvider>
                 <StatusBar style='light' />
                 <HeaderBar title="Profile" />
-
                 <View style={styles.photo}>
                     <TouchableOpacity
                     //    onPress={updatePhoto}

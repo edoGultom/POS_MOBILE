@@ -42,6 +42,7 @@ export const addMenu = createAsyncThunk('menu/addMenu', async (param, { dispatch
             },
         });
         if (response.status === 200) {
+            console.log(response.data.data, 'resssppsss')
             setRefreshData(false);
             dispatch(addMenuState(response.data.data))
         } else {
@@ -55,7 +56,6 @@ export const addMenu = createAsyncThunk('menu/addMenu', async (param, { dispatch
 export const updateMenu = createAsyncThunk('menu/updateMenu', async (param, { dispatch }) => {
     const { id, setRefreshData, dataInput, token } = param
     setRefreshData(true);
-    console.log(dataInput, 'dataInput')
     try {
         const response = await axios.post(`${BE_API_HOST}/barang/update?id=${id}`, dataInput, {
             headers: {
@@ -101,16 +101,17 @@ const menuSlice = createSlice({
     initialState,
     reducers: {
         addMenuState: (state, action) => {
-            state.menus = [...state.menus, action.payload]
+            state.menus.push(action.payload)
         },
         updateMenuState: (state, action) => {
-            const newData = state.menus.map(item => {
-                if (item.id === action.payload.id) {
-                    return { ...item, ...action.payload };
-                }
-                return item;
-            });
-            state.menus = newData
+            const { id } = action.payload;
+            const index = state.menus.findIndex(menu => menu.id === id);
+            if (index !== -1) {
+                state.menus[index] = {
+                    ...state.menus[index],
+                    ...action.payload,
+                };
+            }
         },
         deleteMenuState: (state, action) => {
             const current = [...state.menus];

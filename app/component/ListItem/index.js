@@ -1,14 +1,25 @@
 import { BE_API_HOST } from '@env'
 import { LinearGradient } from 'expo-linear-gradient'
-import React from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Image, StyleSheet, Text, View } from 'react-native'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import CustomIcon from '../CustomIcon'
 
 const ListItem = (props) => {
+    const [photo, setPhoto] = useState(null);
     const { name, url, kind, price, onPressDelete, onPressUpdate } = props;
+    const fetchData = useCallback(async () => {
+        setPhoto(`${BE_API_HOST}/lihat-file/profile?path=${url}`);
+    }, []);
 
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
+
+    const Item = ({ imageUrl }) => (
+        <Image source={{ uri: photo }} style={styles.ItemSingleImage} />
+    );
     return (
         <View>
             <LinearGradient
@@ -17,7 +28,7 @@ const ListItem = (props) => {
                 colors={[COLORS.primaryBlackHex, COLORS.primaryGreyHex]}
                 style={styles.ItemSingleLinearGradient}>
                 <View>
-                    <Image source={{ uri: `${BE_API_HOST}/lihat-file/profile?path=${url}` }} style={styles.ItemSingleImage} />
+                    <Image source={{ uri: photo }} style={styles.ItemSingleImage} />
                 </View>
                 <View style={styles.ItemSingleInfoContainer}>
                     <View>

@@ -1,10 +1,12 @@
+import { BE_API_HOST } from '@env'
 import { BottomSheetBackdrop, BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import * as ImagePicker from 'expo-image-picker'
 import { StatusBar } from 'expo-status-bar'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Button, Dimensions, FlatList, Image, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Button, Dimensions, FlatList, Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { showMessage } from 'react-native-flash-message'
 import { useDispatch, useSelector } from 'react-redux'
-import { IEmptyFile, ImChocolate } from '../../assets'
+import { IEmptyFile } from '../../assets'
 import BottomSheetCustom from '../../component/BottomSheet'
 import CustomIcon from '../../component/CustomIcon'
 import HeaderBar from '../../component/HeaderBar'
@@ -13,12 +15,10 @@ import Select from '../../component/Select'
 import TextInput from '../../component/TextInput'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
 import { getKategori } from '../../redux/kategoriSlice'
-import { addMenu, addMenuState, deleteMenu, getMenu, updateMenu } from '../../redux/menuSlice'
+import { addMenu, deleteMenu, getMenu, updateMenu } from '../../redux/menuSlice'
 import { getData, useForm } from '../../utils'
-import { showMessage } from 'react-native-flash-message'
-import axios from 'axios'
-import { BE_API_HOST } from '@env';
-import { addLoading } from '../../redux/globalSlice'
+import mime from 'mime'
+
 const windowWidth = Dimensions.get('window').width;
 
 const AdminMenu = ({ navigation }) => {
@@ -101,12 +101,29 @@ const AdminMenu = ({ navigation }) => {
     }, [selectedMenu])
 
     const FormComponent = ({ dataKategori, selected }) => {
+        const [photo, setPhoto] = useState(null);
 
-        const [photo, setPhoto] = useState(selected !== null ? {
-            assets: [
-                { uri: `${BE_API_HOST}/lihat-file/profile?path=${selected.path}` }
-            ]
-        } : null);
+        if (selected !== null) {
+            const fileUrl = `${BE_API_HOST}/lihat-file/profile?path=${selected.path}`
+            async function fetchFileDetails() {
+                fetch(fileUrl)
+                    .then((response) => {
+                        const contentType = response.headers.get('Content-Type');
+                        setPhoto({
+                            assets: [
+                                {
+                                    uri: `${BE_API_HOST}/lihat-file/profile?path=${selected.path}`,
+                                    mimeType: contentType,
+                                }
+                            ]
+                        })
+                    })
+                    .catch((error) => {
+                        console.error('Error fetching the content:', error);
+                    });
+            }
+            fetchFileDetails();
+        }
 
         const [form, setForm] = useForm({
             nama_barang: selected !== null ? selected.nama_barang : '',
@@ -137,6 +154,7 @@ const AdminMenu = ({ navigation }) => {
                     type: photo.assets[0].mimeType,
                     name: `menu.${fileExtension}`
                 }
+
                 dataInput.append('file', dataPhoto)
                 closeModal();
                 getData('token').then((resToken) => {
@@ -228,7 +246,7 @@ const AdminMenu = ({ navigation }) => {
                 <StatusBar style='light' />
                 <HeaderBar title="Menu" onBack={() => navigation.goBack()} />
                 {!menus ? (
-                    <View style={{ flexGrow: 1, justifyContent: 'center' }}>
+                    <View style={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
                         <Text style={{ fontSize: FONTSIZE.size_18, color: COLORS.primaryLightGreyHex }}>Tidak ada item yang tersedia</Text>
                     </View>
                 ) : (
@@ -238,21 +256,16 @@ const AdminMenu = ({ navigation }) => {
                         refreshing={refreshing}
                         showsVerticalScrollIndicator={false}
                         renderItem={({ item }) => (
-                            // <TouchableOpacity
-                            //     activeOpacity={0.4}
-                            //     onPress={() => setSelectedMenu(item)}
-                            // >
                             <ListItem
                                 key={item.id}
                                 id={item.id}
                                 name={item.nama_barang}
                                 url={item.path}
-                                kind='Non Coffee'
+                                kind={item.nama_kategori}
                                 price={item.harga}
                                 onPressDelete={() => handleDelete(item.id)}
                                 onPressUpdate={() => setSelectedMenu(item)}
                             />
-                            // </TouchableOpacity>
                         )}
                         keyExtractor={item => item.id}
                         contentContainerStyle={{ flexGrow: 1, columnGap: SPACING.space_10 }}
