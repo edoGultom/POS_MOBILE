@@ -9,17 +9,15 @@ import CustomIcon from '../CustomIcon'
 const ListItem = (props) => {
     const [photo, setPhoto] = useState(null);
     const { name, url, kind, price, onPressDelete, onPressUpdate } = props;
-    const fetchData = useCallback(async () => {
-        setPhoto(`${BE_API_HOST}/lihat-file/profile?path=${url}`);
-    }, []);
 
     useEffect(() => {
+        const fetchData = () => {
+            setPhoto(`${BE_API_HOST}/lihat-file/profile?path=${url}`);
+        }
         fetchData();
-    }, [fetchData]);
+        return () => setPhoto(null);
+    }, [url]);
 
-    const Item = ({ imageUrl }) => (
-        <Image source={{ uri: photo }} style={styles.ItemSingleImage} />
-    );
     return (
         <View>
             <LinearGradient

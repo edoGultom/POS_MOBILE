@@ -103,27 +103,28 @@ const AdminMenu = ({ navigation }) => {
     const FormComponent = ({ dataKategori, selected }) => {
         const [photo, setPhoto] = useState(null);
 
-        if (selected !== null) {
+        const fetchImage = useCallback(async () => {
             const fileUrl = `${BE_API_HOST}/lihat-file/profile?path=${selected.path}`
-            async function fetchFileDetails() {
-                fetch(fileUrl)
-                    .then((response) => {
-                        const contentType = response.headers.get('Content-Type');
-                        setPhoto({
-                            assets: [
-                                {
-                                    uri: `${BE_API_HOST}/lihat-file/profile?path=${selected.path}`,
-                                    mimeType: contentType,
-                                }
-                            ]
-                        })
+            fetch(fileUrl)
+                .then((response) => {
+                    const contentType = response.headers.get('Content-Type');
+                    setPhoto({
+                        assets: [
+                            {
+                                uri: `${BE_API_HOST}/lihat-file/profile?path=${selected.path}`,
+                                mimeType: contentType,
+                            }
+                        ]
                     })
-                    .catch((error) => {
-                        console.error('Error fetching the content:', error);
-                    });
-            }
-            fetchFileDetails();
-        }
+                })
+                .catch((error) => {
+                    console.error('Error fetching the content:', error);
+                });
+        }, []);
+
+        useEffect(() => {
+            if (selected !== null) fetchImage();
+        }, [selected, fetchImage]);
 
         const [form, setForm] = useForm({
             nama_barang: selected !== null ? selected.nama_barang : '',
