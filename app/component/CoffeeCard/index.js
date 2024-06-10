@@ -33,7 +33,7 @@ const CoffeCard = ({ id, link, name, kind, price, buttonPressHandler }) => {
                     <Text style={styles.CardSubtitle}>{kind}</Text>
                     <View style={styles.CardFooterRow}>
                         <Text style={styles.CardPriceCurrency}>
-                            IDR <Text style={styles.CardPrice}>{price}</Text>
+                            IDR <Text style={styles.CardPrice}>{price.toLocaleString('id-ID')}</Text>
                         </Text>
                     </View>
                 </View>

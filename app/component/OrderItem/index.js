@@ -6,7 +6,16 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
 import CustomIcon from '../CustomIcon'
 
-const OrderItem = ({ name, link, kind, price, qty }) => {
+const OrderItem = ({
+    id,
+    name,
+    link,
+    kind,
+    price,
+    qty,
+    incrementCartItemQuantityHandler,
+    decrementCartItemQuantityHandler
+}) => {
     return (
         <View>
             <LinearGradient
@@ -33,9 +42,9 @@ const OrderItem = ({ name, link, kind, price, qty }) => {
                     <View style={styles.CartItemSingleQuantityContainer}>
                         <TouchableOpacity
                             style={styles.CartItemIcon}
-                        // onPress={() => {
-                        //   decrementCartItemQuantityHandler(id, prices[0].size);
-                        // }}
+                            onPress={() => {
+                                decrementCartItemQuantityHandler(id);
+                            }}
                         >
                             <CustomIcon
                                 name="minus"
@@ -50,9 +59,9 @@ const OrderItem = ({ name, link, kind, price, qty }) => {
                         </View>
                         <TouchableOpacity
                             style={styles.CartItemIcon}
-                        // onPress={() => {
-                        //   incrementCartItemQuantityHandler(id, prices[0].size);
-                        // }}
+                            onPress={() => {
+                                incrementCartItemQuantityHandler(id);
+                            }}
                         >
                             <CustomIcon
                                 name="add"
@@ -62,7 +71,6 @@ const OrderItem = ({ name, link, kind, price, qty }) => {
                         </TouchableOpacity>
                     </View>
                 </View>
-
             </LinearGradient >
         </View >
     )
@@ -78,11 +86,11 @@ const styles = StyleSheet.create({
         gap: SPACING.space_12,
         borderRadius: BORDERRADIUS.radius_25,
         marginHorizontal: SPACING.space_15,
-        marginVertical: SPACING.space_10
+        // marginVertical: SPACING.space_10
     },
     CartItemSingleImage: {
-        height: 150,
-        width: 150,
+        height: 100,
+        width: 100,
         borderRadius: BORDERRADIUS.radius_20,
     },
     CartItemQuantityText: {

@@ -1,16 +1,26 @@
 import React, { useRef, useState } from 'react';
 import { Dimensions, FlatList, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import HeaderBar from '../../component/HeaderBar';
 import OrderItem from '../../component/OrderItem';
 import PaymentFooter from '../../component/PaymentFooter';
 import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
+import { addPembayaran, calculateCartPrice, decrementCartItemQuantity, incrementCartItemQuantity } from '../../redux/orderSlice';
+import { getData, useForm } from '../../utils';
 
 const AdminOrder = ({ navigation }) => {
     const { CartList } = useSelector(state => state.orderReducer);
+    const [pembayaran, setPembayaran] = useState('cash')
     const ListRef = useRef();
-    const totalBayar = CartList.reduce((acc, curr) => acc + curr.totalHarga, 0);
-    console.log(totalBayar)
+    const dispatch = useDispatch();
+    const totalBayar = CartList.reduce((acc, curr) => acc + curr.harga * curr.qty, 0);
+
+    const incrementCartItemQuantityHandler = (id) => {
+        dispatch(incrementCartItemQuantity(id))
+    };
+    const decrementCartItemQuantityHandler = (id) => {
+        dispatch(decrementCartItemQuantity(id))
+    };
     const renderItem = ({ item }) => {
         return (
             <OrderItem
@@ -21,14 +31,29 @@ const AdminOrder = ({ navigation }) => {
                 price={item.harga}
                 totalHarga={item.totalHarga}
                 qty={item.qty}
-            // incrementCartItemQuantityHandler={
-            //     incrementCartItemQuantityHandler
-            // }
-            // decrementCartItemQuantityHandler={
-            //     decrementCartItemQuantityHandler
-            // }
+                incrementCartItemQuantityHandler={
+                    incrementCartItemQuantityHandler
+                }
+                decrementCartItemQuantityHandler={
+                    decrementCartItemQuantityHandler
+                }
             />
         );
+    };
+    const buttonPressHandler = () => {
+        getData('token').then((resToken) => {
+            const data = {
+                CartList,
+                totalBayar,
+                pembayaran,
+                status: 'PENDING'
+            }
+            const token = resToken.value;
+            const properties = { data, token };
+
+            dispatch(addPembayaran(properties))
+        });
+        // navigation.push('Payment', { amount: CartPrice });
     };
     return (
         <View style={styles.ScreenContainer}>
@@ -51,9 +76,15 @@ const AdminOrder = ({ navigation }) => {
                     />
                 </View>
                 <PaymentFooter
-                    // buttonPressHandler={buttonPressHandler}
-                    buttonTitle="Pay"
-                    price={{ totalBayar: totalBayar, currency: 'IDR' }}
+                    buttonPressHandler={buttonPressHandler}
+                    buttonTitle="Bayar"
+                    price={{
+                        totalPesanan: CartList.reduce((sum, item) => sum + item.qty, 0),
+                        totalBayar: totalBayar,
+                        currency: 'IDR'
+                    }}
+                    pembayaran={pembayaran}
+                    setPembayaran={setPembayaran}
                 />
             </View>
         </View>
@@ -65,10 +96,11 @@ export default AdminOrder
 
 const styles = StyleSheet.create({
     EmptyListContainer: {
-        width: Dimensions.get('window').width - SPACING.space_30 * 2,
+        width: Dimensions.get('window').width,
         alignItems: 'center',
         justifyContent: 'center',
-        paddingVertical: SPACING.space_36 * 3.6,
+        // backgroundColor: 'red',
+        paddingVertical: SPACING.space_15,
     },
     EmptyText: {
         fontFamily: FONTFAMILY.poppins_semibold,

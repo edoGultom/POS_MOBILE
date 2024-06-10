@@ -25,7 +25,7 @@ const RoleBasedNavigator = () => {
     const { roles } = useRole();
     return (
         <Stack.Navigator initialRouteName="Splash">
-            {/* <Stack.Screen
+            <Stack.Screen
                 name="SplashScreen"
                 component={SplashScreen}
                 options={{ headerShown: false }}
@@ -34,7 +34,7 @@ const RoleBasedNavigator = () => {
                 name="SignIn"
                 component={SignIn}
                 options={{ headerShown: false }}
-            /> */}
+            />
             {/*        
             <Stack.Screen
                 name="SignUp"
