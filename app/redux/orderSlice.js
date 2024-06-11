@@ -92,9 +92,13 @@ const orderSlice = createSlice({
         },
         decrementCartItemQuantity: (state, action) => {
             const item = state.CartList.find(item => item.id === action.payload);
-            if (item && item.qty > 1) {
-                item.qty -= 1;
-                item.totalHarga -= item.harga
+            if (item) {
+                if (item.qty > 1) {
+                    item.qty -= 1;
+                    item.totalHarga -= item.harga;
+                } else {
+                    state.CartList = state.CartList.filter(item => item.id !== action.payload);
+                }
             }
         },
         addStateMidtrans: (state, action) => {

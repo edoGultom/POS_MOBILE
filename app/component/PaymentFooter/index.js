@@ -11,7 +11,8 @@ const PaymentFooter = ({ price, buttonTitle, buttonPressHandler, pembayaran, set
                 paddingHorizontal: SPACING.space_15,
                 // backgroundColor: 'red',
                 gap: SPACING.space_15,
-                flexDirection: 'column'
+                flexDirection: 'column',
+                marginTop: 5
             }}>
                 <Select
                     label="Pembayaran"

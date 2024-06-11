@@ -33,25 +33,7 @@ const AdminOrder = ({ navigation }) => {
     const decrementCartItemQuantityHandler = (id) => {
         dispatch(decrementCartItemQuantity(id))
     };
-    const renderItem = ({ item }) => {
-        return (
-            <OrderItem
-                id={item.id}
-                name={item.nama_barang}
-                link={item.path}
-                kind={item.nama_kategori}
-                price={item.harga}
-                totalHarga={item.totalHarga}
-                qty={item.qty}
-                incrementCartItemQuantityHandler={
-                    incrementCartItemQuantityHandler
-                }
-                decrementCartItemQuantityHandler={
-                    decrementCartItemQuantityHandler
-                }
-            />
-        );
-    };
+
     const buttonPressHandler = () => {
         getData('token').then((resToken) => {
             const data = {
@@ -95,6 +77,25 @@ const AdminOrder = ({ navigation }) => {
             navigation.reset({ index: 4, routes: [{ name: 'Admin' }] });
         }, 2000);
     }
+    const renderItem = ({ item }) => {
+        return (
+            <OrderItem
+                id={item.id}
+                name={item.nama_barang}
+                link={item.path}
+                kind={item.nama_kategori}
+                price={item.harga}
+                totalHarga={item.totalHarga}
+                qty={item.qty}
+                incrementCartItemQuantityHandler={
+                    incrementCartItemQuantityHandler
+                }
+                decrementCartItemQuantityHandler={
+                    decrementCartItemQuantityHandler
+                }
+            />
+        );
+    };
     const FormComponent = ({ dataMidtrans }) => {
         const expiryTime = dataMidtrans.expiry_time;
         const orderId = dataMidtrans.order_id;

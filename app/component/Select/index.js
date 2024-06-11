@@ -36,6 +36,7 @@ const styles = StyleSheet.create({
     borderRadius: BORDERRADIUS.radius_15,
     paddingHorizontal: SPACING.space_2,
     paddingVertical: 0,
-    fontFamily: FONTFAMILY.poppins_regular
+    fontFamily: FONTFAMILY.poppins_regular,
+    marginTop: 5
   },
 });
