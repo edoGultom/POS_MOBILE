@@ -5,6 +5,7 @@ import Order from "./Order";
 import Profile from "./Profile";
 import SplashScreen from "./SplashScreen";
 import SuccessSignUp from "./SuccessSignUp";
+import SuccessOrder from "./SuccessOrder";
 import Admin from "./Admin";
 import AdminMenu from "./AdminMenu";
 
@@ -17,5 +18,6 @@ export {
     SplashScreen,
     SuccessSignUp,
     Admin,
-    AdminMenu
+    AdminMenu,
+    SuccessOrder
 };

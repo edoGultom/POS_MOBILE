@@ -28,6 +28,7 @@ export const getMenu = createAsyncThunk('menu/getMenu', async (token, { dispatch
         }
 
     } catch (error) {
+        dispatch(addLoading(false));
         console.error('Error: ', error);
     }
 });

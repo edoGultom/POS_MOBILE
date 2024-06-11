@@ -18,6 +18,7 @@ const PaymentFooter = ({ price, buttonTitle, buttonPressHandler, pembayaran, set
                     data={[{ id: 'cash', nama: 'Cash' }, { id: 'qris', nama: 'Qris' }]}
                     value={pembayaran}
                     onSelectChange={(value) => setPembayaran(value)}
+                    enabled={price.totalBayar !== 0}
                 />
                 <View style={{
                     justifyContent: 'space-between',

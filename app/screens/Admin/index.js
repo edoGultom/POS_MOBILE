@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Dimensions, FlatList, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { IcCoffeeOff, IcCoffeeOn, IcNonCoffeeOff, IcNonCoffeeOn } from '../../assets'
@@ -38,26 +38,26 @@ const IconTextView = ({ iconName, text, onPress }) => {
         </TouchableOpacity>
     );
 }
-const getMenuList = (category, data) => {
-    let coffeelist = data.filter((item) => item.nama_kategori == category);
-    return coffeelist;
-};
 const Admin = ({ navigation }) => {
     const ListRef = useRef();
     const dispatch = useDispatch();
     const { menus } = useSelector(state => state.menuReducer);
-    const { CartList } = useSelector(state => state.orderReducer);
+    const { isLoading } = useSelector(state => state.globalReducer);
+
     const [catgoryMenu, setCategoryMenu] = useState({
         index: 0,
         category: 'Coffee',
     });
     const [sortedMenu, setSortedMenu] = useState(null);
-
+    const getMenuList = (category, data) => {
+        let coffeelist = data?.filter((item) => item.nama_kategori == category) || [];
+        return coffeelist;
+    };
     useEffect(() => {
-        // navigation.addListener('focus', () => {
-        getDataMenu();
-        // });
-    }, []);
+        navigation.addListener('focus', () => {
+            getDataMenu();
+        });
+    }, [navigation]);
 
     useEffect(() => {
         setSortedMenu([...getMenuList(catgoryMenu.category, menus)])
@@ -133,6 +133,18 @@ const Admin = ({ navigation }) => {
             ToastAndroid.CENTER,
         )
     };
+
+    const fetchData = useCallback(async () => {
+        try {
+            getDataMenu();
+        } catch (error) {
+            console.log(error);
+        }
+    }, []);
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
+
     return (
         <View style={styles.ScreenContainer}>
             <StatusBar style='light' />
@@ -144,6 +156,7 @@ const Admin = ({ navigation }) => {
                 gap: 10,
                 flexWrap: 'wrap',
                 justifyContent: 'center',
+                flex: 1
             }}>
                 {
                     navMenu.map((item) => (
@@ -186,10 +199,11 @@ const Admin = ({ navigation }) => {
                             </Text>
                         </TouchableOpacity>
                     ))}
-
                 </View>
                 <FlatList
                     ref={ListRef}
+                    onRefresh={fetchData}
+                    refreshing={false}
                     showsHorizontalScrollIndicator={false}
                     data={sortedMenu}
                     contentContainerStyle={styles.FlatListContainer}
@@ -199,6 +213,7 @@ const Admin = ({ navigation }) => {
                         </View>
                     }
                     keyExtractor={item => item.id}
+                    vertical
                     renderItem={({ item }) => {
                         return (
                             <CoffeCard
@@ -212,7 +227,9 @@ const Admin = ({ navigation }) => {
                         );
                     }}
                 />
+
             </View>
+
         </View>
     )
 }
@@ -223,6 +240,7 @@ const styles = StyleSheet.create({
     FlatListContainer: {
         gap: SPACING.space_15,
         paddingVertical: SPACING.space_20,
+        flexGrow: 1,
     },
     EmptyListContainer: {
         width: Dimensions.get('window').width - SPACING.space_30 * 2,
@@ -240,6 +258,7 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         flexDirection: 'row',
         gap: SPACING.space_15,
+        paddingVertical: 10
     },
     KindBox: {
         flex: 1,
@@ -255,12 +274,11 @@ const styles = StyleSheet.create({
         fontSize: FONTSIZE.size_20,
         fontFamily: FONTFAMILY.poppins_semibold,
         color: COLORS.primaryWhiteHex,
-        marginBottom: 10
     },
     containerMenuAdmin: {
         paddingVertical: 15,
         paddingHorizontal: 15,
-        flexGrow: 1
+        flex: 2,
     },
     ScreenContainer: {
         backgroundColor: COLORS.primaryBlackHex,

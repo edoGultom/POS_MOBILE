@@ -5,7 +5,7 @@ import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../confi
 import CustomIcon from '../CustomIcon'
 import { BE_API_HOST } from '@env'
 
-const CARD_WIDTH = Dimensions.get('window').width * 0.32;
+const CARD_WIDTH = Dimensions.get('window').width * 0.25;
 
 const CoffeCard = ({ id, link, name, kind, price, buttonPressHandler }) => {
     return (

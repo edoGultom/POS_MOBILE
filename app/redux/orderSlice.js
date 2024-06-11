@@ -7,12 +7,14 @@ import axios from 'axios';
 // Initial state
 const initialState = {
     CartList: [],
+    Midtrans: null,
     loading: false,
     error: null,
 };
 export const addPembayaran = createAsyncThunk('pembayaran/addPembayaran', async (properties, { dispatch }) => {
     const { data, token } = properties;
     dispatch(addLoading(true));
+    console.log(BE_API_HOST, 'BE_API_HOST')
     try {
         const response = await axios.post(`${BE_API_HOST}/pembayaran/add`, data, {
             headers: {
@@ -21,9 +23,35 @@ export const addPembayaran = createAsyncThunk('pembayaran/addPembayaran', async 
             },
         });
         if (response.status === 200) {
+            const { midtrans } = response.data
+            dispatch(addLoading(false));
+            console.log(midtrans, 'response')
+            dispatch(addStateMidtrans(midtrans))
+        } else {
+            dispatch(addLoading(false));
+            console.error('Response not okay');
+        }
+    } catch (error) {
+        dispatch(addLoading(false));
+        console.error('Error: ', error);
+    }
+});
+export const batalPembayaran = createAsyncThunk('pembayaran/batalPembayaran', async (properties, { dispatch }) => {
+    const { data, token } = properties;
+    dispatch(addLoading(true));
+    console.log(BE_API_HOST, 'BE_API_HOST')
+    try {
+        const response = await axios.post(`${BE_API_HOST}/pembayaran/cancel`, data, {
+            headers: {
+                Authorization: `${token}`,
+                'Content-Type': 'application/json'
+            },
+        });
+        if (response.status === 200) {
+            // const { midtrans } = response.data
             dispatch(addLoading(false));
             console.log(response.data, 'response')
-            // dispatch(deleteMenuState(id))
+            // dispatch(addStateMidtrans(midtrans))
         } else {
             dispatch(addLoading(false));
             console.error('Response not okay');
@@ -69,8 +97,14 @@ const orderSlice = createSlice({
                 item.totalHarga -= item.harga
             }
         },
+        addStateMidtrans: (state, action) => {
+            state.Midtrans = action.payload
+        },
+        addToOrderHistoryListFromCart: (state, action) => {
+            state.CartList = [];
+        }
     },
     extraReducers: () => { },
 });
-export const { addToChartList, incrementCartItemQuantity, decrementCartItemQuantity, calculateCartPrice } = orderSlice.actions;
+export const { addToChartList, incrementCartItemQuantity, decrementCartItemQuantity, calculateCartPrice, addStateMidtrans, addToOrderHistoryListFromCart } = orderSlice.actions;
 export default orderSlice.reducer;

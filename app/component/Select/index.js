@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
 
-const Select = ({ label, data, value, onSelectChange }) => {
+const Select = ({ label, data, value, onSelectChange, enabled }) => {
   return (
     <View >
       <Text style={styles.label}>{label}</Text>
@@ -13,6 +13,7 @@ const Select = ({ label, data, value, onSelectChange }) => {
           style={{ color: COLORS.secondaryLightGreyHex }}
           onValueChange={(itemValue) => onSelectChange(itemValue)}
           dropdownIconColor={COLORS.secondaryLightGreyHex}
+          enabled={enabled}
         >
           {data.map((item) => (
             <Picker.Item label={item.nama} value={item.id} key={item.id} />

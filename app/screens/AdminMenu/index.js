@@ -51,6 +51,7 @@ const AdminMenu = ({ navigation }) => {
             dispatch(getMenu(res.value))
         });
     };
+
     const fetchData = useCallback(async () => {
         setRefreshData(true);
         try {
@@ -78,11 +79,6 @@ const AdminMenu = ({ navigation }) => {
         });
     }, []);
 
-
-    const openModal = () => {
-        bottomSheetModalRef.current.present();
-    };
-
     const renderBackdrop = useCallback(
         props => (
             <BottomSheetBackdrop
@@ -98,6 +94,14 @@ const AdminMenu = ({ navigation }) => {
             bottomSheetModalRef.current.present();
         }
     }, [selectedMenu])
+
+    const openModal = () => {
+        bottomSheetModalRef.current.present();
+    };
+
+    const closeModal = () => {
+        bottomSheetModalRef.current.dismiss();
+    };
 
     const FormComponent = ({ dataKategori, selected }) => {
         const [photo, setPhoto] = useState(null);
@@ -134,10 +138,6 @@ const AdminMenu = ({ navigation }) => {
             type: 'addition',
         });
         const Title = selected !== null ? 'Ubah Menu' : 'Tambah Menu';
-
-        const closeModal = () => {
-            bottomSheetModalRef.current.dismiss();
-        };
 
         const onSubmit = () => {
             if (photo === null) {
