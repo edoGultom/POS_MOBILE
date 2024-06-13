@@ -12,9 +12,8 @@ const initialState = {
     error: null,
 };
 export const addPembayaran = createAsyncThunk('pembayaran/addPembayaran', async (properties, { dispatch }) => {
-    const { data, token } = properties;
+    const { data, token, handleSuccessCash } = properties;
     dispatch(addLoading(true));
-    console.log(BE_API_HOST, 'BE_API_HOST')
     try {
         const response = await axios.post(`${BE_API_HOST}/pembayaran/add`, data, {
             headers: {
@@ -24,9 +23,14 @@ export const addPembayaran = createAsyncThunk('pembayaran/addPembayaran', async 
         });
         if (response.status === 200) {
             const { midtrans } = response.data
+            if (midtrans !== undefined) {
+                console.log(response.data, 'responseMidtrans')
+                dispatch(addStateMidtrans(midtrans))
+            } else {
+                handleSuccessCash(response.data)
+                console.log(response.data, 'responseCash')
+            }
             dispatch(addLoading(false));
-            console.log(midtrans, 'response')
-            dispatch(addStateMidtrans(midtrans))
         } else {
             dispatch(addLoading(false));
             console.error('Response not okay');

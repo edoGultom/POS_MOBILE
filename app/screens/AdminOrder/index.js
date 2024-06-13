@@ -1,7 +1,7 @@
 import { BE_API_HOST } from '@env';
 import { BottomSheetBackdrop, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Dimensions, FlatList, Image, KeyboardAvoidingView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, FlatList, Image, KeyboardAvoidingView, ScrollView, StatusBar, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
 import CurrencyInput from 'react-native-currency-input';
 import QRCode from 'react-native-qrcode-svg';
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,6 +18,7 @@ import TextInput from '../../component/TextInput';
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
 import { addPembayaran, addStateMidtrans, addToOrderHistoryListFromCart, decrementCartItemQuantity, incrementCartItemQuantity } from '../../redux/orderSlice';
 import { getData, useForm } from '../../utils';
+import debounce from 'lodash.debounce';
 
 const AdminOrder = ({ navigation }) => {
     const { CartList, Midtrans } = useSelector(state => state.orderReducer);
@@ -72,7 +73,7 @@ const AdminOrder = ({ navigation }) => {
         ),
         []
     );
-    const handleSuccess = () => {
+    const handleSuccessQris = () => {
         closeModal();
         setShowAnimation(true);
         setTimeout(() => {
@@ -102,7 +103,8 @@ const AdminOrder = ({ navigation }) => {
         );
     };
 
-    const FormComponentCash = ({ data }) => {
+    // FORM CASH
+    const FormComponentCash = () => {
         const formatCurrency = (amount, currency) => {
             return new Intl.NumberFormat('id-ID', {
                 style: 'currency',
@@ -112,8 +114,11 @@ const AdminOrder = ({ navigation }) => {
             }).format(amount);
         };
         const [form, setForm] = useForm({
-            bayar: 35000,
+            totalBayar: totalBayar,
+            jumlah_diberikan: 35000,
+            jumlah_kembalian: 0,
         });
+
         const [currencyMenu, setCurrencyMenu] = useState({
             index: 0,
             category: formatCurrency(35000, 'IDR')
@@ -130,24 +135,76 @@ const AdminOrder = ({ navigation }) => {
                 value: 50000
             },
         ];
+        const handleSuccessCash = (data) => {
+            setTimeout(() => {
+                dispatch(addToOrderHistoryListFromCart())
+            }, 1000);
+            navigation.navigate('SuccessPaymentCash', data.cash);
+
+        }
+        const handleProcessPaymentCash = () => {
+            if (form.jumlah_diberikan < totalBayar) {
+                ToastAndroid.showWithGravity(
+                    `Proses tidak dapat dilakukan, Uang yang harus dibayar adalah ${formatCurrency(totalBayar, 'IDR')}`,
+                    ToastAndroid.SHORT,
+                    ToastAndroid.CENTER,
+                )
+                return;
+            }
+            getData('token').then((resToken) => {
+                const dataPembayaran = {
+                    jumlah_diberikan: form.jumlah_diberikan,
+                    jumlah_kembalian: form.jumlah_kembalian
+                }
+                const data = {
+                    CartList,
+                    totalBayar,
+                    metode_pembayaran: pembayaran,
+                    status: 'PAID',
+                    cash: dataPembayaran
+                }
+                const token = resToken.value;
+                const properties = { data, token, handleSuccessCash };
+                dispatch(addPembayaran(properties))
+            });
+        }
+        const isFailedJumlahBayar = useCallback(
+            debounce((val) => {
+                if (val < totalBayar) {
+                    ToastAndroid.showWithGravity(
+                        `Uang yang harus dibayar adalah ${formatCurrency(totalBayar, 'IDR')}`,
+                        ToastAndroid.SHORT,
+                        ToastAndroid.CENTER,
+                    )
+                    return true;
+                }
+                return false
+            }, 500),
+            []
+        );
+        const handleBlur = () => {
+            const check = isFailedJumlahBayar(form.jumlah_diberikan);
+            if (!check) {
+                setForm('jumlah_kembalian', parseInt(form.jumlah_diberikan) - parseInt(totalBayar))
+            }
+        };
 
         return (
             <KeyboardAvoidingView style={{ flex: 1 }} behavior={"padding"} >
                 <ScrollView>
                     <View style={{ marginBottom: 5, gap: 20 }}>
-                        <Text style={{ color: COLORS.secondaryLightGreyHex, fontSize: FONTSIZE.size_18, fontFamily: FONTFAMILY.poppins_semibold }}> Payment - Cash</Text>
-
+                        <Text style={{ color: COLORS.secondaryLightGreyHex, fontSize: FONTSIZE.size_16, fontFamily: FONTFAMILY.poppins_semibold }}>Total Pembayaran - <Text style={{ color: COLORS.primaryOrangeHex, fontSize: FONTSIZE.size_20, fontFamily: FONTFAMILY.poppins_semibold }}>{formatCurrency(totalBayar, 'IDR')}</Text></Text>
                         <CurrencyInput
-                            value={form.bayar}
-                            onChangeValue={(value) => setForm('bayar', value)}
+                            value={form.jumlah_diberikan}
+                            onChangeValue={(value) => {
+                                setForm('jumlah_diberikan', value)
+                            }}
+                            onBlur={handleBlur}
                             renderTextInput={textInputProps => <TextInput {...textInputProps} variant='filled' />}
                             prefix="Rp "
                             delimiter="."
                             precision={0}
                             minValue={0}
-                            onChangeText={(formattedValue) => {
-                                console.log(formattedValue); // R$ +2.310,46
-                            }}
                         />
                         <View style={styles.KindOuterContainer}>
                             {arrCurrency.map((item, index) => (
@@ -155,7 +212,8 @@ const AdminOrder = ({ navigation }) => {
                                     key={item.key}
                                     onPress={() => {
                                         setCurrencyMenu({ index: item.key, category: item.label })
-                                        setForm('bayar', item.value)
+                                        setForm('jumlah_diberikan', item.value)
+                                        handleBlur()
                                     }}
                                     style={[
                                         styles.KindBox,
@@ -177,8 +235,8 @@ const AdminOrder = ({ navigation }) => {
                                 </TouchableOpacity>
                             ))}
                         </View>
-                        <TouchableOpacity style={{ justifyContent: 'center', alignItems: 'center', borderRadius: BORDERRADIUS.radius_15, height: 50, backgroundColor: COLORS.primaryOrangeHex }} onClick={{}}>
-                            <Text style={{ fontSize: FONTSIZE.size_14, fontFamily: FONTFAMILY.poppins_semibold, color: COLORS.primaryWhiteHex }}>PROCESS</Text>
+                        <TouchableOpacity style={styles.processBtn} onPress={handleProcessPaymentCash}>
+                            <Text style={styles.processBtnTitle}>PROCESS</Text>
                         </TouchableOpacity>
                     </View>
                 </ScrollView>
@@ -186,6 +244,7 @@ const AdminOrder = ({ navigation }) => {
         );
     }
 
+    // FORM QRIS
     const FormComponentQris = ({ dataMidtrans }) => {
         const expiryTime = dataMidtrans.expiry_time;
         const orderId = dataMidtrans.order_id;
@@ -212,7 +271,7 @@ const AdminOrder = ({ navigation }) => {
                         expiryTime && (
                             <>
                                 <CountdownTimer targetDate={expiryTime} />
-                                <EventStatusChecker apiUrl={apiUrl} handleSuccess={handleSuccess} />
+                                <EventStatusChecker apiUrl={apiUrl} handleSuccess={handleSuccessQris} />
                             </>
                         )
                     }
@@ -289,6 +348,18 @@ const AdminOrder = ({ navigation }) => {
 export default AdminOrder
 
 const styles = StyleSheet.create({
+    processBtnTitle: {
+        fontSize: FONTSIZE.size_14,
+        fontFamily: FONTFAMILY.poppins_semibold,
+        color: COLORS.primaryWhiteHex
+    },
+    processBtn: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: BORDERRADIUS.radius_15,
+        height: 50,
+        backgroundColor: COLORS.primaryOrangeHex
+    },
     SizeText: {
         fontFamily: FONTFAMILY.poppins_medium,
     },
