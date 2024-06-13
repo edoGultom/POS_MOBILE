@@ -25,4 +25,5 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.secondaryBlackRGBA,
         justifyContent: 'center',
     },
+
 })

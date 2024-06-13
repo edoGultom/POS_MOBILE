@@ -183,7 +183,7 @@ const Admin = ({ navigation }) => {
                             style={[
                                 styles.KindBox,
                                 catgoryMenu.index === item.key
-                                    ? { borderColor: COLORS.primaryOrangeHex } : {},
+                                    ? { borderColor: COLORS.primaryOrangeHex } : { borderColor: COLORS.primaryLightGreyHex },
                             ]}>
                             {catgoryMenu.index === item.key ? item.iconOn : item.iconOff}
                             <Text

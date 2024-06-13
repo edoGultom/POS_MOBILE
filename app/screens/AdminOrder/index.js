@@ -1,22 +1,23 @@
+import { BE_API_HOST } from '@env';
+import { BottomSheetBackdrop, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Dimensions, FlatList, Image, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, FlatList, Image, KeyboardAvoidingView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import CurrencyInput from 'react-native-currency-input';
+import QRCode from 'react-native-qrcode-svg';
 import { useDispatch, useSelector } from 'react-redux';
+import { IlQris, IlSuccesFully } from '../../assets';
+import BottomSheetCustom from '../../component/BottomSheet';
+import CountdownTimer from '../../component/CountdownTimer';
+import EventStatusChecker from '../../component/EventStatusChecker';
 import HeaderBar from '../../component/HeaderBar';
 import OrderItem from '../../component/OrderItem';
 import PaymentFooter from '../../component/PaymentFooter';
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
-import { addPembayaran, addStateMidtrans, addToOrderHistoryListFromCart, batalPembayaran, calculateCartPrice, decrementCartItemQuantity, incrementCartItemQuantity, successPembayaran } from '../../redux/orderSlice';
-import { getData, useForm } from '../../utils';
-import { BottomSheetBackdrop, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import BottomSheetCustom from '../../component/BottomSheet';
-import QRCode from 'react-native-qrcode-svg';
-import Button from '../../component/Button';
-import CountdownTimer from '../../component/CountdownTimer';
-import EventStatusChecker from '../../component/EventStatusChecker';
-import { BE_API_HOST } from '@env';
-import { IlQris, IlSuccesFully } from '../../assets';
-import LottieView from 'lottie-react-native';
 import PopUpAnimation from '../../component/PopUpAnimation';
+import SuccessPaymentCash from '../../component/SuccessPaymentCash';
+import TextInput from '../../component/TextInput';
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
+import { addPembayaran, addStateMidtrans, addToOrderHistoryListFromCart, decrementCartItemQuantity, incrementCartItemQuantity } from '../../redux/orderSlice';
+import { getData, useForm } from '../../utils';
 
 const AdminOrder = ({ navigation }) => {
     const { CartList, Midtrans } = useSelector(state => state.orderReducer);
@@ -35,17 +36,21 @@ const AdminOrder = ({ navigation }) => {
     };
 
     const buttonPressHandler = () => {
-        getData('token').then((resToken) => {
-            const data = {
-                CartList,
-                totalBayar,
-                metode_pembayaran: pembayaran,
-                status: 'PENDING'
-            }
-            const token = resToken.value;
-            const properties = { data, token };
-            dispatch(addPembayaran(properties))
-        });
+        if (pembayaran == 'qris') {
+            getData('token').then((resToken) => {
+                const data = {
+                    CartList,
+                    totalBayar,
+                    metode_pembayaran: pembayaran,
+                    status: 'PENDING'
+                }
+                const token = resToken.value;
+                const properties = { data, token };
+                dispatch(addPembayaran(properties))
+            });
+        } else {
+            openModal();
+        }
     };
     useEffect(() => {
         if (Midtrans !== null) openModal();
@@ -61,8 +66,8 @@ const AdminOrder = ({ navigation }) => {
         props => (
             <BottomSheetBackdrop
                 {...props}
-                // disappearsOnIndex={-1}
-                appearsOnIndex={0}
+                disappearsOnIndex={-1}
+            // appearsOnIndex={0}
             />
         ),
         []
@@ -96,7 +101,92 @@ const AdminOrder = ({ navigation }) => {
             />
         );
     };
-    const FormComponent = ({ dataMidtrans }) => {
+
+    const FormComponentCash = ({ data }) => {
+        const formatCurrency = (amount, currency) => {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: currency,
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount);
+        };
+        const [form, setForm] = useForm({
+            bayar: 35000,
+        });
+        const [currencyMenu, setCurrencyMenu] = useState({
+            index: 0,
+            category: formatCurrency(35000, 'IDR')
+        });
+        const arrCurrency = [
+            {
+                key: 0,
+                label: formatCurrency(35000, 'IDR'),
+                value: 35000
+            },
+            {
+                key: 1,
+                label: formatCurrency(50000, 'IDR'),
+                value: 50000
+            },
+        ];
+
+        return (
+            <KeyboardAvoidingView style={{ flex: 1 }} behavior={"padding"} >
+                <ScrollView>
+                    <View style={{ marginBottom: 5, gap: 20 }}>
+                        <Text style={{ color: COLORS.secondaryLightGreyHex, fontSize: FONTSIZE.size_18, fontFamily: FONTFAMILY.poppins_semibold }}> Payment - Cash</Text>
+
+                        <CurrencyInput
+                            value={form.bayar}
+                            onChangeValue={(value) => setForm('bayar', value)}
+                            renderTextInput={textInputProps => <TextInput {...textInputProps} variant='filled' />}
+                            prefix="Rp "
+                            delimiter="."
+                            precision={0}
+                            minValue={0}
+                            onChangeText={(formattedValue) => {
+                                console.log(formattedValue); // R$ +2.310,46
+                            }}
+                        />
+                        <View style={styles.KindOuterContainer}>
+                            {arrCurrency.map((item, index) => (
+                                <TouchableOpacity
+                                    key={item.key}
+                                    onPress={() => {
+                                        setCurrencyMenu({ index: item.key, category: item.label })
+                                        setForm('bayar', item.value)
+                                    }}
+                                    style={[
+                                        styles.KindBox,
+                                        currencyMenu.index === item.key
+                                            ? { borderColor: COLORS.primaryOrangeHex } : { borderColor: COLORS.primaryLightGreyHex },
+                                    ]}>
+                                    {currencyMenu.index === item.key ? item.iconOn : item.iconOff}
+                                    <Text
+                                        style={[
+                                            styles.SizeText,
+                                            {
+                                                fontSize: FONTSIZE.size_16,
+                                            },
+                                            currencyMenu.index === item.key
+                                                ? { color: COLORS.primaryOrangeHex } : { color: COLORS.primaryWhiteHex },
+                                        ]}>
+                                        {item.label}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                        <TouchableOpacity style={{ justifyContent: 'center', alignItems: 'center', borderRadius: BORDERRADIUS.radius_15, height: 50, backgroundColor: COLORS.primaryOrangeHex }} onClick={{}}>
+                            <Text style={{ fontSize: FONTSIZE.size_14, fontFamily: FONTFAMILY.poppins_semibold, color: COLORS.primaryWhiteHex }}>PROCESS</Text>
+                        </TouchableOpacity>
+                    </View>
+                </ScrollView>
+            </KeyboardAvoidingView>
+        );
+    }
+
+    const FormComponentQris = ({ dataMidtrans }) => {
         const expiryTime = dataMidtrans.expiry_time;
         const orderId = dataMidtrans.order_id;
         const apiUrl = `${BE_API_HOST}/verify/isfinish?orderId=${orderId}`
@@ -118,7 +208,6 @@ const AdminOrder = ({ navigation }) => {
                             />
                         </View>
                     </View>
-
                     {
                         expiryTime && (
                             <>
@@ -131,19 +220,18 @@ const AdminOrder = ({ navigation }) => {
             </View>
         );
     }
+
     return (
         <BottomSheetModalProvider>
             <View style={styles.ScreenContainer}>
                 <StatusBar style='light' />
-                {showAnimation ? (
+                {showAnimation && (
                     <PopUpAnimation
                         style={styles.LottieAnimation}
                         source={IlSuccesFully}
                     />
-                )
-                    : (
-                        <></>
-                    )}
+                )}
+
                 <HeaderBar title="Order Detail" onBack={() => navigation.goBack()} />
                 <View style={[styles.orderContainer, { marginBottom: SPACING.space_2 }]}>
                     <View style={styles.orderItemFlatlist}>
@@ -172,16 +260,26 @@ const AdminOrder = ({ navigation }) => {
                         pembayaran={pembayaran}
                         setPembayaran={setPembayaran}
                     />
+
                 </View>
-                {Midtrans && (
+                {Midtrans && pembayaran === 'qris' ? (
                     <BottomSheetCustom
                         ref={bottomSheetModalRef}
                         backdropComponent={renderBackdrop}
                         enablePanDownToClose={false} // Disable swipe down to close
                     >
-                        <FormComponent dataMidtrans={Midtrans} />
+                        <FormComponentQris dataMidtrans={Midtrans} />
                     </BottomSheetCustom>
-                )}
+                ) :
+
+                    <BottomSheetCustom
+                        ref={bottomSheetModalRef}
+                        backdropComponent={renderBackdrop}
+                    >
+                        <FormComponentCash />
+                        {/* <SuccessPaymentCash /> */}
+                    </BottomSheetCustom>
+                }
 
             </View>
         </BottomSheetModalProvider >
@@ -191,6 +289,25 @@ const AdminOrder = ({ navigation }) => {
 export default AdminOrder
 
 const styles = StyleSheet.create({
+    SizeText: {
+        fontFamily: FONTFAMILY.poppins_medium,
+    },
+    KindOuterContainer: {
+        justifyContent: 'flex-end',
+        flexDirection: 'row',
+        gap: SPACING.space_15,
+        paddingVertical: 10
+    },
+    KindBox: {
+        flex: 1,
+        backgroundColor: COLORS.secondaryDarkGreyHex,
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: SPACING.space_24 * 2.5,
+        borderRadius: BORDERRADIUS.radius_10,
+        borderWidth: 2,
+        elevation: 1
+    },
     LottieAnimation: {
         flex: 1,
     },
@@ -230,13 +347,11 @@ const styles = StyleSheet.create({
     FlatListContainer: {
         gap: SPACING.space_10,
         paddingVertical: SPACING.space_20,
-        // flex: 1,
-        // alignItems: 'center',
-        // justifyContent: 'center'
     },
     ScreenContainer: {
         flex: 1,
         backgroundColor: COLORS.primaryBlackHex,
+        // backgroundColor: COLORS.primaryWhiteHex,
     },
     ScrollViewFlex: {
         flexGrow: 1,

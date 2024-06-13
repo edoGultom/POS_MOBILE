@@ -4,6 +4,7 @@ import * as ImagePicker from 'expo-image-picker'
 import { StatusBar } from 'expo-status-bar'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Button, Dimensions, FlatList, Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import CurrencyInput from 'react-native-currency-input'
 import { useDispatch, useSelector } from 'react-redux'
 import { IEmptyFile } from '../../assets'
 import BottomSheetCustom from '../../component/BottomSheet'
@@ -16,7 +17,6 @@ import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../confi
 import { getKategori } from '../../redux/kategoriSlice'
 import { addMenu, deleteMenu, getMenu, updateMenu } from '../../redux/menuSlice'
 import { getData, showMessage, useForm } from '../../utils'
-import mime from 'mime'
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -83,8 +83,8 @@ const AdminMenu = ({ navigation }) => {
         props => (
             <BottomSheetBackdrop
                 {...props}
-                // disappearsOnIndex={-1}
-                appearsOnIndex={0}
+                disappearsOnIndex={-1}
+            // appearsOnIndex={0}
             />
         ),
         []
@@ -197,12 +197,19 @@ const AdminMenu = ({ navigation }) => {
                     value={form.id_kategori}
                     onSelectChange={(value) => setForm('id_kategori', value)}
                 />
-                <TextInput
-                    label="Harga"
-                    keyboardType='numeric'
-                    placeholder='Masukkan Harga'
+                <CurrencyInput
                     value={form.harga}
-                    onChangeText={(value) => setForm('harga', value)}
+                    onChangeValue={(value) => setForm('harga', value)}
+                    renderTextInput={textInputProps => <TextInput {...textInputProps} variant='filled' />}
+                    prefix="Rp "
+                    delimiter="."
+                    precision={0}
+                    minValue={0}
+                    label="Harga"
+                    placeholder='Masukkan Harga'
+                    onChangeText={(formattedValue) => {
+                        console.log(formattedValue); // R$ +2.310,46
+                    }}
                 />
                 <TextInput
                     label="Stok"

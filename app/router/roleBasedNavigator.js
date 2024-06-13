@@ -6,6 +6,7 @@ import BottomNavigator from '../component/BottomNavigator';
 import { Admin, AdminMenu, Home, Order, Profile, SignIn, SignUp, SplashScreen, SuccessSignUp } from '../screens';
 import { useRole } from '../utils/roles';
 import AdminOrder from '../screens/AdminOrder';
+import SuccessPaymentCash from '../component/SuccessPaymentCash';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -58,6 +59,11 @@ const RoleBasedNavigator = () => {
             <Stack.Screen
                 name="AdminOrder"
                 component={AdminOrder}
+                options={{ headerShown: false, animation: 'slide_from_bottom' }}
+            />
+            <Stack.Screen
+                name="SuccessPaymentCash"
+                component={SuccessPaymentCash}
                 options={{ headerShown: false, animation: 'slide_from_bottom' }}
             />
 
