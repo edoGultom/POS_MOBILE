@@ -16,7 +16,7 @@ const PaymentFooter = ({ price, buttonTitle, buttonPressHandler, pembayaran, set
             }}>
                 <Select
                     label="Pembayaran"
-                    data={[{ id: 'cash', nama: 'Cash' }, { id: 'qris', nama: 'Qris' }]}
+                    data={[{ id: 'cash', nama: 'CASH' }, { id: 'qris', nama: 'QRIS' }]}
                     value={pembayaran}
                     onSelectChange={(value) => setPembayaran(value)}
                     enabled={price.totalBayar !== 0}

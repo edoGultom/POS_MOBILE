@@ -82,8 +82,7 @@ const Admin = ({ navigation }) => {
             key: 2,
             label: 'POS',
             icon: 'shop',
-            onPress: (label) => {
-                // setMenuIndex({ index: 2, menu: 'POS' });
+            onPress: () => {
                 navigation.navigate('AdminOrder')
             },
         },
@@ -92,7 +91,7 @@ const Admin = ({ navigation }) => {
             label: 'Laporan',
             icon: 'print',
             onPress: () => {
-                // setMenuIndex({ index: 3, menu: 'Laporan' });
+                navigation.navigate('AdminReport')
             },
         },
         {
