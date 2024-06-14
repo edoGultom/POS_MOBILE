@@ -102,6 +102,7 @@ const AdminReport = ({ navigation }) => {
             <StatusBar style='light' />
             <HeaderBar title="Report" onBack={() => navigation.goBack()} />
             <View style={{
+                marginTop: 20,
                 paddingHorizontal: 15,
                 flexDirection: 'row',
                 gap: 8,
@@ -132,7 +133,7 @@ const AdminReport = ({ navigation }) => {
             </View>
 
             <Text style={{
-                marginTop: 10,
+                marginTop: 25,
                 paddingHorizontal: 15,
                 color: COLORS.primaryWhiteHex
             }}>Report date from to</Text>
