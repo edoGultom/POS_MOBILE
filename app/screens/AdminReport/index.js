@@ -132,7 +132,7 @@ const AdminReport = ({ navigation }) => {
             </View>
             <ScrollView vertical={true}>
                 <View style={styles.container}>
-                    {data.length > 0 && data.map((item, idx) => {
+                    {data && data.map((item, idx) => {
                         total += total + item.total_sales_amount;
                         return (
                             <View key={idx} style={{
@@ -151,7 +151,7 @@ const AdminReport = ({ navigation }) => {
                     }
                     )}
                 </View>
-                {data.length > 0 && (
+                {data > 0 && (
                     <View style={{
                         marginVertical: 5,
                         flexDirection: 'row',
