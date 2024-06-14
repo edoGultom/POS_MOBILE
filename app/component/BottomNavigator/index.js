@@ -1,10 +1,13 @@
-import { BlurView } from 'expo-blur'
 import React from 'react'
-import { Pressable, StyleSheet, TouchableOpacity, View } from 'react-native'
-import { COLORS, FONTSIZE, SPACING } from '../../config'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
+import { IcCoffee } from '../../assets'
+import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
 import CustomIcon from '../CustomIcon'
+import { useSelector } from 'react-redux'
 
 const Icon = ({ label, focused }) => {
+    const { CartList } = useSelector(state => state.orderReducer);
+    let countList = CartList.length;
     switch (label) {
         case 'Home':
             return focused ?
@@ -20,43 +23,31 @@ const Icon = ({ label, focused }) => {
                     size={FONTSIZE.size_20}
                 />
         case 'Order':
-            return focused ?
-                <View
-                    style={{
-                        marginTop: -40,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        height: 60,
-                        width: 60,
-                        backgroundColor: 'white',
-                        borderRadius: 50,
-                        elevation: 5,
-                    }}
-                >
-                    <CustomIcon
-                        name={'bag-shopping'}
-                        color={COLORS.primaryOrangeHex}
-                        size={FONTSIZE.size_18 * 2}
-                    />
-                </View> :
-                <View
-                    style={{
-                        marginTop: -40,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        height: 60,
-                        width: 60,
-                        backgroundColor: 'white',
-                        borderRadius: 100,
-                        elevation: 5,
-                    }}
-                >
-                    <CustomIcon
-                        name={'bag-shopping'}
-                        color={COLORS.primaryLightGreyHex}
-                        size={FONTSIZE.size_18 * 2}
-                    />
+            return <View
+                style={{
+                    marginTop: -40,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: 65,
+                    width: 65,
+                    backgroundColor: 'white',
+                    borderRadius: 50,
+                    elevation: 5,
+                    position: 'relative'
+                }}
+            >
+                <Text style={[
+                    styles.counterList,
+                    countList > 0
+                        ? { color: COLORS.primaryOrangeHex }
+                        : { color: COLORS.primaryRedHex },
+                ]}>
+                    +{CartList.length}
+                </Text>
+                <View style={{ position: 'absolute', top: 2, left: 0, bottom: 0 }}>
+                    <IcCoffee />
                 </View>
+            </View >
         case 'Profile':
             return focused ?
                 <CustomIcon
@@ -75,10 +66,10 @@ const Icon = ({ label, focused }) => {
 }
 const BottomNavigator = ({ state, descriptors, navigation }) => {
     const focusedOptions = descriptors[state.routes[state.index].key].options;
-
     if (focusedOptions.tabBarVisible === false) {
         return null;
     }
+
     return (
 
         <View style={styles.tabBarStyle}>
@@ -139,7 +130,14 @@ const BottomNavigator = ({ state, descriptors, navigation }) => {
 export default BottomNavigator
 
 const styles = StyleSheet.create({
-
+    counterList: {
+        position: 'absolute',
+        fontFamily: FONTFAMILY.poppins_bold,
+        top: 10,
+        right: 8,
+        bottom: 14,
+        fontSize: FONTSIZE.size_16
+    },
     tabBarStyle: {
         height: 50,
         left: 0,

@@ -1,5 +1,6 @@
 import { BE_API_HOST } from '@env';
 import { BottomSheetBackdrop, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import debounce from 'lodash.debounce';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Dimensions, FlatList, Image, KeyboardAvoidingView, ScrollView, StatusBar, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
 import CurrencyInput from 'react-native-currency-input';
@@ -13,12 +14,10 @@ import HeaderBar from '../../component/HeaderBar';
 import OrderItem from '../../component/OrderItem';
 import PaymentFooter from '../../component/PaymentFooter';
 import PopUpAnimation from '../../component/PopUpAnimation';
-import SuccessPaymentCash from '../../component/SuccessPaymentCash';
 import TextInput from '../../component/TextInput';
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
 import { addPembayaran, addStateMidtrans, addToOrderHistoryListFromCart, decrementCartItemQuantity, incrementCartItemQuantity } from '../../redux/orderSlice';
 import { getData, useForm } from '../../utils';
-import debounce from 'lodash.debounce';
 
 const AdminOrder = ({ navigation }) => {
     const { CartList, Midtrans } = useSelector(state => state.orderReducer);
@@ -69,6 +68,15 @@ const AdminOrder = ({ navigation }) => {
                 {...props}
                 disappearsOnIndex={-1}
             // appearsOnIndex={0}
+            />
+        ),
+        []
+    );
+    const renderBackdropQris = useCallback(
+        props => (
+            <BottomSheetBackdrop
+                {...props}
+                appearsOnIndex={0}
             />
         ),
         []
@@ -139,7 +147,14 @@ const AdminOrder = ({ navigation }) => {
             setTimeout(() => {
                 dispatch(addToOrderHistoryListFromCart())
             }, 1000);
-            navigation.navigate('SuccessPaymentCash', data.cash);
+            const params = {
+                cash: data.cash,
+                redirect: {
+                    index: 4,
+                    name: 'Admin'
+                }
+            }
+            navigation.navigate('SuccessPaymentCash', params);
 
         }
         const handleProcessPaymentCash = () => {
@@ -324,7 +339,7 @@ const AdminOrder = ({ navigation }) => {
                 {Midtrans && pembayaran === 'qris' ? (
                     <BottomSheetCustom
                         ref={bottomSheetModalRef}
-                        backdropComponent={renderBackdrop}
+                        backdropComponent={renderBackdropQris}
                         enablePanDownToClose={false} // Disable swipe down to close
                     >
                         <FormComponentQris dataMidtrans={Midtrans} />
@@ -336,7 +351,6 @@ const AdminOrder = ({ navigation }) => {
                         backdropComponent={renderBackdrop}
                     >
                         <FormComponentCash />
-                        {/* <SuccessPaymentCash /> */}
                     </BottomSheetCustom>
                 }
 

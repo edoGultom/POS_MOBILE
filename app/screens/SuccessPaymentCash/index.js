@@ -1,14 +1,19 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
-import { IlSuccesFully } from '../../assets'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE } from '../../config'
 import LottieView from 'lottie-react-native';
 import { StatusBar } from 'expo-status-bar';
 import { id } from 'date-fns/locale';
 import { format } from 'date-fns';
+import { IlSuccesFully } from '../../assets';
 
 const SuccessPaymentCash = ({ navigation, route }) => {
-    const { payment_method, jumlah, jumlah_diberikan, jumlah_kembalian, tanggal_pembayaran } = route.params;
+    const {
+        cash,
+        redirect
+    } = route.params;
+
+    const { payment_method, jumlah, jumlah_diberikan, jumlah_kembalian, tanggal_pembayaran } = cash;
     const date = new Date(tanggal_pembayaran);
     const formattedDate = format(date, "dd MMMM, HH:mm", { locale: id });
 
@@ -21,7 +26,7 @@ const SuccessPaymentCash = ({ navigation, route }) => {
         }).format(amount);
     };
     const handleDone = () => {
-        navigation.reset({ index: 4, routes: [{ name: 'Admin' }] })
+        navigation.reset({ index: redirect.index, routes: [{ name: redirect.name }] })
     }
     return (
         <View style={styles.ScreenContainer}>

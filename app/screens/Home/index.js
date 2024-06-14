@@ -1,121 +1,83 @@
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
-import React, { useRef, useState } from 'react';
-import { Dimensions, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Dimensions, FlatList, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
 import { IcCoffeeOff, IcCoffeeOn, IcNonCoffeeOff, IcNonCoffeeOn, ImChocolate, ImCoffAmericano, ImLangitMatcha, ImLangitTaro } from '../../assets';
 import CoffeCard from '../../component/CoffeeCard';
 import HeaderBar from '../../component/HeaderBar';
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
+import { useDispatch, useSelector } from 'react-redux';
+import { getData } from '../../utils';
+import { getMenu } from '../../redux/menuSlice';
+import { addToChartList } from '../../redux/orderSlice';
 
-const Home = () => {
+const Home = ({ navigation }) => {
     const tabBarHeight = useBottomTabBarHeight();
     const ListRef = useRef();
+    const dispatch = useDispatch();
+    const { menus } = useSelector(state => state.menuReducer);
+
     const [catgoryMenu, setCategoryMenu] = useState({
-        index: 1,
+        index: 0,
         category: 'Coffee',
     });
     const categroyMenu = [
         {
-            key: 1,
+            key: 0,
             label: 'Coffee',
             iconOff: <IcCoffeeOff />,
             iconOn: <IcCoffeeOn />,
-            onPress: () => {
-                setCategoryMenu({ index: 1, category: 'Coffee' });
-            },
         },
         {
-            key: 2,
+            key: 1,
             label: 'Non Coffee',
             iconOff: <IcNonCoffeeOff />,
             iconOn: <IcNonCoffeeOn />,
-            onPress: () => {
-                setCategoryMenu({ index: 2, category: 'Non Coffee' });
-            },
         },
     ];
-    const BeanList = [
-        {
-            id: 'B1',
-            name: 'Chocolate',
-            description: `Robusta beans are larger and more rounded than the other bean varieties. These plants typically grow much larger than Arabica plants, measuring between 15 and 20 feet. Robusta beans are typically considered to be hardier because they can grow at lower altitudes and resist diseases. But recent research suggests that they don’t handle heat as well as was previously thought.`,
-            roasted: 'Medium Roasted',
-            imagelink_square: ImChocolate,
-            ingredients: 'Africa',
-            kind: 'Non Coffee',
-            prices: [
-                { size: '250gm', price: '12.000', currency: 'K' },
-                { size: '500gm', price: '13.000', currency: 'K' },
-                { size: '1Kg', price: '15.000', currency: 'K' },
-            ],
-            average_rating: 4.7,
-            ratings_count: '6,879',
-            favourite: false,
-            type: 'Bean',
-            index: 0,
-        },
-        {
-            id: 'B2',
-            name: 'Americano',
-            description: `Arabica beans are by far the most popular type of coffee beans, making up about 60% of the world’s coffee. These tasty beans originated many centuries ago in the highlands of Ethiopia, and may even be the first coffee beans ever consumed! The name Arabica likely comes from the beans’ popularity in 7th-century Arabia (present-day Yemen).`,
-            roasted: 'Medium Roasted',
-            imagelink_square: ImCoffAmericano,
-            imagelink_portrait: require('../../assets/coffee_assets/arabica_coffee_beans/arabica_coffee_beans_portrait.png'),
-            ingredients: 'Africa',
-            kind: 'Coffee',
-            prices: [
-                { size: '250gm', price: '10.000', currency: 'K' },
-                { size: '500gm', price: '10.000', currency: 'K' },
-                { size: '1Kg', price: '18.000', currency: 'K' },
-            ],
-            average_rating: 4.7,
-            ratings_count: '6,879',
-            favourite: false,
-            type: 'Bean',
-            index: 1,
-        },
-        {
-            id: 'B3',
-            name: 'Langit Matcha',
-            description: `Arabica beans are by far the most popular type of coffee beans, making up about 60% of the world’s coffee. These tasty beans originated many centuries ago in the highlands of Ethiopia, and may even be the first coffee beans ever consumed! The name Arabica likely comes from the beans’ popularity in 7th-century Arabia (present-day Yemen).`,
-            roasted: 'Medium Roasted',
-            imagelink_square: ImLangitMatcha,
-            imagelink_portrait: require('../../assets/coffee_assets/arabica_coffee_beans/arabica_coffee_beans_portrait.png'),
-            ingredients: 'Africa',
-            kind: 'Non Coffee',
-            prices: [
-                { size: '250gm', price: '17.000', currency: 'K' },
-                { size: '500gm', price: '19.000', currency: 'K' },
-                { size: '1Kg', price: '20.000', currency: 'K' },
-            ],
-            average_rating: 4.7,
-            ratings_count: '6,879',
-            favourite: false,
-            type: 'Bean',
-            index: 1,
-        },
-        {
-            id: 'B4',
-            name: 'Langit Taro',
-            description: `Arabica beans are by far the most popular type of coffee beans, making up about 60% of the world’s coffee. These tasty beans originated many centuries ago in the highlands of Ethiopia, and may even be the first coffee beans ever consumed! The name Arabica likely comes from the beans’ popularity in 7th-century Arabia (present-day Yemen).`,
-            roasted: 'Medium Roasted',
-            imagelink_square: ImLangitTaro,
-            imagelink_portrait: require('../../assets/coffee_assets/arabica_coffee_beans/arabica_coffee_beans_portrait.png'),
-            ingredients: 'Africa',
-            kind: 'Non Coffee',
-            prices: [
-                { size: '250gm', price: '17.000', currency: 'K' },
-                { size: '500gm', price: '19.000', currency: 'K' },
-                { size: '1Kg', price: '20.000', currency: 'K' },
-            ],
-            average_rating: 4.7,
-            ratings_count: '6,879',
-            favourite: false,
-            type: 'Bean',
-            index: 1,
-        },
-    ];
-    // console.log(Dimensions.get('window').width, 'width')
+    const [sortedMenu, setSortedMenu] = useState(null);
+    const getMenuList = (category, data) => {
+        let coffeelist = data?.filter((item) => item.nama_kategori == category) || [];
+        return coffeelist;
+    };
+    useEffect(() => {
+        setSortedMenu([...getMenuList(catgoryMenu.category, menus)])
+    }, [menus]);
+
+    const getDataMenu = () => {
+        getData('token').then((res) => {
+            dispatch(getMenu(res.value))
+        });
+    };
+    useEffect(() => {
+        navigation.addListener('focus', () => {
+            getDataMenu();
+        });
+    }, [navigation]);
+
+    const CoffeCardAddToCart = (item) => {
+        const { id, nama_barang, path, nama_kategori, harga } = item
+        const data = {
+            id, nama_barang, path, nama_kategori, harga
+        }
+        dispatch(addToChartList(data))
+        ToastAndroid.showWithGravity(
+            `${nama_barang} is Added to Cart`,
+            ToastAndroid.SHORT,
+            ToastAndroid.CENTER,
+        )
+    };
+
+    const fetchData = useCallback(async () => {
+        try {
+            getDataMenu();
+        } catch (error) {
+            console.log(error);
+        }
+    }, []);
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
     return (
         <View style={styles.ScreenContainer}>
             <StatusBar style='light' />
@@ -130,13 +92,23 @@ const Home = () => {
                     Find the best{'\n'}coffee for you
                 </Text>
                 <View style={styles.KindOuterContainer}>
-                    {categroyMenu.map((item) => (
+                    {categroyMenu.map((item, index) => (
                         <TouchableOpacity
-                            onPress={item.onPress}
+                            key={item.key}
+                            onPress={() => {
+                                ListRef?.current?.scrollToOffset({
+                                    animated: true,
+                                    offset: 0,
+                                });
+                                setCategoryMenu({ index: item.key, category: item.label })
+                                setSortedMenu([
+                                    ...getMenuList(item.label, menus),
+                                ]);
+                            }}
                             style={[
                                 styles.KindBox,
                                 catgoryMenu.index === item.key
-                                    ? { borderColor: COLORS.primaryOrangeHex } : {},
+                                    ? { borderColor: COLORS.primaryOrangeHex } : { borderColor: COLORS.primaryLightGreyHex },
                             ]}>
                             {catgoryMenu.index === item.key ? item.iconOn : item.iconOff}
                             <Text
@@ -164,8 +136,10 @@ const Home = () => {
             >
                 <FlatList
                     ref={ListRef}
+                    onRefresh={fetchData}
+                    refreshing={false}
                     showsHorizontalScrollIndicator={false}
-                    data={BeanList}
+                    data={sortedMenu}
                     contentContainerStyle={styles.FlatListContainer}
                     ListEmptyComponent={
                         <View style={styles.EmptyListContainer}>
@@ -173,19 +147,16 @@ const Home = () => {
                         </View>
                     }
                     keyExtractor={item => item.id}
+                    vertical
                     renderItem={({ item }) => {
                         return (
                             <CoffeCard
                                 id={item.id}
-                                index={item.index}
-                                type={item.type}
-                                roasted={item.roasted}
-                                imagelink_square={item.imagelink_square}
-                                name={item.name}
-                                kind={item.kind}
-                                average_rating={item.average_rating}
-                                price={item.prices[2]}
-                                buttonPressHandler={() => console.log('CoffeCardAddToCart')}
+                                link={item.path}
+                                name={item.nama_barang}
+                                kind={item.nama_kategori}
+                                price={item.harga}
+                                buttonPressHandler={() => CoffeCardAddToCart(item)}
                             />
                         );
                     }}

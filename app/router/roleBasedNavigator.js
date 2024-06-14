@@ -6,7 +6,7 @@ import BottomNavigator from '../component/BottomNavigator';
 import { Admin, AdminMenu, Home, Order, Profile, SignIn, SignUp, SplashScreen, SuccessSignUp } from '../screens';
 import { useRole } from '../utils/roles';
 import AdminOrder from '../screens/AdminOrder';
-import SuccessPaymentCash from '../component/SuccessPaymentCash';
+import SuccessPaymentCash from '../screens/SuccessPaymentCash';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -17,7 +17,7 @@ const MainApp = () => {
             tabBar={props => <BottomNavigator {...props} />}
         >
             <Tab.Screen name="Home" component={Home} options={{ headerShown: false }} />
-            <Tab.Screen name="Order" component={Order} options={{ headerShown: false }} />
+            <Tab.Screen name="Order" component={Order} options={{ headerShown: false, tabBarVisible: false }} />
             <Tab.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
         </Tab.Navigator>
     )
