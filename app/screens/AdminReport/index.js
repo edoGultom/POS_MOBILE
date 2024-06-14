@@ -1,29 +1,45 @@
 import { BE_API_HOST } from '@env'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import axios from 'axios'
-import { format } from 'date-fns'
+import { format, addMonths, addYears } from 'date-fns'
 import { id } from 'date-fns/locale'
 import { StatusBar } from 'expo-status-bar'
 import React, { useState } from 'react'
-import { Dimensions, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Dimensions, Platform, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { useDispatch } from 'react-redux'
 import CustomIcon from '../../component/CustomIcon'
 import HeaderBar from '../../component/HeaderBar'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
 import { addLoading } from '../../redux/globalSlice'
 import { getData } from '../../utils'
-
+import { Ionicons } from '@expo/vector-icons';
 const windowWidth = Dimensions.get('window').width;
 
 const AdminReport = ({ navigation }) => {
     const dispatch = useDispatch();
-    const [data, setData] = useState([]);
-
-    const [dateStart, setDateStart] = useState(new Date());
+    const [data, setData] = useState(null);
+    const [dateStart, setDateStart] = useState(null);
     const [showStart, setShowStart] = useState(false);
-
-    const [dateEnd, setDateEnd] = useState(new Date());
+    const [dateEnd, setDateEnd] = useState(null);
     const [showEnd, setShowEnd] = useState(false);
+    const [checked, setChecked] = useState({
+        label: '',
+        value: '',
+    });
+    const Checkboxs = [
+        {
+            label: '1 Day',
+            value: format(new Date(), "yyyy-MM-dd", { locale: id })
+        },
+        {
+            label: '1 Month',
+            value: format(addMonths(new Date(), 1), "yyyy-MM-dd", { locale: id })
+        },
+        {
+            label: '1 Year',
+            value: format(addYears(new Date(), 1), "yyyy-MM-dd", { locale: id })
+        }
+    ]
 
     const onChangeStart = (event, selectedDate) => {
         const currentDateStart = selectedDate || dateStart;
@@ -36,10 +52,6 @@ const AdminReport = ({ navigation }) => {
         setShowEnd(Platform.OS === 'ios');
         setDateEnd(currentDateEnd);
     };
-
-    const formattedDateStart = format(new Date(dateStart), 'dd MMMM yyyy', { locale: id });
-    const formattedDateEnd = format(new Date(dateEnd), 'dd MMMM yyyy', { locale: id });
-    console.log(data, 'response')
 
     const getFilter = async (token, data) => {
         dispatch(addLoading(true));
@@ -67,7 +79,6 @@ const AdminReport = ({ navigation }) => {
     const submitFilter = () => {
         const start = format(new Date(dateStart), 'yyyy-MM-dd', { locale: id });
         const end = format(new Date(dateEnd), 'yyyy-MM-dd', { locale: id });
-        console.log(start, end);
         const data = {
             start,
             end
@@ -85,10 +96,46 @@ const AdminReport = ({ navigation }) => {
         }).format(amount);
     };
     let total = 0;
+
     return (
         <View style={styles.ScreenContainer}>
             <StatusBar style='light' />
             <HeaderBar title="Report" onBack={() => navigation.goBack()} />
+            <View style={{
+                paddingHorizontal: 15,
+                flexDirection: 'row',
+                gap: 8,
+                alignItems: 'center'
+            }}>
+                {Checkboxs.map((item, idx) => (
+                    <View style={{
+                        flexDirection: 'row',
+                        gap: 8,
+                        alignItems: 'center'
+                    }}
+                        key={idx}
+                    >
+                        <Pressable
+                            style={[styles.checkboxBase, checked && styles.checkboxChecked]}
+                            onPress={() => {
+                                if (checked.label === item.label) {
+                                    setChecked({ label: '', value: '' });
+                                } else {
+                                    setChecked({ label: item.label, value: item.value });
+                                }
+                            }}>
+                            {checked.label == item.label && <Ionicons name="checkmark" size={24} color="white" />}
+                        </Pressable>
+                        <Text style={{ color: COLORS.primaryWhiteHex }}>Report 1 Day</Text>
+                    </View>
+                ))}
+            </View>
+
+            <Text style={{
+                marginTop: 10,
+                paddingHorizontal: 15,
+                color: COLORS.primaryWhiteHex
+            }}>Report date from to</Text>
             <View style={styles.containerFilter}>
                 <View style={styles.containerCard}>
                     <TouchableOpacity
@@ -100,7 +147,12 @@ const AdminReport = ({ navigation }) => {
                             color={COLORS.primaryOrangeHex}
                             size={FONTSIZE.size_20}
                         />
-                        <Text style={{ color: COLORS.primaryWhiteHex, fontFamily: FONTFAMILY.poppins_light }}>{formattedDateStart}</Text>
+                        <Text style={[
+                            { fontFamily: FONTFAMILY.poppins_light },
+                            { color: dateStart ? COLORS.primaryWhiteHex : COLORS.secondaryLightGreyHex }
+                        ]}>
+                            {dateStart ? format(new Date(dateStart), 'dd MMMM yyyy', { locale: id }) : 'Select a start date'}
+                        </Text>
                     </TouchableOpacity>
                 </View>
                 <View style={styles.containerCard}>
@@ -113,7 +165,12 @@ const AdminReport = ({ navigation }) => {
                             color={COLORS.primaryOrangeHex}
                             size={FONTSIZE.size_20}
                         />
-                        <Text style={{ color: COLORS.primaryWhiteHex, fontFamily: FONTFAMILY.poppins_light }}>{formattedDateEnd}</Text>
+                        <Text style={[
+                            { fontFamily: FONTFAMILY.poppins_light },
+                            { color: dateEnd ? COLORS.primaryWhiteHex : COLORS.secondaryLightGreyHex }
+                        ]}>
+                            {dateEnd ? format(new Date(dateEnd), 'dd MMMM yyyy', { locale: id }) : 'Select a end date'}
+                        </Text>
                     </TouchableOpacity>
                 </View>
                 <View style={styles.containerCardSubmit}>
@@ -151,7 +208,7 @@ const AdminReport = ({ navigation }) => {
                     }
                     )}
                 </View>
-                {data > 0 && (
+                {data && (
                     <View style={{
                         marginVertical: 5,
                         flexDirection: 'row',
@@ -188,7 +245,7 @@ const AdminReport = ({ navigation }) => {
             </ScrollView>
             {showStart && (
                 <DateTimePicker
-                    value={dateStart}
+                    value={new Date()}
                     mode="date"
                     display="default"
                     onChange={onChangeStart}
@@ -196,7 +253,7 @@ const AdminReport = ({ navigation }) => {
             )}
             {showEnd && (
                 <DateTimePicker
-                    value={dateEnd}
+                    value={new Date()}
                     mode="date"
                     display="default"
                     onChange={onChangeEnd}
@@ -209,6 +266,19 @@ const AdminReport = ({ navigation }) => {
 export default AdminReport
 
 const styles = StyleSheet.create({
+    checkboxBase: {
+        width: 24,
+        height: 24,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 4,
+        borderWidth: 2,
+        borderColor: 'coral',
+        backgroundColor: 'transparent',
+    },
+    checkboxChecked: {
+        backgroundColor: 'coral',
+    },
     container: {
         marginTop: 15,
         // backgroundColor: 'gray'
