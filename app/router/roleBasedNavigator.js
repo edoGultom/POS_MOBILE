@@ -27,7 +27,7 @@ const RoleBasedNavigator = () => {
     const { roles } = useRole();
     return (
         <Stack.Navigator initialRouteName="Splash">
-            {/* <Stack.Screen
+            <Stack.Screen
                 name="SplashScreen"
                 component={SplashScreen}
                 options={{ headerShown: false }}
@@ -66,7 +66,7 @@ const RoleBasedNavigator = () => {
                 name="SuccessPaymentCash"
                 component={SuccessPaymentCash}
                 options={{ headerShown: false, animation: 'slide_from_bottom' }}
-            /> */}
+            />
             <Stack.Screen
                 name="AdminReport"
                 component={AdminReport}

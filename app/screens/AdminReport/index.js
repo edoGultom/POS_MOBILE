@@ -5,7 +5,7 @@ import { format, addMonths, addYears } from 'date-fns'
 import { id } from 'date-fns/locale'
 import { StatusBar } from 'expo-status-bar'
 import React, { useState } from 'react'
-import { Dimensions, Platform, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Dimensions, Platform, Pressable, ScrollView, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import { useDispatch } from 'react-redux'
 import CustomIcon from '../../component/CustomIcon'
 import HeaderBar from '../../component/HeaderBar'
@@ -28,15 +28,15 @@ const AdminReport = ({ navigation }) => {
     });
     const Checkboxs = [
         {
-            label: '1 Day',
+            label: 'Report 1 Day',
             value: format(new Date(), "yyyy-MM-dd", { locale: id })
         },
         {
-            label: '1 Month',
+            label: 'Report 1 Month',
             value: format(addMonths(new Date(), 1), "yyyy-MM-dd", { locale: id })
         },
         {
-            label: '1 Year',
+            label: 'Report 1 Year',
             value: format(addYears(new Date(), 1), "yyyy-MM-dd", { locale: id })
         }
     ]
@@ -53,10 +53,10 @@ const AdminReport = ({ navigation }) => {
         setDateEnd(currentDateEnd);
     };
 
-    const getFilter = async (token, data) => {
+    const getFilter = async (url, token, data) => {
         dispatch(addLoading(true));
         try {
-            const response = await axios.post(`${BE_API_HOST}/report/by-date`, data, {
+            const response = await axios.post(url, data, {
                 headers: {
                     Authorization: `${token}`,
                     'Content-Type': 'application/json'
@@ -65,6 +65,7 @@ const AdminReport = ({ navigation }) => {
             dispatch(addLoading(false));
             if (response.status === 200) {
                 const { data } = response.data
+                console.log(data, 'xdataaaaa')
                 setData(data)
             } else {
                 dispatch(addLoading(false));
@@ -79,12 +80,31 @@ const AdminReport = ({ navigation }) => {
     const submitFilter = () => {
         const start = format(new Date(dateStart), 'yyyy-MM-dd', { locale: id });
         const end = format(new Date(dateEnd), 'yyyy-MM-dd', { locale: id });
-        const data = {
-            start,
-            end
+        let data = null;
+        let url = '';
+        if (dateStart && dateEnd) {
+            url = `${BE_API_HOST}/report/by-date-range`
+            data = {
+                start,
+                end
+            }
+        } else if (checked.value !== '') {
+            url = `${BE_API_HOST}/report/by-date`
+            data = {
+                date: checked.value
+            }
+        } else {
+            ToastAndroid.showWithGravity(
+                `Silahkan isi data yang akan dicari`,
+                ToastAndroid.SHORT,
+                ToastAndroid.CENTER,
+            )
+            setData(null)
+            return;
         }
+
         getData('token').then((res) => {
-            getFilter(res.value, data)
+            getFilter(url, res.value, data)
         });
     }
     const formatCurrency = (amount, currency) => {
@@ -127,7 +147,7 @@ const AdminReport = ({ navigation }) => {
                             }}>
                             {checked.label == item.label && <Ionicons name="checkmark" size={24} color="white" />}
                         </Pressable>
-                        <Text style={{ color: COLORS.primaryWhiteHex }}>Report 1 Day</Text>
+                        <Text style={{ color: COLORS.primaryWhiteHex }}>{item.label}</Text>
                     </View>
                 ))}
             </View>
@@ -189,60 +209,65 @@ const AdminReport = ({ navigation }) => {
                 </View>
             </View>
             <ScrollView vertical={true}>
-                <View style={styles.container}>
-                    {data && data.map((item, idx) => {
-                        total += total + item.total_sales_amount;
-                        return (
-                            <View key={idx} style={{
-                                alignItems: 'center',
-                                marginHorizontal: 15,
-                                // backgroundColor: 'red',
-                                flexDirection: 'row',
-                                marginVertical: 5
-                            }}>
-                                <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, width: windowWidth / 4, color: COLORS.primaryWhiteHex }}>{format(item.date, "d MMMM yyyy", { locale: id })}</Text>
-                                <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, width: windowWidth / 4, color: COLORS.primaryWhiteHex }}>{item.nama_barang}</Text>
-                                <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, width: windowWidth / 4, color: COLORS.primaryWhiteHex }}>{item.total_quantity_sold}</Text>
-                                <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, width: windowWidth / 4, color: COLORS.primaryWhiteHex }}>{formatCurrency(item.total_sales_amount, 'IDR')}</Text>
-                            </View>
-                        )
-                    }
-                    )}
-                </View>
-                {data && (
-                    <View style={{
-                        marginVertical: 5,
-                        flexDirection: 'row',
-                        justifyContent: 'space-around'
-                    }}>
+                {data ? (
+                    <>
+                        <View style={[styles.container, data ? { borderBottomWidth: 1, borderBottomColor: COLORS.secondaryLightGreyHex } : {}]}>
+                            {data.map((item, idx) => {
+                                total += total + item.total_sales_amount;
+                                return (
+                                    <View key={idx} style={{
+                                        alignItems: 'center',
+                                        marginHorizontal: 15,
+                                        // backgroundColor: 'red',
+                                        flexDirection: 'row',
+                                        marginVertical: 5
+                                    }}>
+                                        <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, width: windowWidth / 4, color: COLORS.primaryWhiteHex }}>{format(item.date, "d MMMM yyyy", { locale: id })}</Text>
+                                        <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, width: windowWidth / 4, color: COLORS.primaryWhiteHex }}>{item.nama_barang}</Text>
+                                        <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, width: windowWidth / 4, color: COLORS.primaryWhiteHex }}>{item.total_quantity_sold}</Text>
+                                        <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, width: windowWidth / 4, color: COLORS.primaryWhiteHex }}>{formatCurrency(item.total_sales_amount, 'IDR')}</Text>
+                                    </View>
+                                )
+                            }
+                            )}
+                        </View>
+                        <View style={{
+                            marginVertical: 5,
+                            flexDirection: 'row',
+                            justifyContent: 'space-around'
+                        }}>
 
-                        <View style={{
-                            alignItems: 'flex-start',
-                            // backgroundColor: 'blue',
-                            paddingLeft: 15,
-                            width: windowWidth / 2
-                        }}>
-                            <Text style={{
-                                color: COLORS.primaryWhiteHex,
-                                fontFamily: FONTFAMILY.poppins_semibold,
-                                fontSize: FONTSIZE.size_14
-                            }}>Total</Text>
+                            <View style={{
+                                alignItems: 'flex-start',
+                                // backgroundColor: 'blue',
+                                paddingLeft: 15,
+                                width: windowWidth / 2
+                            }}>
+                                <Text style={{
+                                    color: COLORS.primaryWhiteHex,
+                                    fontFamily: FONTFAMILY.poppins_semibold,
+                                    fontSize: FONTSIZE.size_14
+                                }}>Total</Text>
+                            </View>
+                            <View style={{
+                                width: windowWidth / 2,
+                                alignItems: 'flex-end',
+                                // backgroundColor: 'orange',
+                                paddingRight: 25
+                            }}>
+                                <Text style={{
+                                    fontFamily: FONTFAMILY.poppins_semibold,
+                                    fontSize: FONTSIZE.size_14,
+                                    color: COLORS.primaryWhiteHex
+                                }}>{formatCurrency(total, 'IDR')}</Text>
+                            </View>
                         </View>
-                        <View style={{
-                            width: windowWidth / 2,
-                            alignItems: 'flex-end',
-                            // backgroundColor: 'orange',
-                            paddingRight: 15
-                        }}>
-                            <Text style={{
-                                fontFamily: FONTFAMILY.poppins_semibold,
-                                fontSize: FONTSIZE.size_14,
-                                color: COLORS.primaryWhiteHex
-                            }}>{formatCurrency(total, 'IDR')}</Text>
-                        </View>
+                    </>
+                ) : (
+                    <View style={{ marginTop: SPACING.space_30, justifyContent: 'center', alignItems: 'center' }}>
+                        <Text style={{ color: COLORS.secondaryLightGreyHex, fontSize: FONTSIZE.size_14, fontFamily: FONTFAMILY.poppins_light }}>Data Tidak Ditemukan</Text>
                     </View>
                 )}
-
             </ScrollView>
             {showStart && (
                 <DateTimePicker
@@ -281,7 +306,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'coral',
     },
     container: {
-        marginTop: 15,
+        marginTop: SPACING.space_30
         // backgroundColor: 'gray'
     },
     box1: {
