@@ -96,6 +96,14 @@ const Admin = ({ navigation }) => {
         },
         {
             key: 4,
+            label: 'Stok',
+            icon: 'box-open',
+            onPress: () => {
+                navigation.navigate('AdminStok')
+            },
+        },
+        {
+            key: 5,
             label: 'Riwayat',
             icon: 'chart-simple',
             onPress: () => {

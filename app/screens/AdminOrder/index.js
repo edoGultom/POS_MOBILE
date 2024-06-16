@@ -178,6 +178,7 @@ const AdminOrder = ({ navigation }) => {
                     status: 'PAID',
                     cash: dataPembayaran
                 }
+                console.log(data, 'cccccccc')
                 const token = resToken.value;
                 const properties = { data, token, handleSuccessCash };
                 dispatch(addPembayaran(properties))
@@ -198,6 +199,9 @@ const AdminOrder = ({ navigation }) => {
             []
         );
         const handleBlur = () => {
+            if (form.jumlah_diberikan !== currencyMenu.label) {
+                setCurrencyMenu({ index: undefined, category: undefined })
+            }
             const check = isFailedJumlahBayar(form.jumlah_diberikan);
             if (!check) {
                 setForm('jumlah_kembalian', parseInt(form.jumlah_diberikan) - parseInt(totalBayar))
@@ -213,6 +217,7 @@ const AdminOrder = ({ navigation }) => {
                             value={form.jumlah_diberikan}
                             onChangeValue={(value) => {
                                 setForm('jumlah_diberikan', value)
+                                setCurrencyMenu({ index: undefined, category: '' })
                             }}
                             onBlur={handleBlur}
                             renderTextInput={textInputProps => <TextInput {...textInputProps} variant='filled' />}
