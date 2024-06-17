@@ -8,6 +8,8 @@ import SuccessSignUp from "./SuccessSignUp";
 import SuccessOrder from "./SuccessOrder";
 import Admin from "./Admin";
 import AdminMenu from "./AdminMenu";
+import AdminStock from "./AdminStock";
+import AdminHistory from "./AdminHistory";
 
 export {
     Home,
@@ -19,5 +21,7 @@ export {
     SuccessSignUp,
     Admin,
     AdminMenu,
-    SuccessOrder
+    SuccessOrder,
+    AdminStock,
+    AdminHistory
 };

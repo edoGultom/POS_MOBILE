@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import BottomNavigator from '../component/BottomNavigator';
-import { Admin, AdminMenu, Home, Order, Profile, SignIn, SignUp, SplashScreen, SuccessSignUp } from '../screens';
+import { Admin, AdminHistory, AdminMenu, AdminStock, Home, Order, Profile, SignIn, SignUp, SplashScreen, SuccessSignUp } from '../screens';
 import { useRole } from '../utils/roles';
 import AdminOrder from '../screens/AdminOrder';
 import SuccessPaymentCash from '../screens/SuccessPaymentCash';
@@ -70,6 +70,16 @@ const RoleBasedNavigator = () => {
             <Stack.Screen
                 name="AdminReport"
                 component={AdminReport}
+                options={{ headerShown: false, animation: 'slide_from_bottom' }}
+            />
+            <Stack.Screen
+                name="AdminStock"
+                component={AdminStock}
+                options={{ headerShown: false, animation: 'slide_from_bottom' }}
+            />
+            <Stack.Screen
+                name="AdminHistory"
+                component={AdminHistory}
                 options={{ headerShown: false, animation: 'slide_from_bottom' }}
             />
 

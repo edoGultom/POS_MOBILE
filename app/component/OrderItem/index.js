@@ -36,7 +36,7 @@ const OrderItem = ({
                     </View>
                     <View style={styles.CartItemSingleSizeValueContainer}>
                         <Text style={styles.SizeCurrency}>
-                            IDR <Text style={styles.SizePrice}>{price}</Text>
+                            Rp <Text style={styles.SizePrice}>{price.toLocaleString('id-ID')}</Text>
                         </Text>
                     </View>
                     <View style={styles.CartItemSingleQuantityContainer}>

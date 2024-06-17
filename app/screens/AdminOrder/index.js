@@ -28,6 +28,15 @@ const AdminOrder = ({ navigation }) => {
     const totalBayar = CartList.reduce((acc, curr) => acc + curr.harga * curr.qty, 0);
     const [showAnimation, setShowAnimation] = useState(false);
 
+    const formatCurrency = (amount, currency) => {
+        return new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: currency,
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(amount);
+    };
+
     const incrementCartItemQuantityHandler = (id) => {
         dispatch(incrementCartItemQuantity(id))
     };
@@ -113,14 +122,6 @@ const AdminOrder = ({ navigation }) => {
 
     // FORM CASH
     const FormComponentCash = () => {
-        const formatCurrency = (amount, currency) => {
-            return new Intl.NumberFormat('id-ID', {
-                style: 'currency',
-                currency: currency,
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            }).format(amount);
-        };
         const [form, setForm] = useForm({
             totalBayar: totalBayar,
             jumlah_diberikan: 35000,
@@ -334,7 +335,7 @@ const AdminOrder = ({ navigation }) => {
                         price={{
                             totalPesanan: CartList.reduce((sum, item) => sum + item.qty, 0),
                             totalBayar: totalBayar,
-                            currency: 'IDR'
+                            currency: 'Rp'
                         }}
                         pembayaran={pembayaran}
                         setPembayaran={setPembayaran}

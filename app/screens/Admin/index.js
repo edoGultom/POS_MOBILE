@@ -99,7 +99,7 @@ const Admin = ({ navigation }) => {
             label: 'Stok',
             icon: 'box-open',
             onPress: () => {
-                navigation.navigate('AdminStok')
+                navigation.navigate('AdminStock')
             },
         },
         {
@@ -107,7 +107,7 @@ const Admin = ({ navigation }) => {
             label: 'Riwayat',
             icon: 'chart-simple',
             onPress: () => {
-                // setMenuIndex({ index: 4, menu: 'Riwayat' });
+                navigation.navigate('AdminHistory')
             },
         },
 
