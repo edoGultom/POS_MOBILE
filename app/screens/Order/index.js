@@ -30,11 +30,13 @@ const Order = ({ navigation }) => {
     const totalBayar = CartList.reduce((acc, curr) => acc + curr.harga * curr.qty, 0);
     const [showAnimation, setShowAnimation] = useState(false);
 
-    const incrementCartItemQuantityHandler = (id) => {
-        dispatch(incrementCartItemQuantity(id))
+    const incrementCartItemQuantityHandler = (id, temperatur) => {
+        const data = { id, temperatur }
+        dispatch(incrementCartItemQuantity(data))
     };
-    const decrementCartItemQuantityHandler = (id) => {
-        dispatch(decrementCartItemQuantity(id))
+    const decrementCartItemQuantityHandler = (id, temperatur) => {
+        const data = { id, temperatur }
+        dispatch(decrementCartItemQuantity(data))
     };
 
     const buttonPressHandler = () => {
@@ -104,6 +106,7 @@ const Order = ({ navigation }) => {
                 price={item.harga}
                 totalHarga={item.totalHarga}
                 qty={item.qty}
+                temperatur={item.temperatur}
                 incrementCartItemQuantityHandler={
                     incrementCartItemQuantityHandler
                 }
@@ -324,7 +327,7 @@ const Order = ({ navigation }) => {
                                     <Text style={styles.EmptyText}>No Ordered Coffee</Text>
                                 </View>
                             }
-                            keyExtractor={item => item.id}
+                            keyExtractor={item => `${item.id}-${item.temperatur}`}
                             renderItem={renderItem}
                         />
                     </View>

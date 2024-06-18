@@ -128,10 +128,10 @@ const Admin = ({ navigation }) => {
         },
     ];
 
-    const CoffeCardAddToCart = (item) => {
+    const CoffeCardAddToCart = (item, checked) => {
         const { id, nama_barang, path, nama_kategori, harga } = item
         const data = {
-            id, nama_barang, path, nama_kategori, harga
+            id, nama_barang, path, nama_kategori, harga: checked.value, temperatur: checked.label
         }
         dispatch(addToChartList(data))
         ToastAndroid.showWithGravity(
@@ -148,6 +148,7 @@ const Admin = ({ navigation }) => {
             console.log(error);
         }
     }, []);
+
     useEffect(() => {
         fetchData();
     }, [fetchData]);
@@ -221,15 +222,15 @@ const Admin = ({ navigation }) => {
                     }
                     keyExtractor={item => item.id}
                     vertical
-                    renderItem={({ item }) => {
+                    renderItem={({ item, }) => {
                         return (
                             <CoffeCard
-                                id={item.id}
+                                id={`${item.id}-${item.temperatur}`}
                                 link={item.path}
                                 name={item.nama_barang}
                                 kind={item.nama_kategori}
                                 price={item.harga}
-                                buttonPressHandler={() => CoffeCardAddToCart(item)}
+                                buttonPressHandler={(valCheck) => CoffeCardAddToCart(item, valCheck)}
                             />
                         );
                     }}

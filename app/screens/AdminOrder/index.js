@@ -37,11 +37,13 @@ const AdminOrder = ({ navigation }) => {
         }).format(amount);
     };
 
-    const incrementCartItemQuantityHandler = (id) => {
-        dispatch(incrementCartItemQuantity(id))
+    const incrementCartItemQuantityHandler = (id, temperatur) => {
+        const data = { id, temperatur }
+        dispatch(incrementCartItemQuantity(data))
     };
-    const decrementCartItemQuantityHandler = (id) => {
-        dispatch(decrementCartItemQuantity(id))
+    const decrementCartItemQuantityHandler = (id, temperatur) => {
+        const data = { id, temperatur }
+        dispatch(decrementCartItemQuantity(data))
     };
 
     const buttonPressHandler = () => {
@@ -110,6 +112,7 @@ const AdminOrder = ({ navigation }) => {
                 price={item.harga}
                 totalHarga={item.totalHarga}
                 qty={item.qty}
+                temperatur={item.temperatur}
                 incrementCartItemQuantityHandler={
                     incrementCartItemQuantityHandler
                 }
@@ -325,7 +328,7 @@ const AdminOrder = ({ navigation }) => {
                                     <Text style={styles.EmptyText}>No Ordered Coffee</Text>
                                 </View>
                             }
-                            keyExtractor={item => item.id}
+                            keyExtractor={item => `${item.id}-${item.temperatur}`}
                             renderItem={renderItem}
                         />
                     </View>

@@ -71,8 +71,8 @@ const orderSlice = createSlice({
     initialState,
     reducers: {
         addToChartList: (state, action) => {
-            const { id, harga } = action.payload;
-            const existingIndex = state.CartList.findIndex(item => item.id === id);
+            const { id, harga, temperatur } = action.payload;
+            const existingIndex = state.CartList.findIndex(item => item.id === id && item.temperatur === temperatur);
             if (existingIndex !== -1) {
                 state.CartList[existingIndex] = {
                     ...action.payload,
@@ -88,20 +88,22 @@ const orderSlice = createSlice({
             }
         },
         incrementCartItemQuantity: (state, action) => {
-            const item = state.CartList.find(item => item.id === action.payload);
+            const { id, temperatur } = action.payload
+            const item = state.CartList.find(item => item.id === id && item.temperatur === temperatur);
             if (item) {
                 item.qty += 1;
                 item.totalHarga = item.harga * item.qty
             }
         },
         decrementCartItemQuantity: (state, action) => {
-            const item = state.CartList.find(item => item.id === action.payload);
+            const { id, temperatur } = action.payload
+            const item = state.CartList.find(item => item.id === id && item.temperatur === temperatur);
             if (item) {
                 if (item.qty > 1) {
                     item.qty -= 1;
                     item.totalHarga -= item.harga;
                 } else {
-                    state.CartList = state.CartList.filter(item => item.id !== action.payload);
+                    state.CartList = state.CartList.filter(item => !(item.id === id && item.temperatur === temperatur));
                 }
             }
         },

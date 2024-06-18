@@ -1,13 +1,27 @@
 import { LinearGradient } from 'expo-linear-gradient'
-import React from 'react'
-import { Dimensions, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React, { useState } from 'react'
+import { Dimensions, ImageBackground, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
 import CustomIcon from '../CustomIcon'
 import { BE_API_HOST } from '@env'
-
+import { Ionicons } from '@expo/vector-icons';
 const CARD_WIDTH = Dimensions.get('window').width * 0.25;
 
 const CoffeCard = ({ id, link, name, kind, price, buttonPressHandler }) => {
+    const [checked, setChecked] = useState({
+        label: 'HOT',
+        value: price,
+    });
+    const Checkboxs = [
+        {
+            label: 'HOT',
+            value: price
+        },
+        {
+            label: 'COLD',
+            value: kind === 'Coffee' ? price + 3000 : price + 2000
+        },
+    ]
     return (
         <LinearGradient
             key={id}
@@ -15,7 +29,7 @@ const CoffeCard = ({ id, link, name, kind, price, buttonPressHandler }) => {
             end={{ x: 0.9, y: 0.7 }}
             style={styles.CardLinearGradientContainer}
             colors={[COLORS.primaryBlackHex, COLORS.primaryOrangeHex]}>
-            <View style={{ padding: SPACING.space_10, flex: 1, flexDirection: 'row', gap: SPACING.space_15 }}>
+            <View style={{ padding: SPACING.space_10, justifyContent: 'center', alignItems: 'center', flex: 1, flexDirection: 'row', gap: SPACING.space_15 }}>
                 <ImageBackground
                     source={{ uri: `${BE_API_HOST}/lihat-file/profile?path=${link}` }}
                     style={styles.CardImageBG}
@@ -31,6 +45,35 @@ const CoffeCard = ({ id, link, name, kind, price, buttonPressHandler }) => {
                 <View>
                     <Text style={styles.CardTitle}>{name}</Text>
                     <Text style={styles.CardSubtitle}>{kind}</Text>
+                    <View style={{
+                        flexDirection: 'row',
+                        gap: 8,
+                        alignItems: 'center'
+                    }}>
+                        {Checkboxs.map((item, idx) => (
+                            <View style={{
+                                marginTop: 5,
+                                flexDirection: 'row',
+                                gap: 8,
+                                alignItems: 'center'
+                            }}
+                                key={idx}
+                            >
+                                <Pressable
+                                    style={[styles.checkboxBase, checked && styles.checkboxChecked]}
+                                    onPress={() => {
+                                        if (checked.label === item.label) {
+                                            setChecked({ label: '', value: '' });
+                                        } else {
+                                            setChecked({ label: item.label, value: item.value });
+                                        }
+                                    }}>
+                                    {checked.label == item.label && <Ionicons name="checkmark" size={24} color="white" />}
+                                </Pressable>
+                                <Text style={{ color: COLORS.primaryWhiteHex }}>{item.label}</Text>
+                            </View>
+                        ))}
+                    </View>
                     <View style={styles.CardFooterRow}>
                         <Text style={styles.CardPriceCurrency}>
                             IDR <Text style={styles.CardPrice}>{price.toLocaleString('id-ID')}</Text>
@@ -41,7 +84,7 @@ const CoffeCard = ({ id, link, name, kind, price, buttonPressHandler }) => {
 
             <TouchableOpacity
                 onPress={() => {
-                    buttonPressHandler();
+                    buttonPressHandler(checked);
                 }}
                 style={{
                     backgroundColor: COLORS.primaryOrangeHex,
@@ -66,6 +109,19 @@ const CoffeCard = ({ id, link, name, kind, price, buttonPressHandler }) => {
 export default CoffeCard
 
 const styles = StyleSheet.create({
+    checkboxBase: {
+        width: 24,
+        height: 24,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 4,
+        borderWidth: 2,
+        borderColor: COLORS.secondaryDarkGreyHex,
+        backgroundColor: 'transparent',
+    },
+    checkboxChecked: {
+        backgroundColor: COLORS.primaryBlackRGBA,
+    },
     CardLinearGradientContainer: {
         flex: 1,
         flexDirection: 'row',

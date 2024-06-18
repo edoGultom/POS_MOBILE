@@ -8,16 +8,19 @@ import CustomIcon from '../CustomIcon'
 
 const OrderItem = ({
     id,
+    key,
     name,
     link,
     kind,
     price,
     qty,
+    temperatur,
     incrementCartItemQuantityHandler,
     decrementCartItemQuantityHandler
 }) => {
     return (
-        <View>
+
+        <View key={key}>
             <LinearGradient
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
@@ -35,6 +38,17 @@ const OrderItem = ({
                         <Text style={styles.CartItemSubtitle}>{kind}</Text>
                     </View>
                     <View style={styles.CartItemSingleSizeValueContainer}>
+                        <View style={styles.SizeBox}>
+                            <Text
+                                style={[
+                                    styles.SizeText,
+                                    {
+                                        fontSize: FONTSIZE.size_12
+                                    },
+                                ]}>
+                                {temperatur}
+                            </Text>
+                        </View>
                         <Text style={styles.SizeCurrency}>
                             Rp <Text style={styles.SizePrice}>{price.toLocaleString('id-ID')}</Text>
                         </Text>
@@ -43,7 +57,7 @@ const OrderItem = ({
                         <TouchableOpacity
                             style={styles.CartItemIcon}
                             onPress={() => {
-                                decrementCartItemQuantityHandler(id);
+                                decrementCartItemQuantityHandler(id, temperatur);
                             }}
                         >
                             <CustomIcon
@@ -60,7 +74,7 @@ const OrderItem = ({
                         <TouchableOpacity
                             style={styles.CartItemIcon}
                             onPress={() => {
-                                incrementCartItemQuantityHandler(id);
+                                incrementCartItemQuantityHandler(id, temperatur);
                             }}
                         >
                             <CustomIcon
@@ -79,18 +93,29 @@ const OrderItem = ({
 export default OrderItem
 
 const styles = StyleSheet.create({
+    SizeBox: {
+        backgroundColor: COLORS.primaryBlackHex,
+        height: 40,
+        width: 100,
+        borderRadius: BORDERRADIUS.radius_10,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    SizeText: {
+        fontFamily: FONTFAMILY.poppins_medium,
+        color: COLORS.secondaryLightGreyHex,
+    },
     CartItemSingleLinearGradient: {
         flexDirection: 'row',
         alignItems: 'center',
         padding: SPACING.space_12,
         gap: SPACING.space_12,
         borderRadius: BORDERRADIUS.radius_25,
-        marginHorizontal: SPACING.space_15,
-        // marginVertical: SPACING.space_10
+        marginHorizontal: 15
     },
     CartItemSingleImage: {
-        height: 100,
-        width: 100,
+        height: 140,
+        width: 140,
         borderRadius: BORDERRADIUS.radius_20,
     },
     CartItemQuantityText: {
@@ -114,8 +139,9 @@ const styles = StyleSheet.create({
     },
     CartItemSingleQuantityContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-evenly',
+        // justifyContent: 'space-evenly',
         alignItems: 'center',
+        gap: 8
     },
     SizeCurrency: {
         fontFamily: FONTFAMILY.poppins_semibold,
@@ -127,33 +153,17 @@ const styles = StyleSheet.create({
     },
     CartItemSingleSizeValueContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-evenly',
         alignItems: 'center',
+        gap: SPACING.space_10
     },
     CartItemSingleInfoContainer: {
         flex: 1,
         alignSelf: 'stretch',
         justifyContent: 'space-around',
+        gap: 10
+        // backgroundColor: 'red'
     },
-    CartItemLinearGradient: {
-        flex: 1,
-        gap: SPACING.space_12,
-        padding: SPACING.space_12,
-        borderRadius: BORDERRADIUS.radius_25,
-    },
-    CartItemRoastedContainer: {
-        height: 50,
-        width: 50 * 2 + SPACING.space_20,
-        borderRadius: BORDERRADIUS.radius_15,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: COLORS.primaryDarkGreyHex,
-    },
-    CartItemRoastedText: {
-        fontFamily: FONTFAMILY.poppins_regular,
-        fontSize: FONTSIZE.size_10,
-        color: COLORS.primaryWhiteHex,
-    },
+
     CartItemTitle: {
         fontFamily: FONTFAMILY.poppins_medium,
         fontSize: FONTSIZE.size_18,
