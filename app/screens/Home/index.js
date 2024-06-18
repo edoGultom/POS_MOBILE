@@ -60,7 +60,6 @@ const Home = ({ navigation }) => {
         const data = {
             id, nama_barang, path, nama_kategori, harga: checked.value, temperatur: checked.label
         }
-        console.log(data, 'xxx')
         dispatch(addToChartList(data))
         ToastAndroid.showWithGravity(
             `${nama_barang} is Added to Cart`,
@@ -131,7 +130,6 @@ const Home = ({ navigation }) => {
             <View
                 style={{
                     flex: 2,
-                    // backgroundColor: 'blue'
                     marginBottom: tabBarHeight
                 }}
             >

@@ -208,7 +208,8 @@ const Order = ({ navigation }) => {
             }
             const check = isFailedJumlahBayar(form.jumlah_diberikan);
             if (!check) {
-                setForm('jumlah_kembalian', parseInt(form.jumlah_diberikan) - parseInt(totalBayar))
+                let kembalian = parseInt(form.jumlah_diberikan) - parseInt(totalBayar)
+                setForm('jumlah_kembalian', parseInt(kembalian))
             }
         };
 
@@ -359,7 +360,6 @@ const Order = ({ navigation }) => {
                         backdropComponent={renderBackdrop}
                     >
                         <FormComponentCash />
-                        {/* <SuccessPaymentCash /> */}
                     </BottomSheetCustom>
                 }
 

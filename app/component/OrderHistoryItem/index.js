@@ -12,6 +12,7 @@ const OrderHistoryItem = ({
     link,
     price,
     qty,
+    temperatur,
     ItemPrice,
 }) => {
     return (
@@ -44,7 +45,7 @@ const OrderHistoryItem = ({
                                     fontSize: FONTSIZE.size_16,
                                 },
                             ]}>
-                            COLD
+                            {temperatur}
                         </Text>
                     </View>
                     <View style={styles.PriceBoxRight}>
@@ -152,8 +153,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     Image: {
-        height: 90,
-        width: 90,
+        height: 100,
+        width: 100,
         borderRadius: BORDERRADIUS.radius_15,
     },
 })

@@ -37,6 +37,7 @@ const OrderHistory = ({
                         link={item.link}
                         price={item.harga}
                         qty={item.qty}
+                        temperatur={item.temperatur}
                         ItemPrice={item.total}
                     />
                 ))}
@@ -50,13 +51,16 @@ export default OrderHistory
 const styles = StyleSheet.create({
     CardContainer: {
         gap: SPACING.space_10,
-        marginHorizontal: 10
+        marginHorizontal: 15,
+        marginBottom: 15
     },
     CardHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         gap: SPACING.space_20,
         alignItems: 'center',
+        marginHorizontal: 15,
+        marginTop: 25
     },
     HeaderTitle: {
         fontFamily: FONTFAMILY.poppins_semibold,

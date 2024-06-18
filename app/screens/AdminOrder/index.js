@@ -182,7 +182,6 @@ const AdminOrder = ({ navigation }) => {
                     status: 'PAID',
                     cash: dataPembayaran
                 }
-                console.log(data, 'cccccccc')
                 const token = resToken.value;
                 const properties = { data, token, handleSuccessCash };
                 dispatch(addPembayaran(properties))

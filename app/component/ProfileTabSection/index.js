@@ -54,10 +54,10 @@ const Account = () => {
   return (
     <>
       <View style={styles.containerAccount}>
-        <ItemListMenu
+        {/* <ItemListMenu
           text="Edit Profile"
           onPress={openModal}
-        />
+        /> */}
         <ItemListMenu text="SignOut" onPress={signOut} />
       </View>
 
@@ -68,12 +68,12 @@ const Account = () => {
       >
         {/* Render your dynamic content here */}
         <View style={{ marginBottom: tabBarHeight + 5 }}>
+          <Text style={[styles.text, { color: 'white' }]}>test</Text>
+          {/* <Text style={[styles.text, { color: 'white' }]}>sdsdsdsdsdsdsdsd</Text>
           <Text style={[styles.text, { color: 'white' }]}>sdsdsdsdsdsdsdsd</Text>
           <Text style={[styles.text, { color: 'white' }]}>sdsdsdsdsdsdsdsd</Text>
           <Text style={[styles.text, { color: 'white' }]}>sdsdsdsdsdsdsdsd</Text>
-          <Text style={[styles.text, { color: 'white' }]}>sdsdsdsdsdsdsdsd</Text>
-          <Text style={[styles.text, { color: 'white' }]}>sdsdsdsdsdsdsdsd</Text>
-          <Text style={[styles.text, { color: 'white' }]}>sdsdsdsdsdsdsdsd</Text>
+          <Text style={[styles.text, { color: 'white' }]}>sdsdsdsdsdsdsdsd</Text> */}
           <View style={styles.containerButton}>
             <Button title="Tutup" onPress={closeModal} color={COLORS.primaryLightGreyHex} />
           </View>
@@ -87,7 +87,7 @@ const PosApp = () => {
   return (
     <View style={styles.containerPosApp}>
       <ItemListMenu text="Rate App" />
-      <ItemListMenu text="Help Center" />
+      {/* <ItemListMenu text="Help Center" /> */}
       <ItemListMenu text="Privacy & Policy" />
       <ItemListMenu text="Terms & Conditions" />
     </View>

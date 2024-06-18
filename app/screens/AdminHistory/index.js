@@ -26,7 +26,7 @@ const AdminHistory = ({ navigation }) => {
             dispatch(addLoading(false));
             if (response.status === 200) {
                 const { data } = response.data
-                console.log(data, 'xdataaaaa')
+                // console.log(data, 'xdataaaaa')
                 setData(data)
             } else {
                 dispatch(addLoading(false));
