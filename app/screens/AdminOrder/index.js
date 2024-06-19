@@ -18,6 +18,7 @@ import TextInput from '../../component/TextInput';
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
 import { addPembayaran, addStateMidtrans, addToOrderHistoryListFromCart, decrementCartItemQuantity, incrementCartItemQuantity } from '../../redux/orderSlice';
 import { getData, useForm } from '../../utils';
+import useDebounce from '../../component/UseDebounce';
 
 const AdminOrder = ({ navigation }) => {
     const { CartList, Midtrans } = useSelector(state => state.orderReducer);
@@ -128,12 +129,14 @@ const AdminOrder = ({ navigation }) => {
         const [form, setForm] = useForm({
             totalBayar: totalBayar,
             jumlah_diberikan: 35000,
-            jumlah_kembalian: 0,
+            jumlah_kembalian: 0
         });
+        const [tempKembalian, setTempKembalian] = useState(0);
+        const debounceKembalian = useDebounce(tempKembalian, 500);
 
         const [currencyMenu, setCurrencyMenu] = useState({
             index: 0,
-            category: formatCurrency(35000, 'IDR')
+            value: formatCurrency(35000, 'IDR')
         });
         const arrCurrency = [
             {
@@ -183,6 +186,7 @@ const AdminOrder = ({ navigation }) => {
                     cash: dataPembayaran
                 }
                 const token = resToken.value;
+                // console.log(data, 'dxxxx'); return;
                 const properties = { data, token, handleSuccessCash };
                 dispatch(addPembayaran(properties))
             });
@@ -202,14 +206,30 @@ const AdminOrder = ({ navigation }) => {
             []
         );
         const handleBlur = () => {
-            if (form.jumlah_diberikan !== currencyMenu.label) {
-                setCurrencyMenu({ index: undefined, category: undefined })
+            if (form.jumlah_diberikan !== currencyMenu.value) {
+                setCurrencyMenu({ index: undefined, value: undefined })
             }
             const check = isFailedJumlahBayar(form.jumlah_diberikan);
             if (!check) {
-                setForm('jumlah_kembalian', parseInt(form.jumlah_diberikan) - parseInt(totalBayar))
+                let kembalian = parseInt(form.jumlah_diberikan) - parseInt(totalBayar)
+                setForm('jumlah_kembalian', kembalian)
             }
         };
+        useEffect(() => {
+            if (debounceKembalian) {
+                if (debounceKembalian < totalBayar) {
+                    ToastAndroid.showWithGravity(
+                        `Uang yang harus dibayar adalah ${formatCurrency(totalBayar, 'IDR')}`,
+                        ToastAndroid.SHORT,
+                        ToastAndroid.CENTER,
+                    )
+                    setForm('jumlah_kembalian', 0)
+                    return;
+                }
+                let kembalian = parseInt(debounceKembalian) - parseInt(totalBayar)
+                setForm('jumlah_kembalian', kembalian)
+            }
+        }, [debounceKembalian]);
 
         return (
             <KeyboardAvoidingView style={{ flex: 1 }} behavior={"padding"} >
@@ -220,7 +240,7 @@ const AdminOrder = ({ navigation }) => {
                             value={form.jumlah_diberikan}
                             onChangeValue={(value) => {
                                 setForm('jumlah_diberikan', value)
-                                setCurrencyMenu({ index: undefined, category: '' })
+                                setCurrencyMenu({ index: undefined, value: '' })
                             }}
                             onBlur={handleBlur}
                             renderTextInput={textInputProps => <TextInput {...textInputProps} variant='filled' />}
@@ -234,16 +254,15 @@ const AdminOrder = ({ navigation }) => {
                                 <TouchableOpacity
                                     key={item.key}
                                     onPress={() => {
-                                        setCurrencyMenu({ index: item.key, category: item.label })
-                                        setForm('jumlah_diberikan', item.value)
-                                        handleBlur()
+                                        setCurrencyMenu({ index: item.key, value: item.label })
+                                        setForm('jumlah_diberikan', parseInt(item.value))
+                                        setTempKembalian(item.value)
                                     }}
                                     style={[
                                         styles.KindBox,
                                         currencyMenu.index === item.key
                                             ? { borderColor: COLORS.primaryOrangeHex } : { borderColor: COLORS.primaryLightGreyHex },
                                     ]}>
-                                    {currencyMenu.index === item.key ? item.iconOn : item.iconOff}
                                     <Text
                                         style={[
                                             styles.SizeText,
