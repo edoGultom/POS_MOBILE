@@ -70,11 +70,11 @@ const AdminStock = ({ navigation }) => {
                                 flexDirection: 'row',
                                 marginVertical: 5
                             }}>
-                                <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, width: windowWidth / 5, color: COLORS.primaryWhiteHex }}>Menu</Text>
-                                <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, width: windowWidth / 5, color: COLORS.primaryWhiteHex }}>Stok Awal</Text>
-                                <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, width: windowWidth / 5, color: COLORS.primaryWhiteHex }}>Masuk</Text>
-                                <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, width: windowWidth / 5, color: COLORS.primaryWhiteHex }}>Keluar</Text>
-                                <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, width: windowWidth / 5, color: COLORS.primaryWhiteHex }}>Stok Akhir</Text>
+                                <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, width: windowWidth / 4, color: COLORS.primaryWhiteHex }}>Menu</Text>
+                                {/* <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, width: windowWidth / 4, color: COLORS.primaryWhiteHex }}>Stok Awal</Text> */}
+                                <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, width: windowWidth / 4, color: COLORS.primaryWhiteHex }}>Masuk</Text>
+                                <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, width: windowWidth / 4, color: COLORS.primaryWhiteHex }}>Keluar</Text>
+                                <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, width: windowWidth / 4, color: COLORS.primaryWhiteHex }}>Stok Akhir</Text>
                             </View>
                             {data.map((item, idx) => {
                                 return (
@@ -84,11 +84,11 @@ const AdminStock = ({ navigation }) => {
                                         flexDirection: 'row',
                                         marginVertical: 5
                                     }}>
-                                        <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, width: windowWidth / 5, color: COLORS.primaryWhiteHex }}>{item.nama_barang}</Text>
-                                        <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, width: windowWidth / 5, color: COLORS.primaryWhiteHex }}>{item.stok_awal}</Text>
-                                        <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, width: windowWidth / 5, color: COLORS.primaryWhiteHex }}>{item.masuk}</Text>
-                                        <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, width: windowWidth / 5, color: COLORS.primaryWhiteHex }}>{item.keluar}</Text>
-                                        <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, width: windowWidth / 5, color: COLORS.primaryWhiteHex }}>{item.stok_akhir}</Text>
+                                        <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, width: windowWidth / 4, color: COLORS.primaryWhiteHex }}>{item.nama_barang}</Text>
+                                        {/* <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, width: windowWidth / 4, color: COLORS.primaryWhiteHex }}>{item.stok_awal}</Text> */}
+                                        <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, width: windowWidth / 4, color: COLORS.primaryWhiteHex }}>{item.masuk}</Text>
+                                        <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, width: windowWidth / 4, color: COLORS.primaryWhiteHex }}>{item.keluar}</Text>
+                                        <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, width: windowWidth / 4, color: COLORS.primaryWhiteHex }}>{item.stok_akhir}</Text>
                                     </View>
                                 )
                             }
