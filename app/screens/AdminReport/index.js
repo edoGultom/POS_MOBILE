@@ -22,6 +22,7 @@ const AdminReport = ({ navigation }) => {
     const [showStart, setShowStart] = useState(false);
     const [dateEnd, setDateEnd] = useState(null);
     const [showEnd, setShowEnd] = useState(false);
+
     const [checked, setChecked] = useState({
         label: '',
         value: '',
@@ -65,8 +66,9 @@ const AdminReport = ({ navigation }) => {
             dispatch(addLoading(false));
             if (response.status === 200) {
                 const { data } = response.data
-                console.log(data, 'xdataaaaa')
+                // console.log(data, 'xdataaaaa')
                 setData(data)
+                // total = data.reduce((sum, item) => sum + item.total_sales_amount, 0);
             } else {
                 dispatch(addLoading(false));
                 console.error('Response not okay');
@@ -115,7 +117,6 @@ const AdminReport = ({ navigation }) => {
             maximumFractionDigits: 0
         }).format(amount);
     };
-    let total = 0;
 
     return (
         <View style={styles.ScreenContainer}>
@@ -213,7 +214,6 @@ const AdminReport = ({ navigation }) => {
                     <>
                         <View style={[styles.container, data ? { borderBottomWidth: 1, borderBottomColor: COLORS.secondaryLightGreyHex } : {}]}>
                             {data.map((item, idx) => {
-                                total += total + item.total_sales_amount;
                                 return (
                                     <View key={idx} style={{
                                         alignItems: 'center',
@@ -239,7 +239,6 @@ const AdminReport = ({ navigation }) => {
 
                             <View style={{
                                 alignItems: 'flex-start',
-                                // backgroundColor: 'blue',
                                 paddingLeft: 15,
                                 width: windowWidth / 2
                             }}>
@@ -252,14 +251,13 @@ const AdminReport = ({ navigation }) => {
                             <View style={{
                                 width: windowWidth / 2,
                                 alignItems: 'flex-end',
-                                // backgroundColor: 'orange',
                                 paddingRight: 25
                             }}>
                                 <Text style={{
                                     fontFamily: FONTFAMILY.poppins_semibold,
                                     fontSize: FONTSIZE.size_14,
                                     color: COLORS.primaryWhiteHex
-                                }}>{formatCurrency(total, 'IDR')}</Text>
+                                }}>{formatCurrency(data.reduce((sum, item) => sum + item.total_sales_amount, 0), 'IDR')}</Text>
                             </View>
                         </View>
                     </>
