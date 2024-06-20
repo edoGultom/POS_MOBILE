@@ -34,7 +34,6 @@ const App = () => {
     'Poppins-SemiBold': require('./app/assets/Fonts/Poppins-SemiBold.ttf'),
     'Poppins-Thin': require('./app/assets/Fonts/Poppins-Thin.ttf'),
   });
-
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded || fontError) {
       await SplashScreens.hideAsync();
@@ -44,7 +43,6 @@ const App = () => {
   if (!fontsLoaded && !fontError) {
     return null;
   }
-
 
   return (
     <Provider store={store}>
