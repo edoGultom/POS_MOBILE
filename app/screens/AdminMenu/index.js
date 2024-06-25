@@ -135,7 +135,7 @@ const AdminMenu = ({ navigation }) => {
             id_kategori: selected !== null ? selected.id_kategori : '1',
             harga: selected !== null ? selected.harga.toString() : null,
             stok: selected !== null ? selected.stok.toString() : null,
-            type: 'addition',
+            type: 'initialstok',
         });
         const Title = selected !== null ? 'Ubah Menu' : 'Tambah Menu';
 
@@ -207,9 +207,9 @@ const AdminMenu = ({ navigation }) => {
                     minValue={0}
                     label="Harga"
                     placeholder='Masukkan Harga'
-                    onChangeText={(formattedValue) => {
-                        console.log(formattedValue); // R$ +2.310,46
-                    }}
+                // onChangeText={(formattedValue) => {
+                //     console.log(formattedValue); // R$ +2.310,46
+                // }}
                 />
                 <TextInput
                     label="Stok"
@@ -275,7 +275,7 @@ const AdminMenu = ({ navigation }) => {
                             />
                         )}
                         keyExtractor={item => item.id}
-                        contentContainerStyle={{ flexGrow: 1, columnGap: SPACING.space_10 }}
+                        contentContainerStyle={{ flexGrow: 1, columnGap: SPACING.space_10, paddingBottom: SPACING.space_10 * 9 }}
                         vertical
                     />
                 )}

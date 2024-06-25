@@ -5,12 +5,22 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "BE_API_HOST": "https://beapiposv1.my.id"
+      }
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "BE_API_HOST": "https://beapiposv1.my.id"
+      }
     },
-    "production": {}
+    "production": {
+      "env": {
+        "BE_API_HOST": "https://beapiposv1.my.id"
+      }
+    }
   },
   "submit": {
     "production": {}

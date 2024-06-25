@@ -129,7 +129,7 @@ const AdminOrder = ({ navigation }) => {
         const [form, setForm] = useForm({
             totalBayar: totalBayar,
             jumlah_diberikan: 35000,
-            jumlah_kembalian: 0
+            jumlah_kembalian: (35000 > totalBayar) ? 35000 - totalBayar : 0
         });
         const [tempKembalian, setTempKembalian] = useState(0);
         const debounceKembalian = useDebounce(tempKembalian, 500);

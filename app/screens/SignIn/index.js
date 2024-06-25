@@ -1,13 +1,12 @@
+import { BE_API_HOST } from '@env'
 import React from 'react'
 import { StatusBar, StyleSheet, Text, View } from 'react-native'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import Button from '../../component/Button'
 import TextInput from '../../component/TextInput'
 import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
 import { signInAction } from '../../redux/signInSlice'
 import { useForm } from '../../utils'
-import { Image } from 'expo-image'
-import { IcLogo, LogoJPG } from '../../assets'
 
 const SignIn = ({ navigation }) => {
     const [form, setForm] = useForm({
