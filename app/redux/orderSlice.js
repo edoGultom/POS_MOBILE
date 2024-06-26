@@ -12,7 +12,7 @@ const initialState = {
     error: null,
 };
 export const addPembayaran = createAsyncThunk('pembayaran/addPembayaran', async (properties, { dispatch }) => {
-    const { data, token, handleSuccessCash } = properties;
+    const { data, token, handleSuccess } = properties;
     dispatch(addLoading(true));
     try {
         const response = await axios.post(`${BE_API_HOST}/pembayaran/add`, data, {
@@ -23,12 +23,13 @@ export const addPembayaran = createAsyncThunk('pembayaran/addPembayaran', async 
         });
         if (response.status === 200) {
             const { midtrans } = response.data
+            console.log(midtrans, 'midtrans')
             if (midtrans !== undefined) {
                 console.log(response.data.midtrans.actions, 'responseMidtrans')
                 dispatch(addStateMidtrans(midtrans))
             } else {
-                handleSuccessCash(response.data)
-                console.log(response.data, 'responseCash')
+                handleSuccess(response.data)
+                console.log(response.data, 'responsePembayaran')
             }
             dispatch(addLoading(false));
         } else {

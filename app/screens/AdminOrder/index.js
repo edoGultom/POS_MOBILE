@@ -57,7 +57,8 @@ const AdminOrder = ({ navigation }) => {
                     status: 'PENDING'
                 }
                 const token = resToken.value;
-                const properties = { data, token };
+                const handleSuccess = handleSuccessQris
+                const properties = { data, token, handleSuccess };
                 dispatch(addPembayaran(properties))
             });
         } else {
@@ -187,7 +188,8 @@ const AdminOrder = ({ navigation }) => {
                 }
                 const token = resToken.value;
                 // console.log(data, 'dxxxx'); return;
-                const properties = { data, token, handleSuccessCash };
+                const handleSuccess = handleSuccessCash
+                const properties = { data, token, handleSuccess };
                 dispatch(addPembayaran(properties))
             });
         }
