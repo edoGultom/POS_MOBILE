@@ -12,7 +12,7 @@ export const RoleProvider = ({ children }) => {
 
     const getUser = () => {
         getData('userProfile').then((res) => {
-            setRoles(res.scope)
+            setRoles(res?.scope)
         });
     };
 

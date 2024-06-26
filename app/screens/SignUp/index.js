@@ -7,7 +7,7 @@ import CustomIcon from '../../component/CustomIcon';
 import TextInput from '../../component/TextInput';
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
 import { signUpAction } from '../../redux/signUpSlice';
-import { useForm } from '../../utils';
+import { showMessage, useForm } from '../../utils';
 import { useDispatch } from 'react-redux';
 
 const SignUp = ({ navigation }) => {
@@ -27,7 +27,7 @@ const SignUp = ({ navigation }) => {
             aspect: [4, 4],
             quality: 0.5,
         });
-        console.log(result)
+        // console.log(result)
         if (!result.canceled) {
             // setPhoto(result.assets[0].uri);
             setPhoto(result);
@@ -36,6 +36,10 @@ const SignUp = ({ navigation }) => {
     const dispatch = useDispatch();
 
     const onSubmit = () => {
+        if (photo === null) {
+            showMessage('Silahkan masukkan foto Anda!', 'danger');
+            return;
+        }
         const data = {
             ...form,
             navigation,

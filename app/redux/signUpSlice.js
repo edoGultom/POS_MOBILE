@@ -10,7 +10,11 @@ export const signUpAction = createAsyncThunk(
   'post/postRegister',
   async (data, { dispatch }) => {
     await axios
-      .post(`${BE_API_HOST}/user/register`, data)
+      .post(`${BE_API_HOST}/user/register`, data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
       .then(res => {
         const profile = res.data.data;
         if (res.data.status) {
@@ -73,7 +77,8 @@ export const signUpAction = createAsyncThunk(
       .catch(err => {
         dispatch(addLoading(false));
         // showMessage(err?.response?.data.message);
-        console.log(err, 'err');
+        console.log(data, 'responsex')
+        console.log(err?.response, 'err');
         showMessage(err);
       });
   },
