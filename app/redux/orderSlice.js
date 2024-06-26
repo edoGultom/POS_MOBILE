@@ -23,7 +23,7 @@ export const addPembayaran = createAsyncThunk('pembayaran/addPembayaran', async 
         });
         if (response.status === 200) {
             const { midtrans } = response.data
-            console.log(midtrans, 'midtrans')
+            console.log(response.data, 'midtrans')
             if (midtrans !== undefined) {
                 console.log(response.data.midtrans.actions, 'responseMidtrans')
                 dispatch(addStateMidtrans(midtrans))
