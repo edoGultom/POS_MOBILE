@@ -4,7 +4,7 @@ import axios from 'axios'
 import { format, addMonths, addYears } from 'date-fns'
 import { id } from 'date-fns/locale'
 import { StatusBar } from 'expo-status-bar'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Dimensions, Platform, Pressable, ScrollView, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import { useDispatch } from 'react-redux'
 import CustomIcon from '../../component/CustomIcon'
@@ -41,6 +41,13 @@ const AdminReport = ({ navigation }) => {
             value: format(addYears(new Date(), 1), "yyyy-MM-dd", { locale: id })
         }
     ]
+    useEffect(() => {
+        if (checked.label !== '') {
+            setDateStart(null)
+            setDateEnd(null)
+        }
+    }, [checked.label])
+
 
     const onChangeStart = (event, selectedDate) => {
         const currentDateStart = selectedDate || dateStart;
@@ -117,7 +124,6 @@ const AdminReport = ({ navigation }) => {
             maximumFractionDigits: 0
         }).format(amount);
     };
-
     return (
         <View style={styles.ScreenContainer}>
             <StatusBar style='light' />
@@ -257,7 +263,9 @@ const AdminReport = ({ navigation }) => {
                                     fontFamily: FONTFAMILY.poppins_semibold,
                                     fontSize: FONTSIZE.size_14,
                                     color: COLORS.primaryWhiteHex
-                                }}>{formatCurrency(data.reduce((sum, item) => sum + item.total_sales_amount, 0), 'IDR')}</Text>
+                                }}>
+                                    {formatCurrency(data.reduce((sum, item) => sum + parseInt(item.total_sales_amount), 0), 'IDR')}
+                                </Text>
                             </View>
                         </View>
                     </>
