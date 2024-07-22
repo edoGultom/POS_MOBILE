@@ -13,7 +13,7 @@ const initialState = {
 export const getKategori = createAsyncThunk('kategori/getKategori', async (token) => {
 
     try {
-        const response = await axios.get(`${BE_API_HOST}/kategori-barang`, {
+        const response = await axios.get(`${BE_API_HOST}/kategori`, {
             headers: {
                 Authorization: `${token}`,
             },

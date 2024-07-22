@@ -6,15 +6,15 @@ import { addLoading } from './globalSlice';
 
 // Initial state
 const initialState = {
-    menus: [],
+    tables: [],
     loading: false,
     error: null,
 };
 // Async thunk for posting user data
-export const getMenu = createAsyncThunk('menu/getMenu', async (token, { dispatch }) => {
+export const getTables = createAsyncThunk('table/getTables', async (token, { dispatch }) => {
     dispatch(addLoading(true));
     try {
-        const response = await axios.get(`${BE_API_HOST}/menu`, {
+        const response = await axios.get(`${BE_API_HOST}/table`, {
             headers: {
                 Authorization: `${token}`,
             },
@@ -32,11 +32,11 @@ export const getMenu = createAsyncThunk('menu/getMenu', async (token, { dispatch
         console.error('Error: ', error);
     }
 });
-export const addMenu = createAsyncThunk('menu/addMenu', async (param, { dispatch }) => {
+export const addTable = createAsyncThunk('table/addTable', async (param, { dispatch }) => {
     const { setRefreshData, dataInput, token } = param
     setRefreshData(true);
     try {
-        const response = await axios.post(`${BE_API_HOST}/menu/add`, dataInput, {
+        const response = await axios.post(`${BE_API_HOST}/table/add`, dataInput, {
             headers: {
                 Authorization: `${token}`,
                 'Content-Type': 'multipart/form-data',
@@ -44,7 +44,7 @@ export const addMenu = createAsyncThunk('menu/addMenu', async (param, { dispatch
         });
         if (response.status === 200) {
             setRefreshData(false);
-            dispatch(addMenuState(response.data.data))
+            dispatch(addTablesState(response.data.data))
         } else {
             setRefreshData(false)
             console.error('Response not okay');
@@ -53,11 +53,11 @@ export const addMenu = createAsyncThunk('menu/addMenu', async (param, { dispatch
         console.error('Error: ', error);
     }
 });
-export const updateMenu = createAsyncThunk('menu/updateMenu', async (param, { dispatch }) => {
+export const updateTable = createAsyncThunk('table/updateTable', async (param, { dispatch }) => {
     const { id, setRefreshData, dataInput, token } = param
     setRefreshData(true);
     try {
-        const response = await axios.post(`${BE_API_HOST}/menu/update?id=${id}`, dataInput, {
+        const response = await axios.post(`${BE_API_HOST}/table/update?id=${id}`, dataInput, {
             headers: {
                 Authorization: `${token}`,
                 'Content-Type': 'multipart/form-data',
@@ -65,7 +65,7 @@ export const updateMenu = createAsyncThunk('menu/updateMenu', async (param, { di
         });
         if (response.status === 200) {
             setRefreshData(false);
-            dispatch(updateMenuState(response.data.data))
+            dispatch(updateTablesState(response.data.data))
         } else {
             setRefreshData(false)
             console.error('Response not okay');
@@ -75,18 +75,18 @@ export const updateMenu = createAsyncThunk('menu/updateMenu', async (param, { di
         console.error('Error: ', error);
     }
 });
-export const deleteMenu = createAsyncThunk('menu/deleteMenu', async (param, { dispatch }) => {
+export const deleteTable = createAsyncThunk('table/deleteTable', async (param, { dispatch }) => {
     const { id, setRefreshData, token } = param
     setRefreshData(true);
     try {
-        const response = await axios.delete(`${BE_API_HOST}/menu/delete?id=${id}`, {
+        const response = await axios.delete(`${BE_API_HOST}/table/delete?id=${id}`, {
             headers: {
                 Authorization: `${token}`,
             },
         });
         if (response.status === 200) {
             setRefreshData(false);
-            dispatch(deleteMenuState(id))
+            dispatch(deleteTablesState(id))
         } else {
             setRefreshData(false)
             console.error('Response not okay');
@@ -96,49 +96,48 @@ export const deleteMenu = createAsyncThunk('menu/deleteMenu', async (param, { di
     }
 });
 
-const menuSlice = createSlice({
-    name: 'menuReducer',
+const tableSlice = createSlice({
+    name: 'tablesReducer',
     initialState,
     reducers: {
-        addMenuState: (state, action) => {
-            // Memastikan state.menus sudah diinisialisasi
-            if (!Array.isArray(state.menus)) {
-                state.menus = [];
+        addTablesState: (state, action) => {
+            if (!Array.isArray(state.tables)) {
+                state.tables = [];
             }
-            // Menambahkan menu ke dalam state.menus
-            state.menus.push(action.payload);
+            // Menambahkan menu ke dalam state.tables
+            state.tables.push(action.payload);
         },
-        updateMenuState: (state, action) => {
+        updateTablesState: (state, action) => {
             const { id } = action.payload;
-            const index = state.menus.findIndex(menu => menu.id === id);
+            const index = state.tables.findIndex(menu => menu.id === id);
             if (index !== -1) {
-                state.menus[index] = {
-                    ...state.menus[index],
+                state.tables[index] = {
+                    ...state.tables[index],
                     ...action.payload,
                 };
             }
         },
-        deleteMenuState: (state, action) => {
-            const current = [...state.menus];
+        deleteTablesState: (state, action) => {
+            const current = [...state.tables];
             const filter = current.filter((item) => item.id !== action.payload)
-            state.menus = filter
+            state.tables = filter
         },
     },
     extraReducers: (builder) => {
         builder
-            .addCase(getMenu.pending, (state) => {
+            .addCase(getTables.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(getMenu.fulfilled, (state, action) => {
+            .addCase(getTables.fulfilled, (state, action) => {
                 state.loading = false;
-                state.menus = action.payload.data;
+                state.tables = action.payload.data;
             })
-            .addCase(getMenu.rejected, (state, action) => {
+            .addCase(getTables.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message;
             });
     },
 });
-export const { addMenuState, deleteMenuState, updateMenuState } = menuSlice.actions;
-export default menuSlice.reducer;
+export const { addTablesState, deleteTablesState, updateTablesState } = tableSlice.actions;
+export default tableSlice.reducer;

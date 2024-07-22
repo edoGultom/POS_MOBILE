@@ -30,6 +30,9 @@ const IconTextView = ({ iconName, text, onPress }) => {
                     styles.SizeText,
                     {
                         fontSize: FONTSIZE.size_18,
+                        padding: 3,
+                        justifyContent: 'flex-end',
+                        textAlign: 'center'
                     },
                     { color: COLORS.primaryOrangeHex }
                 ]}>
@@ -73,21 +76,45 @@ const Admin = ({ navigation }) => {
         {
             key: 1,
             label: 'Menu',
-            icon: 'pen-to-square',
+            icon: 'fastfood',
             onPress: () => {
                 navigation.navigate('AdminMenu')
             },
         },
         {
             key: 2,
+            label: 'Meja',
+            icon: 'table-restaurant',
+            onPress: () => {
+                navigation.navigate('AdminTable')
+            },
+        },
+        {
+            key: 3,
+            label: 'Daftar Bahan Baku',
+            icon: 'edit-document',
+            onPress: () => {
+                navigation.navigate('AdminIngridients')
+            },
+        },
+        {
+            key: 4,
+            label: 'Menu Bahan Baku',
+            icon: 'restaurant-menu',
+            onPress: () => {
+                navigation.navigate('AdminMenuIngridients')
+            },
+        },
+        {
+            key: 5,
             label: 'POS',
-            icon: 'shop',
+            icon: 'point-of-sale',
             onPress: () => {
                 navigation.navigate('AdminOrder')
             },
         },
         {
-            key: 3,
+            key: 6,
             label: 'Laporan',
             icon: 'print',
             onPress: () => {
@@ -95,22 +122,21 @@ const Admin = ({ navigation }) => {
             },
         },
         {
-            key: 4,
+            key: 7,
             label: 'Stok',
-            icon: 'box-open',
+            icon: 'food-bank',
             onPress: () => {
                 navigation.navigate('AdminStock')
             },
         },
         {
-            key: 5,
+            key: 8,
             label: 'Riwayat',
-            icon: 'chart-simple',
+            icon: 'history',
             onPress: () => {
                 navigation.navigate('AdminHistory')
             },
         },
-
     ]
 
     const categroyMenu = [
@@ -157,87 +183,34 @@ const Admin = ({ navigation }) => {
         <View style={styles.ScreenContainer}>
             <StatusBar style='light' />
             <HeaderBar />
-            <View style={{
-                paddingVertical: 15,
-                paddingHorizontal: 15,
-                flexDirection: 'row',
-                gap: 10,
-                flexWrap: 'wrap',
-                justifyContent: 'center',
-                flex: 1
-            }}>
-                {
-                    navMenu.map((item) => (
-                        <IconTextView key={item.key} index={item.key} iconName={item.icon} text={item.label} onPress={item.onPress} />
-                    ))
-                }
-            </View>
-            <View style={styles.containerMenuAdmin}>
-                <Text style={styles.titleMenuAdmin}>Coffee Available</Text>
-                <View style={styles.KindOuterContainer}>
-                    {categroyMenu.map((item, index) => (
-                        <TouchableOpacity
-                            key={item.key}
-                            onPress={() => {
-                                ListRef?.current?.scrollToOffset({
-                                    animated: true,
-                                    offset: 0,
-                                });
-                                setCategoryMenu({ index: item.key, category: item.label })
-                                setSortedMenu([
-                                    ...getMenuList(item.label, menus),
-                                ]);
-                            }}
-                            style={[
-                                styles.KindBox,
-                                catgoryMenu.index === item.key
-                                    ? { borderColor: COLORS.primaryOrangeHex } : { borderColor: COLORS.primaryLightGreyHex },
-                            ]}>
-                            {catgoryMenu.index === item.key ? item.iconOn : item.iconOff}
-                            <Text
-                                style={[
-                                    styles.SizeText,
-                                    {
-                                        fontSize: FONTSIZE.size_16,
-                                    },
-                                    catgoryMenu.index === item.key
-                                        ? { color: COLORS.primaryOrangeHex } : { color: COLORS.primaryWhiteHex },
-                                ]}>
-                                {item.label}
-                            </Text>
-                        </TouchableOpacity>
-                    ))}
-                </View>
-                <FlatList
-                    ref={ListRef}
-                    onRefresh={fetchData}
-                    refreshing={false}
-                    showsHorizontalScrollIndicator={false}
-                    data={sortedMenu}
-                    contentContainerStyle={styles.FlatListContainer}
-                    ListEmptyComponent={
-                        <View style={styles.EmptyListContainer}>
-                            <Text style={styles.EmptyText}>No Coffee Available</Text>
+            <View style={styles.content}>
+                <View style={styles.containerHeader}>
+                    <View style={styles.circleParent}>
+                        <View style={styles.circleChild}>
+                            <Text style={styles.titleCircle}>Aplikasi Point Of Sales</Text>
+                            <Text style={styles.SubTitleCircle}>Hi, admin</Text>
                         </View>
-                    }
-                    keyExtractor={item => item.id}
-                    vertical
-                    renderItem={({ item, }) => {
-                        return (
-                            <CoffeCard
-                                id={`${item.id}-${item.temperatur}`}
-                                link={item.path}
-                                name={item.nama_barang}
-                                kind={item.nama_kategori}
-                                price={item.harga}
-                                buttonPressHandler={(valCheck) => CoffeCardAddToCart(item, valCheck)}
-                            />
-                        );
-                    }}
-                />
-
+                    </View>
+                </View>
+                <View style={styles.constainerMenu}>
+                    <View style={{
+                        paddingVertical: 15,
+                        paddingHorizontal: 15,
+                        flexDirection: 'row',
+                        gap: 10,
+                        flexWrap: 'wrap',
+                        justifyContent: 'center',
+                        alignContent: 'center',
+                        flex: 1,
+                    }}>
+                        {
+                            navMenu.map((item) => (
+                                <IconTextView key={item.key} index={item.key} iconName={item.icon} text={item.label} onPress={item.onPress} />
+                            ))
+                        }
+                    </View>
+                </View>
             </View>
-
         </View>
     )
 }
@@ -245,6 +218,47 @@ const Admin = ({ navigation }) => {
 export default Admin
 
 const styles = StyleSheet.create({
+    content: {
+        flex: 1,
+        backgroundColor: COLORS.primaryBlackRGBA,
+        // gap: SPACING.space_2
+    },
+    SubTitleCircle: {
+        fontSize: FONTSIZE.size_20,
+        fontFamily: FONTFAMILY.poppins_light,
+        color: COLORS.primaryWhiteHex,
+        fontStyle: 'italic'
+    },
+    titleCircle: {
+        fontSize: FONTSIZE.size_24,
+        fontFamily: FONTFAMILY.poppins_semibold,
+        color: COLORS.primaryWhiteHex
+    },
+    circleParent: {
+        height: '100%',
+        width: '100%',
+        transform: [{ scaleX: 2 }],
+        borderBottomStartRadius: 200,
+        borderBottomEndRadius: 200,
+        overflow: 'hidden',
+    },
+    circleChild: {
+        flex: 1,
+        transform: [{ scaleX: 0.5 }],
+        backgroundColor: COLORS.primaryOrangeHex,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    containerHeader: {
+        flex: 2,
+        backgroundColor: COLORS.primaryBlackHex,
+    },
+    constainerMenu: {
+        flex: 3,
+        backgroundColor: COLORS.primaryBlackHex,
+        paddingHorizontal: 15,
+        paddingHorizontal: 15,
+    },
     FlatListContainer: {
         gap: SPACING.space_15,
         paddingVertical: SPACING.space_20,
@@ -289,19 +303,18 @@ const styles = StyleSheet.create({
         flex: 2,
     },
     ScreenContainer: {
-        backgroundColor: COLORS.primaryBlackHex,
+        backgroundColor: COLORS.primaryOrangeHex,
         flex: 1,
     },
+
     SizeText: {
         fontFamily: FONTFAMILY.poppins_medium,
     },
-
     text: {
         marginLeft: 10,
         fontSize: 18,
         color: COLORS.secondaryLightGreyHex
     },
-
     box: {
         flexGrow: 1,
         gap: 4,

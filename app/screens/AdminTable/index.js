@@ -1,61 +1,42 @@
-import { BE_API_HOST } from '@env'
 import { BottomSheetBackdrop, BottomSheetModalProvider } from '@gorhom/bottom-sheet'
-import * as ImagePicker from 'expo-image-picker'
 import { StatusBar } from 'expo-status-bar'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Button, Dimensions, FlatList, Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import CurrencyInput from 'react-native-currency-input'
+import { Button, Dimensions, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { MaskedTextInput } from "react-native-mask-text"
 import { useDispatch, useSelector } from 'react-redux'
-import { IEmptyFile } from '../../assets'
 import BottomSheetCustom from '../../component/BottomSheet'
 import CustomIcon from '../../component/CustomIcon'
 import HeaderBar from '../../component/HeaderBar'
-import ListItem from '../../component/ListItem'
-import Select from '../../component/Select'
-import TextInput from '../../component/TextInput'
+import ListItemTable from '../../component/ListItemTable'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
-import { getKategori } from '../../redux/kategoriSlice'
-import { addMenu, deleteMenu, getMenu, updateMenu } from '../../redux/menuSlice'
+import { addTable, deleteTable, getTables, updateTable } from '../../redux/tableSice'
 import { getData, showMessage, useForm } from '../../utils'
 
 const windowWidth = Dimensions.get('window').width;
 
-const AdminMenu = ({ navigation }) => {
-    const { kategori } = useSelector(state => state.kategoriReducer);
+const AdminTable = ({ navigation }) => {
     const bottomSheetModalRef = useRef(null);
-    const { menus } = useSelector(state => state.menuReducer);
-    const [dataKategori, setDataKategori] = useState([]);
+    const { tables } = useSelector(state => state.tablesReducer);
     const dispatch = useDispatch();
     const [refreshing, setRefreshing] = useState(false);
     const [selectedMenu, setSelectedMenu] = useState(null);
 
     useEffect(() => {
-        if (dataKategori.length < 1 && kategori.length > 0) {
-            const data = kategori.map((item) => ({
-                id: item.id,
-                nama: item.nama_kategori
-            }));
-            setDataKategori(data)
-        }
-    }, [kategori])
-
-    useEffect(() => {
         navigation.addListener('focus', () => {
-            getDataMenu();
+            getDataTable();
         });
     }, [navigation]);
 
-    const getDataMenu = () => {
+    const getDataTable = () => {
         getData('token').then((res) => {
-            dispatch(getKategori(res.value))
-            dispatch(getMenu(res.value))
+            dispatch(getTables(res.value))
         });
     };
 
     const fetchData = useCallback(async () => {
         setRefreshData(true);
         try {
-            getDataMenu();
+            getDataTable();
         } catch (error) {
             console.error(error);
         } finally {
@@ -75,7 +56,7 @@ const AdminMenu = ({ navigation }) => {
         getData('token').then(async (res) => {
             const token = res.value;
             const param = { token, id, setRefreshData };
-            dispatch(deleteMenu(param))
+            dispatch(deleteTable(param))
         });
     }, []);
 
@@ -89,6 +70,7 @@ const AdminMenu = ({ navigation }) => {
         ),
         []
     );
+
     useEffect(() => {
         if (selectedMenu) {
             bottomSheetModalRef.current.present();
@@ -103,137 +85,68 @@ const AdminMenu = ({ navigation }) => {
         bottomSheetModalRef.current.dismiss();
     };
 
-    const FormComponent = ({ dataKategori, selected }) => {
-        const [photo, setPhoto] = useState(null);
-
-        const fetchImage = useCallback(async () => {
-            const fileUrl = `${BE_API_HOST}/lihat-file/profile?path=${selected.path}`
-            fetch(fileUrl)
-                .then((response) => {
-                    const contentType = response.headers.get('Content-Type');
-                    setPhoto({
-                        assets: [
-                            {
-                                uri: `${BE_API_HOST}/lihat-file/profile?path=${selected.path}`,
-                                mimeType: contentType,
-                            }
-                        ]
-                    })
-                })
-                .catch((error) => {
-                    console.error('Error fetching the content:', error);
-                });
-        }, []);
-
-        useEffect(() => {
-            if (selected !== null) fetchImage();
-        }, [selected, fetchImage]);
-
+    const FormComponent = ({ selected }) => {
         const [form, setForm] = useForm({
-            nama: selected !== null ? selected.nama : '',
-            id_kategori: selected !== null ? selected.id_kategori : '1',
-            harga: selected !== null ? selected.harga.toString() : null,
+            nomor_meja: selected !== null ? selected.nomor_meja : '',
+            status: selected !== null ? selected.status : 'Available',
         });
-        const Title = selected !== null ? 'Ubah Menu' : 'Tambah Menu';
+        const Title = selected !== null ? 'Ubah Meja' : 'Tambah Meja';
 
         const onSubmit = () => {
-            if (photo === null) {
-                showMessage('Please select a file to continue!', 'danger');
+            if (form.nomor_meja === null) {
+                showMessage('Please input table number to continue!', 'danger');
             } else {
                 const dataInput = new FormData();
                 for (const key in form) {
                     dataInput.append(key, form[key]);
                 }
-                let uri = photo.assets[0].uri;
-                let fileExtension = uri.substr(uri.lastIndexOf('.') + 1);
-                const dataPhoto = {
-                    uri: photo.assets[0].uri,
-                    type: photo.assets[0].mimeType,
-                    name: `menu.${fileExtension}`
-                }
-
-                dataInput.append('file', dataPhoto)
                 closeModal();
                 getData('token').then((resToken) => {
                     const token = resToken.value;
                     const param = { token, dataInput, setRefreshData };
                     if (selected !== null) {//update
                         const updatedParam = { ...param, id: selected.id };
-                        dispatch(updateMenu(updatedParam));
+                        dispatch(updateTable(updatedParam));
                     } else {//add
-                        dispatch(addMenu(param));
+                        console.log('first')
+                        dispatch(addTable(param));
                     }
                 });
             }
         };
-
-        const choosePhoto = async () => {
-            let result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                allowsEditing: true,
-                aspect: [4, 4],
-                quality: 0.5,
-            });
-            if (!result.canceled) {
-                setPhoto(result);
-            }
-        };
-
+        // console.log(form, 'formx')
         return (
             <View style={{ marginBottom: 5, gap: 20 }}>
                 <Text style={{ color: COLORS.primaryOrangeHex, fontFamily: FONTFAMILY.poppins_bold, fontSize: FONTSIZE.size_20 }}>{Title}</Text>
-                <TextInput
-                    label="Menu"
-                    placeholder="Masukkan menu"
-                    value={form.nama}
-                    onChangeText={(value) => setForm('nama', value)}
-                />
-                <Select
-                    label="Kategori"
-                    data={dataKategori}
-                    value={form.id_kategori}
-                    onSelectChange={(value) => setForm('id_kategori', value)}
-                />
-                <CurrencyInput
-                    value={form.harga}
-                    onChangeValue={(value) => setForm('harga', value)}
-                    renderTextInput={textInputProps => <TextInput {...textInputProps} variant='filled' />}
-                    prefix="Rp "
-                    delimiter="."
-                    precision={0}
-                    minValue={0}
-                    label="Harga"
-                    placeholder='Masukkan Harga'
-                // onChangeText={(formattedValue) => {
-                //     console.log(formattedValue); // R$ +2.310,46
-                // }}
-                />
-                <Text style={{ color: COLORS.secondaryLightGreyHex }}>Pilih Gambar</Text>
-                <Pressable
-                    android_ripple={{
-                        color: 'rgb(224, 224, 224)',
-                        foreground: true,
-                        radius: 50
-                    }}
-                    onPress={() => choosePhoto()}
-                    style={{
-                        width: 80,
-                        height: 80,
-                        justifyContent: 'space-around',
-                        alignItems: 'start',
-                        elevation: 4,
-                    }}>
-                    <View style={styles.photoContainer}>
-                        {photo ? (
-                            <Image source={{ uri: photo.assets[0].uri }} style={styles.photoContainer} />
-                        ) : (
-                            <Image source={IEmptyFile} style={styles.photoMenu} />
-                        )}
+                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={{ flexShrink: 1, flexGrow: 1, marginRight: SPACING.space_10 }}>
+                        <MaskedTextInput
+                            mask="A-99"
+                            placeholder="Masukkan nomor meja"
+                            keyboardType='numeric'
+                            onChangeText={(text, rawText) => {
+                                // console.log(text, 'text');
+                                // console.log(rawText, 'rawText');//nno dashed
+                                setForm('nomor_meja', text)
+                            }}
+                            style={styles.input}
+                            value={form.nomor_meja ? form.nomor_meja : 'T-'}
+                            placeholderTextColor={COLORS.secondaryLightGreyHex}
+                        />
                     </View>
-                </Pressable>
+                    <View style={{ flexShrink: 1, flexDirection: 'row' }}>
+                        <Text style={styles.label}>Status: </Text>
+                        <Text style={[
+                            styles.label,
+                            form.status == 'Available'
+                                ? { color: COLORS.primaryOrangeHex }
+                                : { color: COLORS.primaryRedHex },
+                        ]}>{form.status}</Text>
+                    </View>
+                </View>
                 <Button title="Tutup" onPress={() => { closeModal() }} color={COLORS.primaryLightGreyHex} />
                 <Button title="Simpan" onPress={() => { onSubmit() }} color={COLORS.primaryOrangeHex} />
-            </View>
+            </View >
         );
     }
 
@@ -241,25 +154,22 @@ const AdminMenu = ({ navigation }) => {
         <BottomSheetModalProvider>
             <View style={styles.ScreenContainer}>
                 <StatusBar style='light' />
-                <HeaderBar title="Menu" onBack={() => navigation.goBack()} />
-                {!menus ? (
+                <HeaderBar title="Meja" onBack={() => navigation.goBack()} />
+                {!tables ? (
                     <View style={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
                         <Text style={{ fontSize: FONTSIZE.size_18, color: COLORS.primaryLightGreyHex }}>Tidak ada item yang tersedia</Text>
                     </View>
                 ) : (
                     <FlatList
-                        data={menus}
+                        data={tables}
                         onRefresh={fetchData}
                         refreshing={refreshing}
                         showsVerticalScrollIndicator={false}
                         renderItem={({ item }) => (
-                            <ListItem
+                            <ListItemTable
                                 key={item.id}
                                 id={item.id}
-                                name={item.nama}
-                                url={item.path}
-                                kind={item.nama_kategori}
-                                price={item.harga}
+                                name={item.nomor_meja}
                                 onPressDelete={() => handleDelete(item.id)}
                                 onPressUpdate={() => setSelectedMenu(item)}
                             />
@@ -274,7 +184,7 @@ const AdminMenu = ({ navigation }) => {
                     ref={bottomSheetModalRef}
                     backdropComponent={renderBackdrop}
                 >
-                    <FormComponent dataKategori={dataKategori} selected={selectedMenu} />
+                    <FormComponent selected={selectedMenu} />
                 </BottomSheetCustom>
 
                 <View style={styles.buttonContainer}>
@@ -297,23 +207,11 @@ const AdminMenu = ({ navigation }) => {
     )
 }
 
-export default AdminMenu
+export default AdminTable
 
 const styles = StyleSheet.create({
-    photoMenu: {
-        width: 50,
-        height: 50,
-        alignSelf: 'center',
-        borderRadius: 5
-    },
-    photoContainer: {
-        width: 80,
-        height: 80,
-        borderRadius: 15,
-        backgroundColor: COLORS.primaryWhiteHex,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
+    label: { fontSize: FONTSIZE.size_16, fontFamily: FONTFAMILY.poppins_regular, color: COLORS.secondaryLightGreyHex },
+    input: { borderWidth: 1, borderColor: COLORS.secondaryLightGreyHex, borderRadius: BORDERRADIUS.radius_15, padding: SPACING.space_10, color: COLORS.secondaryLightGreyHex },
     ItemContainer: {
         flex: 1,
     },
