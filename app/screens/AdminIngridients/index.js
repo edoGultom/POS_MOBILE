@@ -2,41 +2,52 @@ import { BottomSheetBackdrop, BottomSheetModalProvider } from '@gorhom/bottom-sh
 import { StatusBar } from 'expo-status-bar'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Button, Dimensions, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { MaskedTextInput } from "react-native-mask-text"
 import { useDispatch, useSelector } from 'react-redux'
 import BottomSheetCustom from '../../component/BottomSheet'
 import CustomIcon from '../../component/CustomIcon'
 import HeaderBar from '../../component/HeaderBar'
-import ListItemTable from '../../component/ListItemTable'
+import ListItemIngridients from '../../component/ListItemIngridients'
+import Select from '../../component/Select'
+import TextInput from '../../component/TextInput'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
-import { addTable, deleteTable, getTables, updateTable } from '../../redux/tableSice'
-import { getData, showMessage, useForm } from '../../utils'
+import { addIngridients, deleteIngridients, getIngridients, updateIngridients } from '../../redux/ingridientsSlice'
+import { getUnits } from '../../redux/unitsSlice'
+import { showMessage, useForm } from '../../utils'
 
-const windowWidth = Dimensions.get('window').width;
-
-const AdminTable = ({ navigation }) => {
+const AdminIngridients = ({ navigation }) => {
+    const { units } = useSelector(state => state.unitsReducer);
     const bottomSheetModalRef = useRef(null);
-    const { tables } = useSelector(state => state.tablesReducer);
+    const { ingridients } = useSelector(state => state.ingridientsReducer);
+    const [dataUnit, setDataUnit] = useState([]);
     const dispatch = useDispatch();
     const [refreshing, setRefreshing] = useState(false);
-    const [selectedMenu, setSelectedMenu] = useState(null);
+    const [selectedIngridients, setSelectedIngridients] = useState(null);
+
+    useEffect(() => {
+        if (dataUnit.length < 1 && units.length > 0) {
+            const data = units.map((item) => ({
+                id: item.id,
+                nama: item.nama
+            }));
+            setDataUnit(data)
+        }
+    }, [units])
 
     useEffect(() => {
         navigation.addListener('focus', () => {
-            getDataTable();
+            getData();
         });
     }, [navigation]);
 
-    const getDataTable = () => {
-        getData('token').then((res) => {
-            dispatch(getTables(res.value))
-        });
+    const getData = () => {
+        dispatch(getUnits())
+        dispatch(getIngridients())
     };
 
     const fetchData = useCallback(async () => {
         setRefreshData(true);
         try {
-            getDataTable();
+            getData();
         } catch (error) {
             console.error(error);
         } finally {
@@ -54,7 +65,7 @@ const AdminTable = ({ navigation }) => {
 
     const handleDelete = useCallback(async (id) => {
         const param = { id, setRefreshData };
-        dispatch(deleteTable(param))
+        dispatch(deleteIngridients(param))
     }, []);
 
     const renderBackdrop = useCallback(
@@ -67,12 +78,11 @@ const AdminTable = ({ navigation }) => {
         ),
         []
     );
-
     useEffect(() => {
-        if (selectedMenu) {
+        if (selectedIngridients) {
             bottomSheetModalRef.current.present();
         }
-    }, [selectedMenu])
+    }, [selectedIngridients])
 
     const openModal = () => {
         bottomSheetModalRef.current.present();
@@ -82,16 +92,16 @@ const AdminTable = ({ navigation }) => {
         bottomSheetModalRef.current.dismiss();
     };
 
-    const FormComponent = ({ selected }) => {
+    const FormComponent = ({ dataUnit, selected }) => {
         const [form, setForm] = useForm({
-            nomor_meja: selected !== null ? selected.nomor_meja : '',
-            status: selected !== null ? selected.status : 'Available',
+            nama: selected !== null ? selected.nama : null,
+            id_unit_bahan_baku: selected !== null ? selected.id_unit_bahan_baku : '1',
         });
-        const Title = selected !== null ? 'Ubah Meja' : 'Tambah Meja';
+        const Title = selected !== null ? 'Ubah Bahan Baku' : 'Tambah Bahan Baku';
 
         const onSubmit = () => {
-            if (form.nomor_meja === null) {
-                showMessage('Please input table number to continue!', 'danger');
+            if (form.nama === null) {
+                showMessage('Please input a ingridient!', 'danger');
             } else {
                 const dataInput = new FormData();
                 for (const key in form) {
@@ -101,45 +111,31 @@ const AdminTable = ({ navigation }) => {
                 const param = { dataInput, setRefreshData };
                 if (selected !== null) {//update
                     const updatedParam = { ...param, id: selected.id };
-                    dispatch(updateTable(updatedParam));
+                    dispatch(updateIngridients(updatedParam));
                 } else {//add
-                    dispatch(addTable(param));
+                    dispatch(addIngridients(param));
                 }
             }
         };
-        // console.log(form, 'formx')
+
         return (
             <View style={{ marginBottom: 5, gap: 20 }}>
                 <Text style={{ color: COLORS.primaryOrangeHex, fontFamily: FONTFAMILY.poppins_bold, fontSize: FONTSIZE.size_20 }}>{Title}</Text>
-                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                    <View style={{ flexShrink: 1, flexGrow: 1, marginRight: SPACING.space_10 }}>
-                        <MaskedTextInput
-                            mask="A-99"
-                            placeholder="Masukkan nomor meja"
-                            keyboardType='numeric'
-                            onChangeText={(text, rawText) => {
-                                // console.log(text, 'text');
-                                // console.log(rawText, 'rawText');//nno dashed
-                                setForm('nomor_meja', text)
-                            }}
-                            style={styles.input}
-                            value={form.nomor_meja ? form.nomor_meja : 'T-'}
-                            placeholderTextColor={COLORS.secondaryLightGreyHex}
-                        />
-                    </View>
-                    <View style={{ flexShrink: 1, flexDirection: 'row' }}>
-                        <Text style={styles.label}>Status: </Text>
-                        <Text style={[
-                            styles.label,
-                            form.status == 'Available'
-                                ? { color: COLORS.primaryOrangeHex }
-                                : { color: COLORS.primaryRedHex },
-                        ]}>{form.status}</Text>
-                    </View>
-                </View>
+                <TextInput
+                    label="Bahan Baku"
+                    placeholder="Masukkan Nama Bahan Baku"
+                    value={form.nama}
+                    onChangeText={(value) => setForm('nama', value)}
+                />
+                <Select
+                    label="Satuan"
+                    data={dataUnit}
+                    value={form.id_unit_bahan_baku}
+                    onSelectChange={(value) => setForm('id_unit_bahan_baku', value)}
+                />
                 <Button title="Tutup" onPress={() => { closeModal() }} color={COLORS.primaryLightGreyHex} />
                 <Button title="Simpan" onPress={() => { onSubmit() }} color={COLORS.primaryOrangeHex} />
-            </View >
+            </View>
         );
     }
 
@@ -147,24 +143,25 @@ const AdminTable = ({ navigation }) => {
         <BottomSheetModalProvider>
             <View style={styles.ScreenContainer}>
                 <StatusBar style='light' />
-                <HeaderBar title="Meja" onBack={() => navigation.goBack()} />
-                {!tables ? (
+                <HeaderBar title="Daftar Bahan Baku" onBack={() => navigation.goBack()} />
+                {!ingridients ? (
                     <View style={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
                         <Text style={{ fontSize: FONTSIZE.size_18, color: COLORS.primaryLightGreyHex }}>Tidak ada item yang tersedia</Text>
                     </View>
                 ) : (
                     <FlatList
-                        data={tables}
+                        data={ingridients}
                         onRefresh={fetchData}
                         refreshing={refreshing}
                         showsVerticalScrollIndicator={false}
                         renderItem={({ item }) => (
-                            <ListItemTable
+                            <ListItemIngridients
                                 key={item.id}
                                 id={item.id}
-                                name={item.nomor_meja}
+                                name={item.nama}
+                                unit={item.unit}
                                 onPressDelete={() => handleDelete(item.id)}
-                                onPressUpdate={() => setSelectedMenu(item)}
+                                onPressUpdate={() => setSelectedIngridients(item)}
                             />
                         )}
                         keyExtractor={item => item.id}
@@ -177,7 +174,7 @@ const AdminTable = ({ navigation }) => {
                     ref={bottomSheetModalRef}
                     backdropComponent={renderBackdrop}
                 >
-                    <FormComponent selected={selectedMenu} />
+                    <FormComponent dataUnit={dataUnit} selected={selectedIngridients} />
                 </BottomSheetCustom>
 
                 <View style={styles.buttonContainer}>
@@ -185,7 +182,7 @@ const AdminTable = ({ navigation }) => {
                         style={styles.buttonTambah}
                         onPress={() => {
                             openModal()
-                            setSelectedMenu(null)
+                            setSelectedIngridients(null)
                         }}
                     >
                         <CustomIcon
@@ -200,11 +197,9 @@ const AdminTable = ({ navigation }) => {
     )
 }
 
-export default AdminTable
+export default AdminIngridients
 
 const styles = StyleSheet.create({
-    label: { fontSize: FONTSIZE.size_16, fontFamily: FONTFAMILY.poppins_regular, color: COLORS.secondaryLightGreyHex },
-    input: { borderWidth: 1, borderColor: COLORS.secondaryLightGreyHex, borderRadius: BORDERRADIUS.radius_15, padding: SPACING.space_10, color: COLORS.secondaryLightGreyHex },
     ItemContainer: {
         flex: 1,
     },

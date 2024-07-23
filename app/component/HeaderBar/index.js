@@ -72,7 +72,7 @@ const HeaderBar = ({ title, onBack }) => {
                 >
                     <View style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'row', gap: SPACING.space_10, paddingHorizontal: SPACING.space_15, paddingVertical: SPACING.space_15 }}>
                         <CustomIcon
-                            name={'right-to-bracket'}
+                            name={'logout'}
                             color={COLORS.primaryOrangeHex}
                             size={FONTSIZE.size_16}
                         />

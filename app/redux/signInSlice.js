@@ -32,6 +32,8 @@ export const signInAction = createAsyncThunk(
         //data token
         const token = `${res.data.token_type} ${res.data.access_token}`;
         storeData('token', { value: token });
+        storeData('refreshToken', { value: res.data.refresh_token });
+
         if (profile.scope.includes('Admin')) {
           obj.navigation.reset({ index: 0, routes: [{ name: 'Admin' }] });
         } else {

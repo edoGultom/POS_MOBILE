@@ -7,6 +7,7 @@ import { IcLogo } from '../../assets';
 import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
 import { getData } from '../../utils';
 import { useRole } from '../../utils/roles';
+import { CommonActions } from '@react-navigation/native';
 
 const SplashScreen = ({ navigation }) => {
   const [progress, setProgress] = useState(0);
@@ -21,9 +22,21 @@ const SplashScreen = ({ navigation }) => {
               getData('userProfile').then((res) => {
                 // console.log(res, 'roles')
                 if (res?.scope?.includes('Admin')) {
-                  navigation.reset({ index: 4, routes: [{ name: 'Admin' }] });
+                  navigation.dispatch(
+                    CommonActions.reset({
+                      index: 1,
+                      routes: [{ name: 'Admin' }],
+                    })
+                  );
+                  // navigation.reset({ index: 4, routes: [{ name: 'Admin' }] });
                 } else {
-                  navigation.reset({ index: 0, routes: [{ name: 'MainApp' }] });
+                  navigation.dispatch(
+                    CommonActions.reset({
+                      index: 12,
+                      routes: [{ name: 'MainApp' }],
+                    })
+                  );
+                  // navigation.reset({ index: 0, routes: [{ name: 'MainApp' }] });
                 }
               });
             } else {

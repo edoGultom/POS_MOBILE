@@ -6,39 +6,38 @@ import api from '../api';
 
 // Initial state
 const initialState = {
-    kategori: [],
+    units: [],
     loading: false,
     error: null,
 };
 // Async thunk for posting user data
-export const getKategori = createAsyncThunk('kategori/getKategori', async () => {
-
+export const getUnits = createAsyncThunk('unit/getUnits', async () => {
     try {
-        const response = await api.get('/kategori');
+        const response = await api.get('/bahan-baku/units');
         return response.data.data;
     } catch (error) {
         console.error(error);
     }
 });
 
-const kategoriSlice = createSlice({
-    name: 'kategoriReducer',
+const unitsSlice = createSlice({
+    name: 'unitsReducer',
     initialState,
     reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(getKategori.pending, (state) => {
+            .addCase(getUnits.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(getKategori.fulfilled, (state, action) => {
+            .addCase(getUnits.fulfilled, (state, action) => {
                 state.loading = false;
-                state.kategori = action.payload;
+                state.units = action.payload;
             })
-            .addCase(getKategori.rejected, (state, action) => {
+            .addCase(getUnits.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message;
             });
     },
 });
-export default kategoriSlice.reducer;
+export default unitsSlice.reducer;

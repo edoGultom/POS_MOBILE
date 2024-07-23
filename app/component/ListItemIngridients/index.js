@@ -1,23 +1,12 @@
-import { BE_API_HOST } from '@env'
 import { LinearGradient } from 'expo-linear-gradient'
-import React, { useCallback, useEffect, useState } from 'react'
-import { Image, StyleSheet, Text, View } from 'react-native'
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
+import React from 'react'
+import { StyleSheet, Text, View } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
 import CustomIcon from '../CustomIcon'
 
-const ListItem = (props) => {
-    const [photo, setPhoto] = useState(null);
-    const { name, url, kind, price, onPressDelete, onPressUpdate } = props;
-
-    useEffect(() => {
-        const fetchData = () => {
-            setPhoto(`${BE_API_HOST}/lihat-file/profile?path=${url}`);
-        }
-        fetchData();
-        return () => setPhoto(null);
-    }, [url]);
-
+const ListItemIngridients = (props) => {
+    const { name, unit, onPressDelete, onPressUpdate } = props;
     return (
         <View>
             <LinearGradient
@@ -25,22 +14,18 @@ const ListItem = (props) => {
                 end={{ x: 1, y: 1 }}
                 colors={[COLORS.primaryBlackHex, COLORS.primaryGreyHex]}
                 style={styles.ItemSingleLinearGradient}>
-                <View>
-                    <Image source={{ uri: photo }} style={styles.ItemSingleImage} />
-                </View>
                 <View style={styles.ItemSingleInfoContainer}>
                     <View>
                         <Text style={styles.ItemTitle}>{name}</Text>
-                        <Text style={styles.ItemSubtitle}>{kind}</Text>
                         <Text style={styles.SizeCurrency}>
-                            IDR <Text style={styles.SizePrice}>{price.toLocaleString('id-ID')}</Text>
+                            {unit}
                         </Text>
                     </View>
                 </View>
-                <View style={styles.CartItemSingleQuantityContainer}>
+                <View style={styles.ButtonContainer}>
                     <TouchableOpacity
                         activeOpacity={0.4}
-                        style={styles.CartItemIcon}
+                        style={styles.ButtonIcon}
                         onPress={onPressUpdate}
                     >
                         <CustomIcon
@@ -51,7 +36,7 @@ const ListItem = (props) => {
                     </TouchableOpacity>
                     <TouchableOpacity
                         activeOpacity={0.4}
-                        style={styles.CartItemIcon}
+                        style={styles.ButtonIcon}
                         onPress={onPressDelete}
                     >
                         <CustomIcon
@@ -67,15 +52,15 @@ const ListItem = (props) => {
     )
 }
 
-export default ListItem
+export default ListItemIngridients
 
 const styles = StyleSheet.create({
-    CartItemIcon: {
+    ButtonIcon: {
         backgroundColor: COLORS.primaryBlackRGBA,
         padding: SPACING.space_12,
         borderRadius: BORDERRADIUS.radius_10,
     },
-    CartItemSingleQuantityContainer: {
+    ButtonContainer: {
         flexDirection: 'row',
         justifyContent: 'space-evenly',
         alignItems: 'center',
@@ -90,37 +75,19 @@ const styles = StyleSheet.create({
         marginHorizontal: SPACING.space_15,
         marginVertical: SPACING.space_10
     },
-    ItemSingleImage: {
-        height: 50,
-        width: 50,
-        borderRadius: BORDERRADIUS.radius_8,
-    },
-
     SizeCurrency: {
+        fontSize: FONTSIZE.size_12,
         fontFamily: FONTFAMILY.poppins_semibold,
-        fontSize: FONTSIZE.size_18,
         color: COLORS.primaryOrangeHex,
     },
-
-    SizePrice: {
-        color: COLORS.primaryWhiteHex,
-    },
-
     ItemSingleInfoContainer: {
         flex: 1,
         alignSelf: 'stretch',
         justifyContent: 'space-around',
     },
-
     ItemTitle: {
         fontFamily: FONTFAMILY.poppins_medium,
         fontSize: FONTSIZE.size_18,
-        color: COLORS.primaryWhiteHex,
-    },
-
-    ItemSubtitle: {
-        fontFamily: FONTFAMILY.poppins_regular,
-        fontSize: FONTSIZE.size_12,
         color: COLORS.secondaryLightGreyHex,
     },
 })

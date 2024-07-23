@@ -1,7 +1,6 @@
 
-import { BE_API_HOST } from '@env';
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import api from '../api';
 import { addLoading } from './globalSlice';
 
 // Initial state
@@ -11,14 +10,11 @@ const initialState = {
     error: null,
 };
 // Async thunk for posting user data
-export const getMenu = createAsyncThunk('menu/getMenu', async (token, { dispatch }) => {
+export const getMenu = createAsyncThunk('menu/getMenu', async (_, thunkAPI) => {
+    const { dispatch } = thunkAPI;
     dispatch(addLoading(true));
     try {
-        const response = await axios.get(`${BE_API_HOST}/menu`, {
-            headers: {
-                Authorization: `${token}`,
-            },
-        });
+        const response = await api.get('/menu');
         if (response.status === 200) {
             dispatch(addLoading(false));
             return response.data;
@@ -32,13 +28,15 @@ export const getMenu = createAsyncThunk('menu/getMenu', async (token, { dispatch
         console.error('Error: ', error);
     }
 });
-export const addMenu = createAsyncThunk('menu/addMenu', async (param, { dispatch }) => {
-    const { setRefreshData, dataInput, token } = param
+export const addMenu = createAsyncThunk('menu/addMenu', async (param, thunkAPI) => {
+    const { dispatch } = thunkAPI;
+
+    const { setRefreshData, dataInput } = param
     setRefreshData(true);
     try {
-        const response = await axios.post(`${BE_API_HOST}/menu/add`, dataInput, {
+
+        const response = await api.post(`/menu/add`, dataInput, {
             headers: {
-                Authorization: `${token}`,
                 'Content-Type': 'multipart/form-data',
             },
         });
@@ -53,13 +51,13 @@ export const addMenu = createAsyncThunk('menu/addMenu', async (param, { dispatch
         console.error('Error: ', error);
     }
 });
-export const updateMenu = createAsyncThunk('menu/updateMenu', async (param, { dispatch }) => {
-    const { id, setRefreshData, dataInput, token } = param
+export const updateMenu = createAsyncThunk('menu/updateMenu', async (param, thunkAPI) => {
+    const { dispatch } = thunkAPI;
+    const { id, setRefreshData, dataInput } = param
     setRefreshData(true);
     try {
-        const response = await axios.post(`${BE_API_HOST}/menu/update?id=${id}`, dataInput, {
+        const response = await api.post(`/menu/update?id=${id}`, dataInput, {
             headers: {
-                Authorization: `${token}`,
                 'Content-Type': 'multipart/form-data',
             },
         });
@@ -75,15 +73,12 @@ export const updateMenu = createAsyncThunk('menu/updateMenu', async (param, { di
         console.error('Error: ', error);
     }
 });
-export const deleteMenu = createAsyncThunk('menu/deleteMenu', async (param, { dispatch }) => {
-    const { id, setRefreshData, token } = param
+export const deleteMenu = createAsyncThunk('menu/deleteMenu', async (param, thunkAPI) => {
+    const { dispatch } = thunkAPI;
+    const { id, setRefreshData } = param
     setRefreshData(true);
     try {
-        const response = await axios.delete(`${BE_API_HOST}/menu/delete?id=${id}`, {
-            headers: {
-                Authorization: `${token}`,
-            },
-        });
+        const response = await api.delete(`/menu/delete?id=${id}`);
         if (response.status === 200) {
             setRefreshData(false);
             dispatch(deleteMenuState(id))

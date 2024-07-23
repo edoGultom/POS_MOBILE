@@ -1,15 +1,10 @@
 import { StatusBar } from 'expo-status-bar'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Dimensions, FlatList, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
-import { useDispatch, useSelector } from 'react-redux'
+import React from 'react'
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { IcCoffeeOff, IcCoffeeOn, IcNonCoffeeOff, IcNonCoffeeOn } from '../../assets'
-import CoffeCard from '../../component/CoffeeCard'
 import CustomIcon from '../../component/CustomIcon'
 import HeaderBar from '../../component/HeaderBar'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
-import { getMenu } from '../../redux/menuSlice'
-import { addToChartList } from '../../redux/orderSlice'
-import { getData } from '../../utils'
 
 const IconTextView = ({ iconName, text, onPress }) => {
     return (
@@ -42,36 +37,6 @@ const IconTextView = ({ iconName, text, onPress }) => {
     );
 }
 const Admin = ({ navigation }) => {
-    const ListRef = useRef();
-    const dispatch = useDispatch();
-    const { menus } = useSelector(state => state.menuReducer);
-    const { isLoading } = useSelector(state => state.globalReducer);
-
-    const [catgoryMenu, setCategoryMenu] = useState({
-        index: 0,
-        category: 'Coffee',
-    });
-    const [sortedMenu, setSortedMenu] = useState(null);
-    const getMenuList = (category, data) => {
-        let coffeelist = data?.filter((item) => item.nama_kategori == category) || [];
-        return coffeelist;
-    };
-    useEffect(() => {
-        navigation.addListener('focus', () => {
-            getDataMenu();
-        });
-    }, [navigation]);
-
-    useEffect(() => {
-        setSortedMenu([...getMenuList(catgoryMenu.category, menus)])
-    }, [menus]);
-
-    const getDataMenu = () => {
-        getData('token').then((res) => {
-            dispatch(getMenu(res.value))
-        });
-    };
-
     const navMenu = [
         {
             key: 1,
@@ -138,46 +103,6 @@ const Admin = ({ navigation }) => {
             },
         },
     ]
-
-    const categroyMenu = [
-        {
-            key: 0,
-            label: 'Coffee',
-            iconOff: <IcCoffeeOff />,
-            iconOn: <IcCoffeeOn />,
-        },
-        {
-            key: 1,
-            label: 'Non Coffee',
-            iconOff: <IcNonCoffeeOff />,
-            iconOn: <IcNonCoffeeOn />,
-        },
-    ];
-
-    const CoffeCardAddToCart = (item, checked) => {
-        const { id, nama_barang, path, nama_kategori, harga } = item
-        const data = {
-            id, nama_barang, path, nama_kategori, harga: checked.value, temperatur: checked.label
-        }
-        dispatch(addToChartList(data))
-        ToastAndroid.showWithGravity(
-            `${nama_barang} is Added to Cart`,
-            ToastAndroid.SHORT,
-            ToastAndroid.CENTER,
-        )
-    };
-
-    const fetchData = useCallback(async () => {
-        try {
-            getDataMenu();
-        } catch (error) {
-            console.log(error);
-        }
-    }, []);
-
-    useEffect(() => {
-        fetchData();
-    }, [fetchData]);
 
     return (
         <View style={styles.ScreenContainer}>

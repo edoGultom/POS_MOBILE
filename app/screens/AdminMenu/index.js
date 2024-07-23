@@ -16,7 +16,7 @@ import TextInput from '../../component/TextInput'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
 import { getKategori } from '../../redux/kategoriSlice'
 import { addMenu, deleteMenu, getMenu, updateMenu } from '../../redux/menuSlice'
-import { getData, showMessage, useForm } from '../../utils'
+import { showMessage, useForm } from '../../utils'
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -46,10 +46,8 @@ const AdminMenu = ({ navigation }) => {
     }, [navigation]);
 
     const getDataMenu = () => {
-        getData('token').then((res) => {
-            dispatch(getKategori(res.value))
-            dispatch(getMenu(res.value))
-        });
+        dispatch(getKategori())
+        dispatch(getMenu())
     };
 
     const fetchData = useCallback(async () => {
@@ -72,11 +70,8 @@ const AdminMenu = ({ navigation }) => {
     }
 
     const handleDelete = useCallback(async (id) => {
-        getData('token').then(async (res) => {
-            const token = res.value;
-            const param = { token, id, setRefreshData };
-            dispatch(deleteMenu(param))
-        });
+        const param = { id, setRefreshData };
+        dispatch(deleteMenu(param))
     }, []);
 
     const renderBackdrop = useCallback(
@@ -154,16 +149,13 @@ const AdminMenu = ({ navigation }) => {
 
                 dataInput.append('file', dataPhoto)
                 closeModal();
-                getData('token').then((resToken) => {
-                    const token = resToken.value;
-                    const param = { token, dataInput, setRefreshData };
-                    if (selected !== null) {//update
-                        const updatedParam = { ...param, id: selected.id };
-                        dispatch(updateMenu(updatedParam));
-                    } else {//add
-                        dispatch(addMenu(param));
-                    }
-                });
+                const param = { dataInput, setRefreshData };
+                if (selected !== null) {//update
+                    const updatedParam = { ...param, id: selected.id };
+                    dispatch(updateMenu(updatedParam));
+                } else {//add
+                    dispatch(addMenu(param));
+                }
             }
         };
 

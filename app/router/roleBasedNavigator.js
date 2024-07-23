@@ -9,6 +9,7 @@ import AdminOrder from '../screens/AdminOrder';
 import SuccessPaymentCash from '../screens/SuccessPaymentCash';
 import AdminReport from '../screens/AdminReport';
 import AdminTable from '../screens/AdminTable';
+import AdminIngridients from '../screens/AdminIngridients';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -28,7 +29,7 @@ const RoleBasedNavigator = () => {
     const { roles } = useRole();
     return (
         <Stack.Navigator initialRouteName="Splash">
-            {/* <Stack.Screen
+            <Stack.Screen
                 name="SplashScreen"
                 component={SplashScreen}
                 options={{ headerShown: false }}
@@ -47,7 +48,7 @@ const RoleBasedNavigator = () => {
                 name="SuccessSignUp"
                 component={SuccessSignUp}
                 options={{ headerShown: false }}
-            /> */}
+            />
             <Stack.Screen
                 name="Admin"
                 component={Admin}
@@ -61,6 +62,11 @@ const RoleBasedNavigator = () => {
             <Stack.Screen
                 name="AdminTable"
                 component={AdminTable}
+                options={{ headerShown: false, animation: 'slide_from_bottom' }}
+            />
+            <Stack.Screen
+                name="AdminIngridients"
+                component={AdminIngridients}
                 options={{ headerShown: false, animation: 'slide_from_bottom' }}
             />
             <Stack.Screen
@@ -88,7 +94,6 @@ const RoleBasedNavigator = () => {
                 component={AdminHistory}
                 options={{ headerShown: false, animation: 'slide_from_bottom' }}
             />
-
             <Stack.Screen name="MainApp" component={MainApp} options={{ headerShown: false }} />
         </Stack.Navigator>
     );
