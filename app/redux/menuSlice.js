@@ -1,6 +1,6 @@
 
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import api from '../api';
+import { axiosInstance } from '../api/instance';
 import { addLoading } from './globalSlice';
 
 // Initial state
@@ -14,7 +14,7 @@ export const getMenu = createAsyncThunk('menu/getMenu', async (_, thunkAPI) => {
     const { dispatch } = thunkAPI;
     dispatch(addLoading(true));
     try {
-        const response = await api.get('/menu');
+        const response = await axiosInstance.get('/menu');
         if (response.status === 200) {
             dispatch(addLoading(false));
             return response.data;
@@ -35,7 +35,7 @@ export const addMenu = createAsyncThunk('menu/addMenu', async (param, thunkAPI) 
     setRefreshData(true);
     try {
 
-        const response = await api.post(`/menu/add`, dataInput, {
+        const response = await axiosInstance.post(`/menu/add`, dataInput, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
@@ -56,7 +56,7 @@ export const updateMenu = createAsyncThunk('menu/updateMenu', async (param, thun
     const { id, setRefreshData, dataInput } = param
     setRefreshData(true);
     try {
-        const response = await api.post(`/menu/update?id=${id}`, dataInput, {
+        const response = await axiosInstance.post(`/menu/update?id=${id}`, dataInput, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
@@ -78,7 +78,7 @@ export const deleteMenu = createAsyncThunk('menu/deleteMenu', async (param, thun
     const { id, setRefreshData } = param
     setRefreshData(true);
     try {
-        const response = await api.delete(`/menu/delete?id=${id}`);
+        const response = await axiosInstance.delete(`/menu/delete?id=${id}`);
         if (response.status === 200) {
             setRefreshData(false);
             dispatch(deleteMenuState(id))

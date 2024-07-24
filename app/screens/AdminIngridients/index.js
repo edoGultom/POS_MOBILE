@@ -1,7 +1,7 @@
 import { BottomSheetBackdrop, BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { StatusBar } from 'expo-status-bar'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Button, Dimensions, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Button, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import BottomSheetCustom from '../../component/BottomSheet'
 import CustomIcon from '../../component/CustomIcon'
@@ -40,7 +40,6 @@ const AdminIngridients = ({ navigation }) => {
     }, [navigation]);
 
     const getData = () => {
-        dispatch(getUnits())
         dispatch(getIngridients())
     };
 
@@ -93,6 +92,10 @@ const AdminIngridients = ({ navigation }) => {
     };
 
     const FormComponent = ({ dataUnit, selected }) => {
+        useEffect(() => {
+            dispatch(getUnits())
+        }, [dataUnit])
+
         const [form, setForm] = useForm({
             nama: selected !== null ? selected.nama : null,
             id_unit_bahan_baku: selected !== null ? selected.id_unit_bahan_baku : '1',

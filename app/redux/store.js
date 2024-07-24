@@ -14,7 +14,7 @@ const reducers = combineReducers({
     ingridientsReducer: ingridientsSlice,
     menuReducer: menuSlice,
     orderReducer: orderSlice,
-    tablesReducer: tableSice
+    tablesReducer: tableSice,
 });
 const store = configureStore({
     reducer: reducers,

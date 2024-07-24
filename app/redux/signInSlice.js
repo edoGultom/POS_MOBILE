@@ -4,6 +4,7 @@ import axios from 'axios';
 
 import { showMessage, storeData } from '../utils';
 import { addLoading } from './globalSlice';
+import { axiosInstance } from '../api/instance';
 
 export const signInAction = createAsyncThunk(
   'post/postSignIn',
@@ -17,7 +18,7 @@ export const signInAction = createAsyncThunk(
     formData.append('client_id', 'testclient');
     formData.append('client_secret', 'testpass');
 
-    await axios
+    await axiosInstance
       .post(`${BE_API_HOST}/user/login`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -30,7 +31,7 @@ export const signInAction = createAsyncThunk(
         storeData('userProfile', profile);
 
         //data token
-        const token = `${res.data.token_type} ${res.data.access_token}`;
+        const token = res.data.access_token;
         storeData('token', { value: token });
         storeData('refreshToken', { value: res.data.refresh_token });
 

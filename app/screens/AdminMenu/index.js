@@ -30,7 +30,7 @@ const AdminMenu = ({ navigation }) => {
     const [selectedMenu, setSelectedMenu] = useState(null);
 
     useEffect(() => {
-        if (dataKategori.length < 1 && kategori.length > 0) {
+        if (dataKategori.length < 1 && kategori?.length > 0) {
             const data = kategori.map((item) => ({
                 id: item.id,
                 nama: item.nama_kategori
@@ -46,7 +46,6 @@ const AdminMenu = ({ navigation }) => {
     }, [navigation]);
 
     const getDataMenu = () => {
-        dispatch(getKategori())
         dispatch(getMenu())
     };
 
@@ -99,6 +98,10 @@ const AdminMenu = ({ navigation }) => {
     };
 
     const FormComponent = ({ dataKategori, selected }) => {
+        useEffect(() => {
+            dispatch(getKategori())
+        }, [])
+
         const [photo, setPhoto] = useState(null);
 
         const fetchImage = useCallback(async () => {

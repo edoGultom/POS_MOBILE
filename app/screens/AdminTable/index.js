@@ -12,7 +12,7 @@ import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../confi
 import { addTable, deleteTable, getTables, updateTable } from '../../redux/tableSice'
 import { getData, showMessage, useForm } from '../../utils'
 
-const windowWidth = Dimensions.get('window').width;
+// const windowWidth = Dimensions.get('window').width;
 
 const AdminTable = ({ navigation }) => {
     const bottomSheetModalRef = useRef(null);
@@ -28,9 +28,7 @@ const AdminTable = ({ navigation }) => {
     }, [navigation]);
 
     const getDataTable = () => {
-        getData('token').then((res) => {
-            dispatch(getTables(res.value))
-        });
+        dispatch(getTables())
     };
 
     const fetchData = useCallback(async () => {

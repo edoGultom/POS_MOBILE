@@ -1,10 +1,10 @@
 import { StatusBar } from 'expo-status-bar'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { IcCoffeeOff, IcCoffeeOn, IcNonCoffeeOff, IcNonCoffeeOn } from '../../assets'
 import CustomIcon from '../../component/CustomIcon'
 import HeaderBar from '../../component/HeaderBar'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
+import { axiosInstance } from '../../api/instance'
 
 const IconTextView = ({ iconName, text, onPress }) => {
     return (
@@ -103,6 +103,21 @@ const Admin = ({ navigation }) => {
             },
         },
     ]
+
+    // useEffect(() => {
+    //     navigation.addListener('focus', () => {
+    //         async function fetch() {
+    //             axiosInstance.get('/menu/test')
+    //                 .then((response) => {
+    //                     console.log(response, 'resx')
+    //                 })
+    //                 .catch((error) => {
+    //                     console.error(error, 'er');
+    //                 });
+    //         }
+    //         fetch()
+    //     });
+    // }, [navigation]);
 
     return (
         <View style={styles.ScreenContainer}>

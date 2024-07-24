@@ -2,7 +2,7 @@
 import { BE_API_HOST } from '@env';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import api from '../api';
+// import api from '../api';
 
 // Initial state
 const initialState = {
@@ -12,9 +12,8 @@ const initialState = {
 };
 // Async thunk for posting user data
 export const getKategori = createAsyncThunk('kategori/getKategori', async () => {
-
     try {
-        const response = await api.get('/kategori');
+        const response = await axios.get('/kategori');
         return response.data.data;
     } catch (error) {
         console.error(error);

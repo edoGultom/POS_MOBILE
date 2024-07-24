@@ -1,7 +1,7 @@
 
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import api from '../api';
 import { addLoading } from './globalSlice';
+import { axiosInstance } from '../api/instance';
 
 // Initial state
 const initialState = {
@@ -14,7 +14,7 @@ export const getIngridients = createAsyncThunk('ingridients/getIngridients', asy
     const { dispatch } = thunkAPI;
     dispatch(addLoading(true));
     try {
-        const response = await api.get('/bahan-baku');
+        const response = await axiosInstance.get('/bahan-baku');
         if (response.status === 200) {
             dispatch(addLoading(false));
             return response.data;
@@ -35,7 +35,7 @@ export const addIngridients = createAsyncThunk('ingridients/addIngridients', asy
     setRefreshData(true);
     try {
 
-        const response = await api.post(`/bahan-baku/add`, dataInput, {
+        const response = await axiosInstance.post(`/bahan-baku/add`, dataInput, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
@@ -56,7 +56,7 @@ export const updateIngridients = createAsyncThunk('ingridients/updateIngridients
     const { id, setRefreshData, dataInput } = param
     setRefreshData(true);
     try {
-        const response = await api.post(`/bahan-baku/update?id=${id}`, dataInput, {
+        const response = await axiosInstance.post(`/bahan-baku/update?id=${id}`, dataInput, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
@@ -78,7 +78,7 @@ export const deleteIngridients = createAsyncThunk('ingridients/deleteIngridients
     const { id, setRefreshData } = param
     setRefreshData(true);
     try {
-        const response = await api.delete(`/bahan-baku/delete?id=${id}`);
+        const response = await axiosInstance.delete(`/bahan-baku/delete?id=${id}`);
         if (response.status === 200) {
             setRefreshData(false);
             dispatch(deleteIngridientsState(id))

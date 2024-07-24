@@ -50,7 +50,7 @@ const HeaderBar = ({ title, onBack }) => {
             )}
             {!onBack && (
                 <View style={styles.Container}>
-                    <Image source={LogoJPG} style={{ width: 120, height: 50, borderRadius: 5 }} />
+                    {/* <Image source={LogoJPG} style={{ width: 120, height: 50, borderRadius: 5 }} /> */}
                 </View>
             )}
 

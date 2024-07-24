@@ -1,8 +1,7 @@
 
 import { BE_API_HOST } from '@env';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
-import api from '../api';
+import { axiosInstance } from '../api/instance';
 
 // Initial state
 const initialState = {
@@ -13,7 +12,7 @@ const initialState = {
 // Async thunk for posting user data
 export const getUnits = createAsyncThunk('unit/getUnits', async () => {
     try {
-        const response = await api.get('/bahan-baku/units');
+        const response = await axiosInstance.get('/bahan-baku/units');
         return response.data.data;
     } catch (error) {
         console.error(error);

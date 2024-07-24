@@ -1,7 +1,7 @@
 
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import api from '../api';
 import { addLoading } from './globalSlice';
+import { axiosInstance } from '../api/instance';
 
 // Initial state
 const initialState = {
@@ -14,7 +14,7 @@ export const getTables = createAsyncThunk('table/getTables', async (_, thunkAPI)
     const { dispatch } = thunkAPI;
     dispatch(addLoading(true));
     try {
-        const response = await api.get(`/table`);
+        const response = await axiosInstance.get(`/table`);
         if (response.status === 200) {
             dispatch(addLoading(false));
             return response.data;
@@ -32,7 +32,7 @@ export const addTable = createAsyncThunk('table/addTable', async (param, thunkAP
     const { setRefreshData, dataInput } = param
     setRefreshData(true);
     try {
-        const response = await api.post(`/table/add`, dataInput, {
+        const response = await axiosInstance.post(`/table/add`, dataInput, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
@@ -53,7 +53,7 @@ export const updateTable = createAsyncThunk('table/updateTable', async (param, t
     const { id, setRefreshData, dataInput } = param
     setRefreshData(true);
     try {
-        const response = await api.post(`/table/update?id=${id}`, dataInput, {
+        const response = await axiosInstance.post(`/table/update?id=${id}`, dataInput, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
@@ -75,7 +75,7 @@ export const deleteTable = createAsyncThunk('table/deleteTable', async (param, t
     const { id, setRefreshData } = param
     setRefreshData(true);
     try {
-        const response = await api.delete(`/table/delete?id=${id}`);
+        const response = await axiosInstance.delete(`/table/delete?id=${id}`);
         if (response.status === 200) {
             setRefreshData(false);
             dispatch(deleteTablesState(id))
