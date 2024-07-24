@@ -10,6 +10,7 @@ import SuccessPaymentCash from '../screens/SuccessPaymentCash';
 import AdminReport from '../screens/AdminReport';
 import AdminTable from '../screens/AdminTable';
 import AdminIngridients from '../screens/AdminIngridients';
+import AdminMenuIngridients from '../screens/AdminMenuIngridients';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -67,6 +68,11 @@ const RoleBasedNavigator = () => {
             <Stack.Screen
                 name="AdminIngridients"
                 component={AdminIngridients}
+                options={{ headerShown: false, animation: 'slide_from_bottom' }}
+            />
+            <Stack.Screen
+                name="AdminMenuIngridients"
+                component={AdminMenuIngridients}
                 options={{ headerShown: false, animation: 'slide_from_bottom' }}
             />
             <Stack.Screen

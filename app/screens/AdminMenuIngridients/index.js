@@ -13,34 +13,28 @@ import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../confi
 import { addIngridients, deleteIngridients, getIngridients, updateIngridients } from '../../redux/ingridientsSlice'
 import { getUnits } from '../../redux/unitsSlice'
 import { showMessage, useForm } from '../../utils'
+import ListItemMenuIngridients from '../../component/ListItemMenuIngridients'
+import { getMenu } from '../../redux/menuSlice'
+import { addMenuIngridients, deleteMenuIngridients, getMenuIngridients, updateMenuIngridients } from '../../redux/menuIngridientsSlice'
 
-const AdminIngridients = ({ navigation }) => {
-    const { units } = useSelector(state => state.unitsReducer);
-    const bottomSheetModalRef = useRef(null);
+const AdminMenuIngridients = ({ navigation }) => {
+    const { menu_ingridients } = useSelector(state => state.menuIngridientsReducer);
+    const { menus } = useSelector(state => state.menuReducer);
     const { ingridients } = useSelector(state => state.ingridientsReducer);
-    const [dataUnit, setDataUnit] = useState([]);
+    const bottomSheetModalRef = useRef(null);
     const dispatch = useDispatch();
     const [refreshing, setRefreshing] = useState(false);
-    const [selectedIngridients, setSelectedIngridients] = useState(null);
-
-    useEffect(() => {
-        if (dataUnit.length < 1 && units.length > 0) {
-            const data = units.map((item) => ({
-                id: item.id,
-                nama: item.nama
-            }));
-            setDataUnit(data)
-        }
-    }, [units])
+    const [selectedMenuIngridients, setSelectedMenuIngridients] = useState(null);
 
     useEffect(() => {
         navigation.addListener('focus', () => {
-            getData();
+            getData()
         });
     }, [navigation]);
 
     const getData = () => {
-        dispatch(getUnits())
+        dispatch(getMenuIngridients())
+        dispatch(getMenu())
         dispatch(getIngridients())
     };
 
@@ -55,17 +49,13 @@ const AdminIngridients = ({ navigation }) => {
         }
     }, []);
 
-    // useEffect(() => {
-    //     fetchData();
-    // }, [fetchData]);
-
     const setRefreshData = (val) => {
         setRefreshing(val);
     }
 
     const handleDelete = useCallback(async (id) => {
         const param = { id, setRefreshData };
-        dispatch(deleteIngridients(param))
+        dispatch(deleteMenuIngridients(param))
     }, []);
 
     const renderBackdrop = useCallback(
@@ -79,10 +69,10 @@ const AdminIngridients = ({ navigation }) => {
         []
     );
     useEffect(() => {
-        if (selectedIngridients) {
+        if (selectedMenuIngridients) {
             bottomSheetModalRef.current.present();
         }
-    }, [selectedIngridients])
+    }, [selectedMenuIngridients])
 
     const openModal = () => {
         bottomSheetModalRef.current.present();
@@ -92,12 +82,15 @@ const AdminIngridients = ({ navigation }) => {
         bottomSheetModalRef.current.dismiss();
     };
 
-    const FormComponent = ({ dataUnit, selected }) => {
+    const FormComponent = ({ dataMenu, dataBahanBaku, selected }) => {
+        console.log(selected, 'selected')
+        const [unit, setUnit] = useState(selected !== null ? selected.unit : dataBahanBaku[0].unit);
         const [form, setForm] = useForm({
-            nama: selected !== null ? selected.nama : null,
-            id_unit_bahan_baku: selected !== null ? selected.id_unit_bahan_baku : '1',
+            id_menu: selected !== null ? selected.id_menu : null,
+            id_bahan_baku: selected !== null ? selected.id_bahan_baku : '1',
+            quantity: selected !== null ? selected.quantity : 1,
         });
-        const Title = selected !== null ? 'Ubah Bahan Baku' : 'Tambah Bahan Baku';
+        const Title = selected !== null ? 'Ubah Menu Bahan Baku' : 'Tambah Menu Bahan Baku';
 
         const onSubmit = () => {
             if (form.nama === null) {
@@ -111,9 +104,9 @@ const AdminIngridients = ({ navigation }) => {
                 const param = { dataInput, setRefreshData };
                 if (selected !== null) {//update
                     const updatedParam = { ...param, id: selected.id };
-                    dispatch(updateIngridients(updatedParam));
+                    dispatch(updateMenuIngridients(updatedParam));
                 } else {//add
-                    dispatch(addIngridients(param));
+                    dispatch(addMenuIngridients(param));
                 }
             }
         };
@@ -121,18 +114,37 @@ const AdminIngridients = ({ navigation }) => {
         return (
             <View style={{ marginBottom: 5, gap: 20 }}>
                 <Text style={{ color: COLORS.primaryOrangeHex, fontFamily: FONTFAMILY.poppins_bold, fontSize: FONTSIZE.size_20 }}>{Title}</Text>
-                <TextInput
-                    label="Bahan Baku"
-                    placeholder="Masukkan Nama Bahan Baku"
-                    value={form.nama}
-                    onChangeText={(value) => setForm('nama', value)}
+                <Select
+                    label="Menu"
+                    data={dataMenu}
+                    value={form.id_menu}
+                    onSelectChange={(value) => setForm('id_menu', value)}
                 />
                 <Select
-                    label="Satuan"
-                    data={dataUnit}
-                    value={form.id_unit_bahan_baku}
-                    onSelectChange={(value) => setForm('id_unit_bahan_baku', value)}
+                    label="Bahan Baku"
+                    data={dataBahanBaku}
+                    value={form.id_bahan_baku}
+                    onSelectChange={(value) => {
+                        const unitBahanBaku = dataBahanBaku.find((item) => item.id === value)
+                        setUnit(unitBahanBaku.unit)
+                        setForm('id_bahan_baku', value)
+                    }}
                 />
+                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={{ flexShrink: 1, flexGrow: 1, marginRight: SPACING.space_10 }}>
+                        <TextInput
+                            keyboardType="numeric"
+                            label="Quantity"
+                            placeholder="Masukkan quantity"
+                            value={form.quantity}
+                            onChangeText={(value) => setForm('quantity', value)}
+                        />
+                    </View>
+                    <View style={{ flexShrink: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                        <Text style={styles.labelUnit}>Unit Bahan Baku</Text>
+                        <Text style={styles.valUnit}>{unit}</Text>
+                    </View>
+                </View>
                 <Button title="Tutup" onPress={() => { closeModal() }} color={COLORS.primaryLightGreyHex} />
                 <Button title="Simpan" onPress={() => { onSubmit() }} color={COLORS.primaryOrangeHex} />
             </View>
@@ -143,25 +155,30 @@ const AdminIngridients = ({ navigation }) => {
         <BottomSheetModalProvider>
             <View style={styles.ScreenContainer}>
                 <StatusBar style='light' />
-                <HeaderBar title="Daftar Bahan Baku" onBack={() => navigation.goBack()} />
-                {!ingridients ? (
+                <HeaderBar title="Daftar Menu Bahan Baku" onBack={() => navigation.goBack()} />
+                {!menu_ingridients ? (
                     <View style={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
                         <Text style={{ fontSize: FONTSIZE.size_18, color: COLORS.primaryLightGreyHex }}>Tidak ada item yang tersedia</Text>
                     </View>
                 ) : (
                     <FlatList
-                        data={ingridients}
+                        data={menu_ingridients}
                         onRefresh={fetchData}
                         refreshing={refreshing}
                         showsVerticalScrollIndicator={false}
                         renderItem={({ item }) => (
-                            <ListItemIngridients
+                            <ListItemMenuIngridients
                                 key={item.id}
                                 id={item.id}
-                                name={item.nama}
-                                unit={item.unit}
-                                onPressDelete={() => handleDelete(item.id)}
-                                onPressUpdate={() => setSelectedIngridients(item)}
+                                menu={item.nama}
+                                url={item.path}
+                                list_bahan_baku={item.list_bahan_baku}
+                                onPressDelete={(id) => handleDelete(id)}
+                                onPressUpdate={() => console.log('first')}
+                                onPressAdd={() => {
+                                    openModal()
+                                    setSelectedMenuIngridients(item)
+                                }}
                             />
                         )}
                         keyExtractor={item => item.id}
@@ -174,15 +191,15 @@ const AdminIngridients = ({ navigation }) => {
                     ref={bottomSheetModalRef}
                     backdropComponent={renderBackdrop}
                 >
-                    <FormComponent dataUnit={dataUnit} selected={selectedIngridients} />
+                    <FormComponent dataMenu={menus} dataBahanBaku={ingridients} selected={selectedMenuIngridients} />
                 </BottomSheetCustom>
 
-                <View style={styles.buttonContainer}>
+                {/* <View style={styles.buttonContainer}>
                     <TouchableOpacity
                         style={styles.buttonTambah}
                         onPress={() => {
                             openModal()
-                            setSelectedIngridients(null)
+                            setSelectedMenuIngridients(null)
                         }}
                     >
                         <CustomIcon
@@ -191,13 +208,13 @@ const AdminIngridients = ({ navigation }) => {
                             size={FONTSIZE.size_24}
                         />
                     </TouchableOpacity>
-                </View>
+                </View> */}
             </View>
         </BottomSheetModalProvider >
     )
 }
 
-export default AdminIngridients
+export default AdminMenuIngridients
 
 const styles = StyleSheet.create({
     ItemContainer: {
@@ -241,5 +258,15 @@ const styles = StyleSheet.create({
         position: 'relative',
         backgroundColor: COLORS.primaryBlackHex,
         flex: 1,
+    },
+    labelUnit: {
+        fontFamily: FONTFAMILY.poppins_medium,
+        fontSize: FONTSIZE.size_14,
+        color: COLORS.primaryOrangeHex,
+    },
+    valUnit: {
+        fontFamily: FONTFAMILY.poppins_medium,
+        fontSize: FONTSIZE.size_12,
+        color: COLORS.primaryWhiteHex,
     },
 })
