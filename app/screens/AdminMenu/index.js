@@ -47,6 +47,7 @@ const AdminMenu = ({ navigation }) => {
 
     const getDataMenu = () => {
         dispatch(getMenu())
+        dispatch(getKategori())
     };
 
     const fetchData = useCallback(async () => {
@@ -98,10 +99,6 @@ const AdminMenu = ({ navigation }) => {
     };
 
     const FormComponent = ({ dataKategori, selected }) => {
-        useEffect(() => {
-            dispatch(getKategori())
-        }, [])
-
         const [photo, setPhoto] = useState(null);
 
         const fetchImage = useCallback(async () => {

@@ -1,8 +1,7 @@
 
 import { BE_API_HOST } from '@env';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
-// import api from '../api';
+import { axiosInstance } from '../api/instance';
 
 // Initial state
 const initialState = {
@@ -13,7 +12,7 @@ const initialState = {
 // Async thunk for posting user data
 export const getKategori = createAsyncThunk('kategori/getKategori', async () => {
     try {
-        const response = await axios.get('/kategori');
+        const response = await axiosInstance.get('/kategori');
         return response.data.data;
     } catch (error) {
         console.error(error);

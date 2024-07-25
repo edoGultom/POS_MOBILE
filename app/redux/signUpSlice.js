@@ -1,6 +1,5 @@
 import { BE_API_HOST } from '@env';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
 
 import { showMessage, storeData } from '../utils';
 import { addLoading } from './globalSlice';
@@ -9,7 +8,7 @@ import { addLoading } from './globalSlice';
 export const signUpAction = createAsyncThunk(
   'post/postRegister',
   async (data, { dispatch }) => {
-    await axios
+    await axiosInstance
       .post(`${BE_API_HOST}/user/register`, data, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -25,7 +24,7 @@ export const signUpAction = createAsyncThunk(
           formData.append('grant_type', 'password');
           formData.append('client_id', 'testclient');
           formData.append('client_secret', 'testpass');
-          axios
+          axiosInstance
             .post(`${BE_API_HOST}/user/login`, formData, {
               headers: {
                 'Content-Type': 'multipart/form-data',
@@ -46,7 +45,7 @@ export const signUpAction = createAsyncThunk(
                   }
                   const photoForUpload = new FormData();
                   photoForUpload.append('imageFile', dataPhoto);
-                  axios
+                  axiosInstance
                     .post(`${BE_API_HOST}/upload-file/upload`, photoForUpload, {
                       headers: {
                         Authorization: `${token}`,

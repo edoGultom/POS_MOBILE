@@ -1,10 +1,9 @@
 import { BE_API_HOST } from '@env';
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { createAsyncThunk } from '@reduxjs/toolkit';
 
+import { axiosInstance } from '../api/instance';
 import { showMessage, storeData } from '../utils';
 import { addLoading } from './globalSlice';
-import { axiosInstance } from '../api/instance';
 
 export const signInAction = createAsyncThunk(
   'post/postSignIn',
