@@ -23,6 +23,7 @@ const AdminMenuIngridients = ({ navigation }) => {
     const { ingridients } = useSelector(state => state.ingridientsReducer);
     const bottomSheetModalRef = useRef(null);
     const dispatch = useDispatch();
+    const [isUpdate, setIsUpdate] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const [selectedMenuIngridients, setSelectedMenuIngridients] = useState(null);
 
@@ -77,23 +78,29 @@ const AdminMenuIngridients = ({ navigation }) => {
     const openModal = () => {
         bottomSheetModalRef.current.present();
     };
-
-    const closeModal = () => {
+    const closeModal = useCallback(() => {
         bottomSheetModalRef.current.dismiss();
-    };
+        setSelectedMenuIngridients(null)
+        setIsUpdate(false);
+    }, []);
 
-    const FormComponent = ({ dataMenu, dataBahanBaku, selected }) => {
-        console.log(selected, 'selected')
-        const [unit, setUnit] = useState(selected !== null ? selected.unit : dataBahanBaku[0].unit);
+    const FormComponent = ({ dataBahanBaku, selected, isUpdate }) => {
+        const [unit, setUnit] = useState(!isUpdate ? dataBahanBaku[0]?.unit : selected.list_bahan_baku[0]?.unit);
+        const existsData = () => {
+            return selected.list_bahan_baku.find((item) => item.id_menu === form.id_menu && item.id_bahan_baku === form.id_bahan_baku)
+        }
         const [form, setForm] = useForm({
-            id_menu: selected !== null ? selected.id_menu : null,
-            id_bahan_baku: selected !== null ? selected.id_bahan_baku : '1',
-            quantity: selected !== null ? selected.quantity : 1,
+            id_menu: selected?.id,
+            id_bahan_baku: !isUpdate ? dataBahanBaku[0].id : selected.list_bahan_baku[0].id_bahan_baku,
+            quantity: !isUpdate ? 0 : selected.list_bahan_baku[0].quantity.toString(),
         });
-        const Title = selected !== null ? 'Ubah Menu Bahan Baku' : 'Tambah Menu Bahan Baku';
+
+        const Title = !isUpdate ? `Tambah Bahan Baku '${selected?.nama}'` : `Ubah Bahan Baku '${selected?.nama}'`;
 
         const onSubmit = () => {
-            if (form.nama === null) {
+            if (!isUpdate && existsData()) {//jika sudah ada diinput
+                showMessage('Ingridient already exists', 'danger');
+            } else if (form.quantity < 1) {
                 showMessage('Please input a ingridient!', 'danger');
             } else {
                 const dataInput = new FormData();
@@ -102,8 +109,8 @@ const AdminMenuIngridients = ({ navigation }) => {
                 }
                 closeModal();
                 const param = { dataInput, setRefreshData };
-                if (selected !== null) {//update
-                    const updatedParam = { ...param, id: selected.id };
+                if (isUpdate) {//update
+                    const updatedParam = { ...param, id: selected.list_bahan_baku[0].id };
                     dispatch(updateMenuIngridients(updatedParam));
                 } else {//add
                     dispatch(addMenuIngridients(param));
@@ -114,12 +121,6 @@ const AdminMenuIngridients = ({ navigation }) => {
         return (
             <View style={{ marginBottom: 5, gap: 20 }}>
                 <Text style={{ color: COLORS.primaryOrangeHex, fontFamily: FONTFAMILY.poppins_bold, fontSize: FONTSIZE.size_20 }}>{Title}</Text>
-                <Select
-                    label="Menu"
-                    data={dataMenu}
-                    value={form.id_menu}
-                    onSelectChange={(value) => setForm('id_menu', value)}
-                />
                 <Select
                     label="Bahan Baku"
                     data={dataBahanBaku}
@@ -137,7 +138,7 @@ const AdminMenuIngridients = ({ navigation }) => {
                             label="Quantity"
                             placeholder="Masukkan quantity"
                             value={form.quantity}
-                            onChangeText={(value) => setForm('quantity', value)}
+                            onChangeText={(value) => setForm('quantity', value ? parseInt(value) : 0)}
                         />
                     </View>
                     <View style={{ flexShrink: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
@@ -174,10 +175,19 @@ const AdminMenuIngridients = ({ navigation }) => {
                                 url={item.path}
                                 list_bahan_baku={item.list_bahan_baku}
                                 onPressDelete={(id) => handleDelete(id)}
-                                onPressUpdate={() => console.log('first')}
-                                onPressAdd={() => {
+                                onPressUpdate={(idBahanBaku) => {
                                     openModal()
+                                    setIsUpdate(true)
+                                    const filter = item.list_bahan_baku.filter((item) => item.id === idBahanBaku)
+                                    const filteredItem = {
+                                        ...item,
+                                        list_bahan_baku: filter
+                                    };
+                                    setSelectedMenuIngridients(filteredItem)
+                                }}
+                                onPressAdd={() => {
                                     setSelectedMenuIngridients(item)
+                                    openModal()
                                 }}
                             />
                         )}
@@ -190,25 +200,10 @@ const AdminMenuIngridients = ({ navigation }) => {
                 <BottomSheetCustom
                     ref={bottomSheetModalRef}
                     backdropComponent={renderBackdrop}
+                    onDismiss={closeModal}
                 >
-                    <FormComponent dataMenu={menus} dataBahanBaku={ingridients} selected={selectedMenuIngridients} />
+                    <FormComponent dataBahanBaku={ingridients} selected={selectedMenuIngridients} isUpdate={isUpdate} />
                 </BottomSheetCustom>
-
-                {/* <View style={styles.buttonContainer}>
-                    <TouchableOpacity
-                        style={styles.buttonTambah}
-                        onPress={() => {
-                            openModal()
-                            setSelectedMenuIngridients(null)
-                        }}
-                    >
-                        <CustomIcon
-                            name={'library-add'}
-                            color={COLORS.primaryOrangeHex}
-                            size={FONTSIZE.size_24}
-                        />
-                    </TouchableOpacity>
-                </View> */}
             </View>
         </BottomSheetModalProvider >
     )

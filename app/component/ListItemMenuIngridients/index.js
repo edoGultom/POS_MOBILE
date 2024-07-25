@@ -1,10 +1,9 @@
 import { BE_API_HOST } from '@env'
 import { LinearGradient } from 'expo-linear-gradient'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Image, StyleSheet, Text, View } from 'react-native'
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import CustomIcon from '../CustomIcon'
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
 import ButtonIcon from '../ButtonIcon'
 
 const ListItemMenuIngridients = (props) => {

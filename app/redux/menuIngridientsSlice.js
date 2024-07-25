@@ -30,7 +30,6 @@ export const getMenuIngridients = createAsyncThunk('menuIngridients/getMenuIngri
 });
 export const addMenuIngridients = createAsyncThunk('menuIngridients/addMenuIngridients', async (param, thunkAPI) => {
     const { dispatch } = thunkAPI;
-
     const { setRefreshData, dataInput } = param
     setRefreshData(true);
     try {
@@ -99,16 +98,20 @@ const menuIngridientsSlice = createSlice({
             if (!Array.isArray(state.menu_ingridients)) {
                 state.menu_ingridients = [];
             }
-            state.menu_ingridients.push(action.payload);
+            const { id_menu } = action.payload;
+            const index = state.menu_ingridients.findIndex(menu => menu.id === id_menu);
+            if (index !== -1) {
+                state.menu_ingridients[index].list_bahan_baku.push(action.payload)
+            }
         },
         updateMenuIngridientsState: (state, action) => {
-            const { id } = action.payload;
-            const index = state.menu_ingridients.findIndex(menu => menu.id === id);
-            if (index !== -1) {
-                state.menu_ingridients[index] = {
-                    ...state.menu_ingridients[index],
-                    ...action.payload,
-                };
+            const { id, id_menu } = action.payload;
+            const menuItem = state.menu_ingridients.find(item => item.id === id_menu);
+            if (menuItem) {
+                const bahanBaku = menuItem.list_bahan_baku.find(b => b.id === id);
+                if (bahanBaku) {
+                    Object.assign(bahanBaku, action.payload);
+                }
             }
         },
         deleteMenuIngridientsState: (state, action) => {
