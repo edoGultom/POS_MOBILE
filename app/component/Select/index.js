@@ -28,15 +28,17 @@ export default Select;
 
 const styles = StyleSheet.create({
   label: {
-    fontSize: FONTSIZE.size_16, fontFamily: FONTFAMILY.poppins_regular, color: COLORS.secondaryLightGreyHex
+    fontSize: FONTSIZE.size_16,
+    fontFamily: FONTFAMILY.poppins_regular,
+    color: COLORS.secondaryLightGreyHex
   },
   input: {
     borderWidth: 1,
     borderColor: COLORS.secondaryLightGreyHex,
     borderRadius: BORDERRADIUS.radius_15,
-    paddingHorizontal: SPACING.space_2,
-    paddingVertical: 0,
+    // paddingHorizontal: SPACING.space_2,
+    // paddingVertical: 0,
     fontFamily: FONTFAMILY.poppins_regular,
-    marginTop: 5
+    // marginTop: 5
   },
 });

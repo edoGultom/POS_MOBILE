@@ -96,7 +96,7 @@ const AdminMenuIngridients = ({ navigation }) => {
         const Title = !isUpdate ? `Tambah Bahan Baku '${selected?.nama}'` : `Ubah Bahan Baku '${selected?.nama}'`;
 
         const onSubmit = () => {
-            if ((!isUpdate && existsDataSelected()) || isUpdate && existsDataIngridient().length > 0) {//jika sudah ada diinput
+            if ((!isUpdate && existsDataSelected()) || isUpdate && existsDataIngridient().length > 0) {//jika sudah ada data(ketika input atau update)
                 showMessage('Ingridient already exists', 'danger');
             } else {
                 const dataInput = new FormData();

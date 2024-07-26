@@ -7,6 +7,7 @@ import tableSice from "./tableSice";
 import unitsSlice from "./unitsSlice";
 import ingridientsSlice from "./ingridientsSlice";
 import menuIngridientsSlice from "./menuIngridientsSlice";
+import stockSlice from "./stockSlice";
 
 const reducers = combineReducers({
     [globalSlice.name]: globalSlice.reducer,
@@ -16,7 +17,8 @@ const reducers = combineReducers({
     menuReducer: menuSlice,
     orderReducer: orderSlice,
     tablesReducer: tableSice,
-    menuIngridientsReducer: menuIngridientsSlice
+    menuIngridientsReducer: menuIngridientsSlice,
+    stockReducer: stockSlice
 });
 const store = configureStore({
     reducer: reducers,

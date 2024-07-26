@@ -19,6 +19,17 @@ const TextInput = ({ label, placeholder, ...restProps }) => {
 export default TextInput;
 
 const styles = StyleSheet.create({
-  label: { fontSize: FONTSIZE.size_16, fontFamily: FONTFAMILY.poppins_regular, color: COLORS.secondaryLightGreyHex },
-  input: { borderWidth: 1, borderColor: COLORS.secondaryLightGreyHex, borderRadius: BORDERRADIUS.radius_15, padding: SPACING.space_10, color: COLORS.secondaryLightGreyHex },
+  label: {
+    fontSize: FONTSIZE.size_16,
+    fontFamily: FONTFAMILY.poppins_regular,
+    color: COLORS.secondaryLightGreyHex
+  },
+
+  input: {
+    borderWidth: 1,
+    borderColor: COLORS.secondaryLightGreyHex,
+    borderRadius: BORDERRADIUS.radius_15,
+    padding: SPACING.space_10,
+    color: COLORS.secondaryLightGreyHex
+  },
 });
