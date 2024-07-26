@@ -81,11 +81,12 @@ const AdminMenuIngridients = ({ navigation }) => {
         setIsUpdate(false);
     }, []);
 
-    const FormComponent = ({ dataBahanBaku, selected, isUpdate }) => {
+    const FormComponent = ({ dataBahanBaku, dataSelectdIngridients, selected, isUpdate }) => {
         const [unit, setUnit] = useState(!isUpdate ? dataBahanBaku[0]?.unit : selected.list_bahan_baku[0]?.unit);
-        const existsData = () => {
+        const existsDataSelected = () => {
             return selected.list_bahan_baku.find((item) => item.id_menu === form.id_menu && item.id_bahan_baku === form.id_bahan_baku)
         }
+        const existsDataIngridient = () => dataSelectdIngridients.find((item) => item.id === form.id_menu)?.list_bahan_baku.filter((bahan) => bahan.id_bahan_baku === form.id_bahan_baku && bahan.quantity === parseInt(form.quantity));
         const [form, setForm] = useForm({
             id_menu: selected?.id,
             id_bahan_baku: !isUpdate ? dataBahanBaku[0].id : selected.list_bahan_baku[0].id_bahan_baku,
@@ -95,10 +96,8 @@ const AdminMenuIngridients = ({ navigation }) => {
         const Title = !isUpdate ? `Tambah Bahan Baku '${selected?.nama}'` : `Ubah Bahan Baku '${selected?.nama}'`;
 
         const onSubmit = () => {
-            if (!isUpdate && existsData()) {//jika sudah ada diinput
+            if ((!isUpdate && existsDataSelected()) || isUpdate && existsDataIngridient().length > 0) {//jika sudah ada diinput
                 showMessage('Ingridient already exists', 'danger');
-            } else if (form.quantity < 1) {
-                showMessage('Please input a ingridient!', 'danger');
             } else {
                 const dataInput = new FormData();
                 for (const key in form) {
@@ -199,7 +198,7 @@ const AdminMenuIngridients = ({ navigation }) => {
                     backdropComponent={renderBackdrop}
                     onDismiss={closeModal}
                 >
-                    <FormComponent dataBahanBaku={ingridients} selected={selectedMenuIngridients} isUpdate={isUpdate} />
+                    <FormComponent dataBahanBaku={ingridients} dataSelectdIngridients={menu_ingridients} selected={selectedMenuIngridients} isUpdate={isUpdate} />
                 </BottomSheetCustom>
             </View>
         </BottomSheetModalProvider >
