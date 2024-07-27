@@ -4,9 +4,11 @@ import { StyleSheet, Text, View } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
 import CustomIcon from '../CustomIcon'
+import { id } from 'date-fns/locale'
+import { format } from 'date-fns'
 
 const ListItemStock = (props) => {
-    const { bahan_baku, tipe, unit, waktu, quantity, onPressDelete, onPressUpdate } = props;
+    const { tanggal, kode, tipe, onPressDelete, onPressUpdate } = props;
     return (
         <View>
             <LinearGradient
@@ -17,12 +19,11 @@ const ListItemStock = (props) => {
 
                 <View style={styles.ItemSingleInfoContainer}>
                     <View>
-                        <Text style={styles.ItemTitle}>{bahan_baku}</Text>
-                        <Text style={styles.ItemSubtitle}>Tipe: <Text style={{ fontFamily: FONTFAMILY.poppins_semibold }}>{tipe}</Text></Text>
+                        <Text style={styles.ItemTitle}>xxxxx</Text>
                         <Text style={styles.SizeCurrency}>
-                            Stok <Text style={styles.SizePrice}>{quantity} {unit}</Text>
+                            Stok <Text style={styles.SizePrice}>xxxx</Text>
                         </Text>
-                        <Text style={styles.ItemSubtitle}>{waktu}</Text>
+                        <Text style={styles.ItemSubtitle}>{format(new Date(tanggal), 'dd-MM-yyyy', { locale: id })}</Text>
                     </View>
                 </View>
                 <View style={styles.CartItemSingleQuantityContainer}>
@@ -32,9 +33,20 @@ const ListItemStock = (props) => {
                         onPress={onPressUpdate}
                     >
                         <CustomIcon
+                            name="view-list"
+                            color={COLORS.primaryOrangeHex}
+                            size={FONTSIZE.size_20}
+                        />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        activeOpacity={0.4}
+                        style={styles.CartItemIcon}
+                        onPress={onPressUpdate}
+                    >
+                        <CustomIcon
                             name="edit"
                             color={COLORS.primaryOrangeHex}
-                            size={FONTSIZE.size_18}
+                            size={FONTSIZE.size_20}
                         />
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -45,10 +57,9 @@ const ListItemStock = (props) => {
                         <CustomIcon
                             name="delete-forever"
                             color={COLORS.primaryRedHex}
-                            size={FONTSIZE.size_18}
+                            size={FONTSIZE.size_20}
                         />
                     </TouchableOpacity>
-
                 </View>
             </LinearGradient>
         </View>

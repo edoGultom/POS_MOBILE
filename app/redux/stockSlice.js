@@ -32,7 +32,7 @@ export const addTransaksiStok = createAsyncThunk('stock/addTransaksiStok', async
     const { setRefreshData, dataInput } = param
     setRefreshData(true);
     try {
-        const response = await axiosInstance.post(`/stock/add`, dataInput, {
+        const response = await axiosInstance.post(`/stock/add-transaction`, dataInput, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
@@ -53,7 +53,7 @@ export const updateTransaksiStok = createAsyncThunk('stock/updateTransaksiStok',
     const { id, setRefreshData, dataInput } = param
     setRefreshData(true);
     try {
-        const response = await axiosInstance.post(`/stock/update?id=${id}`, dataInput, {
+        const response = await axiosInstance.post(`/stock/update-transaction?id=${id}`, dataInput, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
@@ -70,12 +70,12 @@ export const updateTransaksiStok = createAsyncThunk('stock/updateTransaksiStok',
         console.error('Error: ', error);
     }
 });
-export const deleteTable = createAsyncThunk('stock/deleteTable', async (param, thunkAPI) => {
+export const deleteStok = createAsyncThunk('stock/deleteStok', async (param, thunkAPI) => {
     const { dispatch } = thunkAPI;
     const { id, setRefreshData } = param
     setRefreshData(true);
     try {
-        const response = await axiosInstance.delete(`/stock/delete?id=${id}`);
+        const response = await axiosInstance.delete(`/stock/delete-transaction?id=${id}`);
         if (response.status === 200) {
             setRefreshData(false);
             dispatch(deleteStockState(id))
@@ -101,7 +101,7 @@ const stockSlice = createSlice({
         },
         updateStockState: (state, action) => {
             const { id } = action.payload;
-            const index = state.stocks.findIndex(menu => menu.id === id);
+            const index = state.stocks.findIndex(stock => stock.id === id);
             if (index !== -1) {
                 state.stocks[index] = {
                     ...state.stocks[index],

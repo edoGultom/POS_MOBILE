@@ -1,7 +1,6 @@
 import { BottomSheetBackdrop, BottomSheetModalProvider } from '@gorhom/bottom-sheet'
-import RNDateTimePicker from '@react-native-community/datetimepicker'
+import DateTimePicker from '@react-native-community/datetimepicker'
 import { format } from 'date-fns'
-import { id } from 'date-fns/locale'
 import { StatusBar } from 'expo-status-bar'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Button, FlatList, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
@@ -12,8 +11,12 @@ import HeaderBar from '../../component/HeaderBar'
 import ListItemStock from '../../component/ListItemStock'
 import Select from '../../component/Select'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
-import { addTransaksiStok, deleteStok, getTransaksiStok, updateTransaksiStok } from '../../redux/stockSlice'
+import { getIngridients } from '../../redux/ingridientsSlice'
+import { addTable, deleteTable, updateTable } from '../../redux/tableSice'
 import { showMessage, useForm } from '../../utils'
+import TextInput from '../../component/TextInput'
+import { id } from 'date-fns/locale'
+import { addTransaksiStok, getTransaksiStok, updateTransaksiStok } from '../../redux/stockSlice'
 
 const AdminStock = ({ navigation }) => {
     const bottomSheetModalRef = useRef(null);
@@ -21,7 +24,9 @@ const AdminStock = ({ navigation }) => {
     const { ingridients } = useSelector(state => state.ingridientsReducer);
     const dispatch = useDispatch();
     const [refreshing, setRefreshing] = useState(false);
-    const [selectedStock, setSelectedStock] = useState(null);
+    const [selectedMenu, setSelectedMenu] = useState(null);
+    const [showDate, setShowDate] = useState(false);
+    const [date, setDate] = useState(null);
 
     useEffect(() => {
         navigation.addListener('focus', () => {
@@ -31,6 +36,7 @@ const AdminStock = ({ navigation }) => {
 
     const getData = () => {
         dispatch(getTransaksiStok())
+        dispatch(getIngridients())
     };
 
     const fetchData = useCallback(async () => {
@@ -54,7 +60,7 @@ const AdminStock = ({ navigation }) => {
 
     const handleDelete = useCallback(async (id) => {
         const param = { id, setRefreshData };
-        dispatch(deleteStok(param))
+        dispatch(deleteTable(param))
     }, []);
 
     const renderBackdrop = useCallback(
@@ -68,65 +74,52 @@ const AdminStock = ({ navigation }) => {
     );
 
     useEffect(() => {
-        if (selectedStock) {
+        if (selectedMenu) {
             bottomSheetModalRef.current.present();
         }
-    }, [selectedStock])
+    }, [selectedMenu])
 
     const openModal = () => {
         bottomSheetModalRef.current?.present();
     };
 
     const closeModal = () => {
-        setSelectedStock(null)
         bottomSheetModalRef.current?.dismiss();
     };
-    const convertDateIndo = (date) => {
-        if (date) {
-            return format(new Date(date), 'dd-MM-yyyy', { locale: id })
-        }
-        return format(new Date(), 'dd-MM-yyyy', { locale: id })
-    }
-    const convertOriginalDate = (dateString) => {
-        const date = new Date(dateString);
-        const day = date.getDate();
-        const month = date.getMonth();
-        const year = date.getFullYear();
-        return new Date(year, month, day);
-    }
-
-    const FormComponent = ({ selected }) => {
+    const onChangeStart = (event, selectedDate) => {
+        const currentDateStart = selectedDate || date;
+        setShowDate(false);
+        setDate(currentDateStart);
+    };
+    const FormComponent = ({ dataBahanBaku, selected }) => {
         const tipe = [{ id: 'Masuk', nama: 'Masuk' }, { id: 'Keluar', nama: 'Keluar' }];
+        const [unit, setUnit] = useState(dataBahanBaku[0]?.unit);
+
         const [form, setForm] = useForm({
             tipe: selected !== null ? selected.tipe : 'Masuk',
-            tanggal: selected !== null ? selected.tanggal : new Date(),
+            // waktu: selected !== null ? selected.waktu : date,
+            waktu: selected !== null ? selected.waktu : format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+            quantity: selected !== null ? selected.quantity : 0,
+            id_bahan_baku: selected !== null ? selected.id_bahan_baku : dataBahanBaku[0]?.id,
         });
-        const [showDate, setShowDate] = useState(false);
-
-        const Title = selected !== null ? `Ubah Transaksi Stok ${selected.kode}` : 'Tambah Transaksi Stok';
-
-        const onChangeStart = (event, selectedDate) => {
-            const currentDateStart = selectedDate || date;
-            setShowDate(Platform.OS === 'ios');
-            setForm('tanggal', currentDateStart)
-        };
+        const Title = selected !== null ? 'Ubah Stok' : 'Tambah Stok';
 
         const onSubmit = () => {
-            const dataInput = new FormData();
-            for (const key in form) {
-                if (key === 'tanggal') {
-                    dataInput.append(key, format(new Date(form[key]), 'yyyy-MM-dd', { locale: id }));
-                } else {
+            if (form.quantity < 1) {
+                showMessage('Please input stok to continue!', 'danger');
+            } else {
+                const dataInput = new FormData();
+                for (const key in form) {
                     dataInput.append(key, form[key]);
                 }
-            }
-            closeModal();
-            const param = { dataInput, setRefreshData };
-            if (selected !== null) {//update
-                const updatedParam = { ...param, id: selected.id };
-                dispatch(updateTransaksiStok(updatedParam));
-            } else {//add
-                dispatch(addTransaksiStok(param));
+                closeModal();
+                const param = { dataInput, setRefreshData };
+                if (selected !== null) {//update
+                    const updatedParam = { ...param, id: selected.id };
+                    dispatch(updateTransaksiStok(updatedParam));
+                } else {//add
+                    dispatch(addTransaksiStok(param));
+                }
             }
         };
 
@@ -143,7 +136,7 @@ const AdminStock = ({ navigation }) => {
                             style={{ flexShrink: 1 }}
                         />
                     </View>
-                    <View style={{ flexShrink: 1, flexGrow: 1 }}>
+                    {/* <View style={{ flexShrink: 1, flexGrow: 1 }}>
                         <Text style={{ color: COLORS.secondaryLightGreyHex, fontFamily: FONTFAMILY.poppins_regular, fontSize: FONTSIZE.size_16 }}>Tanggal</Text>
                         <TouchableOpacity
                             onPress={() => { setShowDate(true) }}
@@ -155,13 +148,46 @@ const AdminStock = ({ navigation }) => {
                                 size={FONTSIZE.size_20}
                             />
                             <Text style={{ fontFamily: FONTFAMILY.poppins_light, color: COLORS.secondaryLightGreyHex }}>
-                                {selected !== null ? convertDateIndo(convertOriginalDate(form.tanggal)) : convertDateIndo(form.tanggal)}
+                                {date ? format(new Date(date), 'dd MMMM yyyy', { locale: id }) : 'Pilih Tanggal'}
                             </Text>
                         </TouchableOpacity>
-
                         {showDate && (
-                            <RNDateTimePicker minimumDate={new Date()} value={convertOriginalDate(form.tanggal)} onChange={onChangeStart} />
+                            <DateTimePicker
+                                value={new Date()}
+                                mode="date"
+                                display="default"
+                                onChange={onChangeStart}
+                                minimumDate={new Date()}
+                            />
                         )}
+                    </View> */}
+                </View>
+
+                <View style={{ flex: 1, flexDirection: 'row', gap: SPACING.space_8 }}>
+                    <View style={{ flexBasis: 'auto', flexShrink: 1, flexGrow: 0 }}>
+                        <TextInput
+                            keyboardType="numeric"
+                            label="Stok"
+                            placeholder="Masukkan stok"
+                            value={form.quantity}
+                            onChangeText={(value) => setForm('quantity', value ? parseInt(value) : 0)}
+                        />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        <Select
+                            label="Bahan Baku"
+                            data={dataBahanBaku}
+                            value={form.id_bahan_baku}
+                            onSelectChange={(value) => {
+                                const unitBahanBaku = dataBahanBaku.find((item) => item.id === value)
+                                setUnit(unitBahanBaku.unit)
+                                setForm('id_bahan_baku', value)
+                            }}
+                        />
+                    </View>
+                    <View style={{ flexShrink: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                        <Text style={styles.labelUnit}>Unit</Text>
+                        <Text style={styles.valUnit}>{unit}</Text>
                     </View>
                 </View>
 
@@ -190,11 +216,13 @@ const AdminStock = ({ navigation }) => {
                             <ListItemStock
                                 key={item.id}
                                 id={item.id}
-                                tanggal={item.tanggal}
-                                kode={item.kode}
+                                bahan_baku={item.bahan_baku}
                                 tipe={item.tipe}
+                                waktu={item.waktu}
+                                unit={item.unit}
+                                quantity={item.quantity}
                                 onPressDelete={() => handleDelete(item.id)}
-                                onPressUpdate={() => setSelectedStock(item)}
+                                onPressUpdate={() => setSelectedMenu(item)}
                             />
                         )}
                         keyExtractor={item => item.id}
@@ -206,16 +234,15 @@ const AdminStock = ({ navigation }) => {
                 <BottomSheetCustom
                     ref={bottomSheetModalRef}
                     backdropComponent={renderBackdrop}
-                    onDismiss={closeModal}
                 >
-                    <FormComponent selected={selectedStock} />
+                    <FormComponent dataBahanBaku={ingridients} selected={selectedMenu} />
                 </BottomSheetCustom>
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity
                         style={styles.buttonTambah}
                         onPress={() => {
                             openModal()
-                            setSelectedStock(null)
+                            setSelectedMenu(null)
                         }}
                     >
                         <CustomIcon

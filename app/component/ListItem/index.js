@@ -60,7 +60,6 @@ const ListItem = (props) => {
                             size={FONTSIZE.size_18}
                         />
                     </TouchableOpacity>
-
                 </View>
             </LinearGradient>
         </View>
