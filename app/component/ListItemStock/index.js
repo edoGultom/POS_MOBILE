@@ -19,9 +19,17 @@ const ListItemStock = (props) => {
 
                 <View style={styles.ItemSingleInfoContainer}>
                     <View>
-                        <Text style={styles.ItemTitle}>xxxxx</Text>
-                        <Text style={styles.SizeCurrency}>
-                            Stok <Text style={styles.SizePrice}>xxxx</Text>
+                        <Text style={styles.ItemTitle}>Kode: {kode}</Text>
+                        <Text
+                            style={[
+                                styles.containerType,
+                                tipe == 'Masuk'
+                                    ? { color: COLORS.primaryOrangeHex }
+                                    : { color: COLORS.primaryRedHex },
+                            ]}
+                        >
+                            <Text style={styles.type}>Tipe: </Text>  {tipe}
+
                         </Text>
                         <Text style={styles.ItemSubtitle}>{format(new Date(tanggal), 'dd-MM-yyyy', { locale: id })}</Text>
                     </View>
@@ -95,14 +103,14 @@ const styles = StyleSheet.create({
         borderRadius: BORDERRADIUS.radius_8,
     },
 
-    SizeCurrency: {
-        fontFamily: FONTFAMILY.poppins_semibold,
-        fontSize: FONTSIZE.size_18,
-        color: COLORS.primaryOrangeHex,
+    containerType: {
+        fontFamily: FONTFAMILY.poppins_light,
+        fontSize: FONTSIZE.size_16,
     },
 
-    SizePrice: {
+    type: {
         color: COLORS.primaryWhiteHex,
+        fontFamily: FONTFAMILY.poppins_light
     },
 
     ItemSingleInfoContainer: {
@@ -118,8 +126,8 @@ const styles = StyleSheet.create({
     },
 
     ItemSubtitle: {
-        fontFamily: FONTFAMILY.poppins_regular,
+        fontFamily: FONTFAMILY.poppins_medium,
         fontSize: FONTSIZE.size_12,
-        color: COLORS.secondaryLightGreyHex,
+        color: COLORS.primaryLightGreyHex,
     },
 })
