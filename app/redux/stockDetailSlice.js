@@ -5,16 +5,16 @@ import { axiosInstance } from '../api/instance';
 
 // Initial state
 const initialState = {
-    stocks: [],
+    details: [],
     loading: false,
     error: null,
 };
 // Async thunk for posting user data
-export const getTransaksiStok = createAsyncThunk('stock/getTransaksiStok', async (_, thunkAPI) => {
+export const getDetailStok = createAsyncThunk('stock/getDetailStok', async (idTrx, thunkAPI) => {
     const { dispatch } = thunkAPI;
     dispatch(addLoading(true));
     try {
-        const response = await axiosInstance.get(`/stock`);
+        const response = await axiosInstance.get(`/stock/detail-stock?id=${idTrx}`);
         if (response.status === 200) {
             dispatch(addLoading(false));
             return response.data;
@@ -27,12 +27,12 @@ export const getTransaksiStok = createAsyncThunk('stock/getTransaksiStok', async
         console.error('Error: ', error);
     }
 });
-export const addTransaksiStok = createAsyncThunk('stock/addTransaksiStok', async (param, thunkAPI) => {
+export const addStok = createAsyncThunk('stock/addStock', async (param, thunkAPI) => {
     const { dispatch } = thunkAPI;
     const { setRefreshData, dataInput } = param
     setRefreshData(true);
     try {
-        const response = await axiosInstance.post(`/stock/add-transaction`, dataInput, {
+        const response = await axiosInstance.post(`/stock/add-stock`, dataInput, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
@@ -48,12 +48,12 @@ export const addTransaksiStok = createAsyncThunk('stock/addTransaksiStok', async
         console.error('Error: ', error);
     }
 });
-export const updateTransaksiStok = createAsyncThunk('stock/updateTransaksiStok', async (param, thunkAPI) => {
+export const updateStok = createAsyncThunk('stock/updateStok', async (param, thunkAPI) => {
     const { dispatch } = thunkAPI;
     const { id, setRefreshData, dataInput } = param
     setRefreshData(true);
     try {
-        const response = await axiosInstance.post(`/stock/update-transaction?id=${id}`, dataInput, {
+        const response = await axiosInstance.post(`/stock/update-stock?id=${id}`, dataInput, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
@@ -70,12 +70,12 @@ export const updateTransaksiStok = createAsyncThunk('stock/updateTransaksiStok',
         console.error('Error: ', error);
     }
 });
-export const deleteTransaksiStok = createAsyncThunk('stock/deleteTransaksiStok', async (param, thunkAPI) => {
+export const deleteStock = createAsyncThunk('stock/deleteStock', async (param, thunkAPI) => {
     const { dispatch } = thunkAPI;
     const { id, setRefreshData } = param
     setRefreshData(true);
     try {
-        const response = await axiosInstance.delete(`/stock/delete-transaction?id=${id}`);
+        const response = await axiosInstance.delete(`/stock/delete-stock?id=${id}`);
         if (response.status === 200) {
             setRefreshData(false);
             dispatch(deleteStockState(id))
@@ -88,48 +88,48 @@ export const deleteTransaksiStok = createAsyncThunk('stock/deleteTransaksiStok',
     }
 });
 
-const stockSlice = createSlice({
-    name: 'stockReducer',
+const stockDetailSlice = createSlice({
+    name: 'stockDetailReducer',
     initialState,
     reducers: {
         addStockState: (state, action) => {
-            if (!Array.isArray(state.stocks)) {
-                state.stocks = [];
+            if (!Array.isArray(state.details)) {
+                state.details = [];
             }
-            // Menambahkan menu ke dalam state.stocks
-            state.stocks.push(action.payload);
+            // Menambahkan menu ke dalam state.details
+            state.details.push(action.payload);
         },
         updateStockState: (state, action) => {
             const { id } = action.payload;
-            const index = state.stocks.findIndex(stock => stock.id === id);
+            const index = state.details.findIndex(stock => stock.id === id);
             if (index !== -1) {
-                state.stocks[index] = {
-                    ...state.stocks[index],
+                state.details[index] = {
+                    ...state.details[index],
                     ...action.payload,
                 };
             }
         },
         deleteStockState: (state, action) => {
-            const current = [...state.stocks];
+            const current = [...state.details];
             const filter = current.filter((item) => item.id !== action.payload)
-            state.stocks = filter
+            state.details = filter
         },
     },
     extraReducers: (builder) => {
         builder
-            .addCase(getTransaksiStok.pending, (state) => {
+            .addCase(getDetailStok.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(getTransaksiStok.fulfilled, (state, action) => {
+            .addCase(getDetailStok.fulfilled, (state, action) => {
                 state.loading = false;
-                state.stocks = action.payload.data;
+                state.details = action.payload.data;
             })
-            .addCase(getTransaksiStok.rejected, (state, action) => {
+            .addCase(getDetailStok.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message;
             });
     },
 });
-export const { addStockState, deleteStockState, updateStockState } = stockSlice.actions;
-export default stockSlice.reducer;
+export const { addStockState, deleteStockState, updateStockState } = stockDetailSlice.actions;
+export default stockDetailSlice.reducer;

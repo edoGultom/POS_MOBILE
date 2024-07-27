@@ -10,6 +10,7 @@ import Admin from "./Admin";
 import AdminMenu from "./AdminMenu";
 import AdminStock from "./AdminStock";
 import AdminHistory from "./AdminHistory";
+import AdminDetailStock from "./AdminDetailStock";
 
 export {
     Home,
@@ -23,5 +24,6 @@ export {
     AdminMenu,
     SuccessOrder,
     AdminStock,
-    AdminHistory
+    AdminHistory,
+    AdminDetailStock
 };

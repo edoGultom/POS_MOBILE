@@ -11,6 +11,7 @@ import AdminReport from '../screens/AdminReport';
 import AdminTable from '../screens/AdminTable';
 import AdminIngridients from '../screens/AdminIngridients';
 import AdminMenuIngridients from '../screens/AdminMenuIngridients';
+import AdminDetailStock from '../screens/AdminDetailStock';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -94,6 +95,11 @@ const RoleBasedNavigator = () => {
                 name="AdminStock"
                 component={AdminStock}
                 options={{ headerShown: false, animation: 'slide_from_bottom' }}
+            />
+            <Stack.Screen
+                name="AdminDetailStock"
+                component={AdminDetailStock}
+                options={{ headerShown: false, animation: 'slide_from_right' }}
             />
             <Stack.Screen
                 name="AdminHistory"

@@ -12,8 +12,8 @@ import HeaderBar from '../../component/HeaderBar'
 import ListItemStock from '../../component/ListItemStock'
 import Select from '../../component/Select'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
-import { addTransaksiStok, deleteStok, getTransaksiStok, updateTransaksiStok } from '../../redux/stockSlice'
-import { showMessage, useForm } from '../../utils'
+import { addTransaksiStok, deleteTransaksiStok, getTransaksiStok, updateTransaksiStok } from '../../redux/stockSlice'
+import { useForm } from '../../utils'
 
 const AdminStock = ({ navigation }) => {
     const bottomSheetModalRef = useRef(null);
@@ -54,7 +54,7 @@ const AdminStock = ({ navigation }) => {
 
     const handleDelete = useCallback(async (id) => {
         const param = { id, setRefreshData };
-        dispatch(deleteStok(param))
+        dispatch(deleteTransaksiStok(param))
     }, []);
 
     const renderBackdrop = useCallback(
@@ -193,8 +193,10 @@ const AdminStock = ({ navigation }) => {
                                 tanggal={item.tanggal}
                                 kode={item.kode}
                                 tipe={item.tipe}
+                                item={item}
                                 onPressDelete={() => handleDelete(item.id)}
                                 onPressUpdate={() => setSelectedStock(item)}
+                                onPressDetail={() => navigation.navigate('AdminDetailStock', item)}
                             />
                         )}
                         keyExtractor={item => item.id}

@@ -1,14 +1,15 @@
+import { format } from 'date-fns'
+import { id } from 'date-fns/locale'
 import { LinearGradient } from 'expo-linear-gradient'
 import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
 import CustomIcon from '../CustomIcon'
-import { id } from 'date-fns/locale'
-import { format } from 'date-fns'
 
 const ListItemStock = (props) => {
-    const { tanggal, kode, tipe, onPressDelete, onPressUpdate } = props;
+
+    const { tanggal, kode, tipe, onPressDelete, onPressUpdate, onPressDetail } = props;
     return (
         <View>
             <LinearGradient
@@ -38,7 +39,7 @@ const ListItemStock = (props) => {
                     <TouchableOpacity
                         activeOpacity={0.4}
                         style={styles.CartItemIcon}
-                        onPress={onPressUpdate}
+                        onPress={onPressDetail}
                     >
                         <CustomIcon
                             name="view-list"
