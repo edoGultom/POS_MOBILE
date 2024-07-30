@@ -1,23 +1,32 @@
 import * as ImagePicker from 'expo-image-picker';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, Pressable, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
+import { useDispatch, useSelector } from 'react-redux';
 import Button from '../../component/Button';
 import CustomIcon from '../../component/CustomIcon';
+import Select from '../../component/Select';
 import TextInput from '../../component/TextInput';
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
-import { signUpAction } from '../../redux/signUpSlice';
+import { getRoles, signUpAction } from '../../redux/signUpSlice';
 import { showMessage, useForm } from '../../utils';
-import { useDispatch } from 'react-redux';
 
 const SignUp = ({ navigation }) => {
     const [photo, setPhoto] = useState(null);
+    const { roles } = useSelector(state => state.signUpReducer);
+    useEffect(() => {
+        navigation.addListener('focus', () => {
+            dispatch(getRoles())
+        });
+    }, [navigation]);
+
     const [form, setForm] = useForm({
         name: '',
         address: '',
         username: '',
         email: '',
         password: '',
+        role: '',
     });
     const choosePhoto = async () => {
         // No permissions request is necessary for launching the image library
@@ -36,6 +45,7 @@ const SignUp = ({ navigation }) => {
     const dispatch = useDispatch();
 
     const onSubmit = () => {
+        // console.log(form, 'form')
         if (photo === null) {
             showMessage('Silahkan masukkan foto Anda!', 'danger');
             return;
@@ -65,7 +75,7 @@ const SignUp = ({ navigation }) => {
                     <CustomIcon
                         name={'chevron-left'}
                         color={COLORS.primaryLightGreyHex}
-                        size={FONTSIZE.size_24}
+                        size={FONTSIZE.size_16}
                     />
                 </Pressable>
                 <View style={{ flexDirection: 'column' }}>
@@ -125,6 +135,14 @@ const SignUp = ({ navigation }) => {
                             placeholder="Type your username"
                             value={form.username}
                             onChangeText={value => setForm('username', value)}
+                        />
+                        <Select
+                            label="Role"
+                            data={roles}
+                            value={form.role}
+                            onSelectChange={(value) => {
+                                setForm('role', value)
+                            }}
                         />
                         <TextInput
                             label="Email Address"

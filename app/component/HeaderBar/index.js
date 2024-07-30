@@ -27,7 +27,7 @@ const HeaderBar = ({ title, onBack }) => {
 
     const signOut = () => {
         AsyncStorage.multiRemove(['userProfile', 'token']).then(() => {
-            navigation.reset({ index: 1, routes: [{ name: 'SignIn' }] });
+            navigation.reset({ index: 0, routes: [{ name: 'SignIn' }] });
         });
     };
     return (

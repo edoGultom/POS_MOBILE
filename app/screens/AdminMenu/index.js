@@ -17,6 +17,7 @@ import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../confi
 import { getKategori } from '../../redux/kategoriSlice'
 import { addMenu, deleteMenu, getMenu, updateMenu } from '../../redux/menuSlice'
 import { showMessage, useForm } from '../../utils'
+import useAxios from '../../api/useAxios'
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -28,6 +29,7 @@ const AdminMenu = ({ navigation }) => {
     const dispatch = useDispatch();
     const [refreshing, setRefreshing] = useState(false);
     const [selectedMenu, setSelectedMenu] = useState(null);
+    const { fetchData: axiosBe } = useAxios();
 
     useEffect(() => {
         if (dataKategori.length < 1 && kategori?.length > 0) {
@@ -40,37 +42,36 @@ const AdminMenu = ({ navigation }) => {
     }, [kategori])
 
     useEffect(() => {
-        navigation.addListener('focus', () => {
-            getDataMenu();
-        });
-    }, [navigation]);
+        const unsubscribe = navigation.addListener('focus', getDataMenu);
+        return unsubscribe;  // Cleanup the listener on unmount or when navigation changes
+    }, [navigation, dispatch, axiosBe]);
 
-    const getDataMenu = () => {
-        dispatch(getMenu())
-        dispatch(getKategori())
+    const getDataMenu = async () => {
+        try {
+            await dispatch(getMenu(axiosBe)).unwrap();
+            await dispatch(getKategori(axiosBe)).unwrap();
+        } catch (error) {
+            console.error("Failed to fetch data:", error);
+        }
     };
 
-    const fetchData = useCallback(async () => {
+    const fetchDatas = useCallback(async () => {
         setRefreshData(true);
         try {
             getDataMenu();
         } catch (error) {
-            console.error(error);
+            console.error(error, 'error get data');
         } finally {
             setRefreshData(false);
         }
     }, []);
-
-    useEffect(() => {
-        fetchData();
-    }, [fetchData]);
 
     const setRefreshData = (val) => {
         setRefreshing(val);
     }
 
     const handleDelete = useCallback(async (id) => {
-        const param = { id, setRefreshData };
+        const param = { id, setRefreshData, axiosBe };
         dispatch(deleteMenu(param))
     }, []);
 
@@ -149,7 +150,7 @@ const AdminMenu = ({ navigation }) => {
 
                 dataInput.append('file', dataPhoto)
                 closeModal();
-                const param = { dataInput, setRefreshData };
+                const param = { dataInput, setRefreshData, axiosBe };
                 if (selected !== null) {//update
                     const updatedParam = { ...param, id: selected.id };
                     dispatch(updateMenu(updatedParam));
@@ -241,7 +242,7 @@ const AdminMenu = ({ navigation }) => {
                 ) : (
                     <FlatList
                         data={menus}
-                        onRefresh={fetchData}
+                        onRefresh={fetchDatas}
                         refreshing={refreshing}
                         showsVerticalScrollIndicator={false}
                         renderItem={({ item }) => (

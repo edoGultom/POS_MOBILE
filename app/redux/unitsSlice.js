@@ -1,7 +1,7 @@
 
 import { BE_API_HOST } from '@env';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { axiosInstance } from '../api/instance';
+import axiosInstance from '../api/useAxiosBackend';
 
 // Initial state
 const initialState = {

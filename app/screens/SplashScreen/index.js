@@ -46,7 +46,7 @@ const SplashScreen = ({ navigation }) => {
         }
         return prevProgress + 0.1;
       });
-    }, 800); // Setiap 300ms progress akan bertambah
+    }, 100); // Setiap 300ms progress akan bertambah
 
     return () => clearInterval(progressInterval);
   }, [navigation]);

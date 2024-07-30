@@ -46,21 +46,6 @@ const AdminDetailStock = ({ navigation, route }) => {
         dispatch(getIngridients())
     };
 
-    const fetchData = useCallback(async () => {
-        setRefreshData(true);
-        try {
-            getData();
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setRefreshData(false);
-        }
-    }, []);
-
-    useEffect(() => {
-        fetchData();
-    }, [fetchData, refreshing]);
-
     const setRefreshData = (val) => {
         setRefreshing(val);
     }

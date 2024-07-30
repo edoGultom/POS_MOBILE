@@ -12,13 +12,13 @@ const Icon = ({ label, focused }) => {
         case 'Home':
             return focused ?
                 <CustomIcon
-                    name={'house-chimney-window'}
+                    name={'home'}
                     color={COLORS.primaryOrangeHex}
                     size={FONTSIZE.size_20}
                 />
                 :
                 <CustomIcon
-                    name={'house-chimney-window'}
+                    name={'home'}
                     color={COLORS.primaryLightGreyHex}
                     size={FONTSIZE.size_20}
                 />
@@ -51,12 +51,12 @@ const Icon = ({ label, focused }) => {
         case 'Profile':
             return focused ?
                 <CustomIcon
-                    name={'user-large'}
+                    name={'supervised-user-circle'}
                     color={COLORS.primaryOrangeHex}
                     size={FONTSIZE.size_20}
                 /> :
                 <CustomIcon
-                    name={'user-large'}
+                    name={'supervised-user-circle'}
                     color={COLORS.primaryLightGreyHex}
                     size={FONTSIZE.size_20}
                 />

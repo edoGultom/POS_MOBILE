@@ -1,9 +1,10 @@
 import { BE_API_HOST } from '@env';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import { axiosInstance } from '../api/instance';
 import { showMessage, storeData } from '../utils';
 import { addLoading } from './globalSlice';
+import axiosInstance from '../api/useAxios';
+import axios from 'axios';
 
 export const signInAction = createAsyncThunk(
   'post/postSignIn',
@@ -17,7 +18,7 @@ export const signInAction = createAsyncThunk(
     formData.append('client_id', 'testclient');
     formData.append('client_secret', 'testpass');
 
-    await axiosInstance
+    await axios
       .post(`${BE_API_HOST}/user/login`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -41,6 +42,7 @@ export const signInAction = createAsyncThunk(
         }
       })
       .catch(err => {
+        console.log(err, 'rex')
         dispatch(addLoading(false));
         showMessage(err?.response?.data?.message);
       });

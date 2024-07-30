@@ -42,10 +42,6 @@ const AdminTable = ({ navigation }) => {
         }
     }, []);
 
-    useEffect(() => {
-        fetchData();
-    }, [fetchData]);
-
     const setRefreshData = (val) => {
         setRefreshing(val);
     }

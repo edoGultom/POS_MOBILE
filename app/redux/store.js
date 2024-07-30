@@ -9,6 +9,8 @@ import ingridientsSlice from "./ingridientsSlice";
 import menuIngridientsSlice from "./menuIngridientsSlice";
 import stockSlice from "./stockSlice";
 import stockDetailSlice from "./stockDetailSlice";
+import signUpSlice from "./signUpSlice";
+import tokenSlice from "./tokenSlice";
 
 const reducers = combineReducers({
     [globalSlice.name]: globalSlice.reducer,
@@ -20,7 +22,9 @@ const reducers = combineReducers({
     tablesReducer: tableSice,
     menuIngridientsReducer: menuIngridientsSlice,
     stockReducer: stockSlice,
-    stockDetailReducer: stockDetailSlice
+    stockDetailReducer: stockDetailSlice,
+    signUpReducer: signUpSlice,
+    tokenReducer: tokenSlice,
 });
 const store = configureStore({
     reducer: reducers,

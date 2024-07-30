@@ -1,7 +1,8 @@
 
 import { BE_API_HOST } from '@env';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { axiosInstance } from '../api/instance';
+import axiosInstance from '../api/useAxios';
+import useAxiosInterceptor from '../api/useAxiosInterceptor';
 
 // Initial state
 const initialState = {
@@ -9,13 +10,14 @@ const initialState = {
     loading: false,
     error: null,
 };
+
 // Async thunk for posting user data
-export const getKategori = createAsyncThunk('kategori/getKategori', async () => {
+export const getKategori = createAsyncThunk('kategori/getKategori', async (axiosInstance) => {
     try {
-        const response = await axiosInstance.get('/kategori');
-        return response.data.data;
-    } catch (error) {
-        console.error(error);
+        const result = await axiosInstance({ url: "/kategori", method: "GET" })
+        return result
+    } catch (err) {
+        console.error(err.message);
     }
 });
 
@@ -31,7 +33,7 @@ const kategoriSlice = createSlice({
             })
             .addCase(getKategori.fulfilled, (state, action) => {
                 state.loading = false;
-                state.kategori = action.payload;
+                state.kategori = action.payload.data;
             })
             .addCase(getKategori.rejected, (state, action) => {
                 state.loading = false;

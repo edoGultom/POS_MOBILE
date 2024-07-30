@@ -1,7 +1,8 @@
 
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { axiosInstance } from '../api/instance';
 import { addLoading } from './globalSlice';
+import axiosInstance from '../api/useAxios';
+import useAxios from '../api/useAxios';
 
 // Initial state
 const initialState = {
@@ -10,64 +11,52 @@ const initialState = {
     error: null,
 };
 // Async thunk for posting user data
-export const getMenu = createAsyncThunk('menu/getMenu', async (_, thunkAPI) => {
+export const getMenu = createAsyncThunk('menu/getMenu', async (axiosInstance, thunkAPI) => {
     const { dispatch } = thunkAPI;
     dispatch(addLoading(true));
     try {
-        const response = await axiosInstance.get('/menu');
-        if (response.status === 200) {
-            dispatch(addLoading(false));
-            return response.data;
-        } else {
-            dispatch(addLoading(false));
-            console.error('Response not okay');
-        }
-
-    } catch (error) {
+        const result = await axiosInstance({ url: "/menu", method: "GET" })
         dispatch(addLoading(false));
-        console.error('Error: ', error);
+        return result
+    } catch (err) {
+        dispatch(addLoading(false));
+        console.error(err.message);
     }
 });
 export const addMenu = createAsyncThunk('menu/addMenu', async (param, thunkAPI) => {
-    const { dispatch } = thunkAPI;
-
-    const { setRefreshData, dataInput } = param
+    const { setRefreshData, dataInput, axiosBe } = param
+    const { dispatch } = thunkAPI
     setRefreshData(true);
     try {
-
-        const response = await axiosInstance.post(`/menu/add`, dataInput, {
+        const response = await axiosBe({
+            url: "/menu/add",
+            method: "POST",
+            data: dataInput,
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
-        });
-        if (response.status === 200) {
-            setRefreshData(false);
-            dispatch(addMenuState(response.data.data))
-        } else {
-            setRefreshData(false)
-            console.error('Response not okay');
-        }
+        })
+        setRefreshData(false);
+        dispatch(addMenuState(response.data))
     } catch (error) {
         console.error('Error: ', error);
     }
 });
 export const updateMenu = createAsyncThunk('menu/updateMenu', async (param, thunkAPI) => {
     const { dispatch } = thunkAPI;
-    const { id, setRefreshData, dataInput } = param
+    const { id, setRefreshData, dataInput, axiosBe } = param
     setRefreshData(true);
     try {
-        const response = await axiosInstance.post(`/menu/update?id=${id}`, dataInput, {
+        const response = await axiosBe({
+            url: `/menu/update?id=${id}`,
+            method: "POST",
+            data: dataInput,
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
-        });
-        if (response.status === 200) {
-            setRefreshData(false);
-            dispatch(updateMenuState(response.data.data))
-        } else {
-            setRefreshData(false)
-            console.error('Response not okay');
-        }
+        })
+        setRefreshData(false);
+        dispatch(updateMenuState(response.data))
     } catch (error) {
         setRefreshData(false)
         console.error('Error: ', error);
@@ -75,17 +64,17 @@ export const updateMenu = createAsyncThunk('menu/updateMenu', async (param, thun
 });
 export const deleteMenu = createAsyncThunk('menu/deleteMenu', async (param, thunkAPI) => {
     const { dispatch } = thunkAPI;
-    const { id, setRefreshData } = param
+    const { id, setRefreshData, axiosBe } = param
     setRefreshData(true);
     try {
-        const response = await axiosInstance.delete(`/menu/delete?id=${id}`);
-        if (response.status === 200) {
-            setRefreshData(false);
-            dispatch(deleteMenuState(id))
-        } else {
-            setRefreshData(false)
-            console.error('Response not okay');
-        }
+        const response = await axiosBe({
+            url: `/menu/delete`,
+            method: "DELETE",
+            params: { id }
+        })
+        console.log(response, 'responsedelete')
+        setRefreshData(false);
+        dispatch(deleteMenuState(id))
     } catch (error) {
         console.error('Error: ', error);
     }

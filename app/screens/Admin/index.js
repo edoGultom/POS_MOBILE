@@ -4,7 +4,7 @@ import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 import CustomIcon from '../../component/CustomIcon'
 import HeaderBar from '../../component/HeaderBar'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
-import { axiosInstance } from '../../api/instance'
+import axiosInstance from '../../api/useAxiosBackend'
 
 const IconTextView = ({ iconName, text, onPress }) => {
     return (
