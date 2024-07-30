@@ -11,6 +11,8 @@ import AdminMenu from "./AdminMenu";
 import AdminStock from "./AdminStock";
 import AdminHistory from "./AdminHistory";
 import AdminDetailStock from "./AdminDetailStock";
+import PosTable from "./PosTable";
+import PosMenu from "./PosMenu";
 
 export {
     Home,
@@ -25,5 +27,7 @@ export {
     SuccessOrder,
     AdminStock,
     AdminHistory,
-    AdminDetailStock
+    AdminDetailStock,
+    PosTable,
+    PosMenu
 };

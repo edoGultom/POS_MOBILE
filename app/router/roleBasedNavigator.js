@@ -3,15 +3,16 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import BottomNavigator from '../component/BottomNavigator';
-import { Admin, AdminHistory, AdminMenu, AdminStock, Home, Order, Profile, SignIn, SignUp, SplashScreen, SuccessSignUp } from '../screens';
-import { useRole } from '../utils/roles';
-import AdminOrder from '../screens/AdminOrder';
-import SuccessPaymentCash from '../screens/SuccessPaymentCash';
-import AdminReport from '../screens/AdminReport';
-import AdminTable from '../screens/AdminTable';
+import { Admin, AdminHistory, AdminMenu, AdminStock, Home, Order, PosMenu, Profile, SignIn, SignUp, SplashScreen, SuccessSignUp } from '../screens';
+import AdminDetailStock from '../screens/AdminDetailStock';
 import AdminIngridients from '../screens/AdminIngridients';
 import AdminMenuIngridients from '../screens/AdminMenuIngridients';
-import AdminDetailStock from '../screens/AdminDetailStock';
+import AdminOrder from '../screens/AdminOrder';
+import AdminReport from '../screens/AdminReport';
+import AdminTable from '../screens/AdminTable';
+import PosTable from '../screens/PosTable';
+import SuccessPaymentCash from '../screens/SuccessPaymentCash';
+import { useRole } from '../utils/roles';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -30,7 +31,7 @@ const MainApp = () => {
 const RoleBasedNavigator = () => {
     const { roles } = useRole();
     return (
-        <Stack.Navigator initialRouteName="Splash">
+        <Stack.Navigator initialRouteName="PosTable">
             <Stack.Screen
                 name="SplashScreen"
                 component={SplashScreen}
@@ -105,6 +106,16 @@ const RoleBasedNavigator = () => {
                 name="AdminHistory"
                 component={AdminHistory}
                 options={{ headerShown: false, animation: 'slide_from_bottom' }}
+            />
+            <Stack.Screen
+                name="PosTable"
+                component={PosTable}
+                options={{ headerShown: false, animation: 'slide_from_right' }}
+            />
+            <Stack.Screen
+                name="PosMenu"
+                component={PosMenu}
+                options={{ headerShown: false, animation: 'slide_from_right' }}
             />
             <Stack.Screen name="MainApp" component={MainApp} options={{ headerShown: false }} />
         </Stack.Navigator>
