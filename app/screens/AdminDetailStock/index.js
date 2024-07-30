@@ -1,33 +1,30 @@
 import { BottomSheetBackdrop, BottomSheetModalProvider } from '@gorhom/bottom-sheet'
-import RNDateTimePicker from '@react-native-community/datetimepicker'
-import { format } from 'date-fns'
-import { id } from 'date-fns/locale'
 import { StatusBar } from 'expo-status-bar'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Button, Dimensions, FlatList, Platform, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Button, Dimensions, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import BottomSheetCustom from '../../component/BottomSheet'
 import CustomIcon from '../../component/CustomIcon'
 import HeaderBar from '../../component/HeaderBar'
-import ListItemStock from '../../component/ListItemStock'
 import Select from '../../component/Select'
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
-import { showMessage, useForm } from '../../utils'
-import { addStok, deleteStock, getDetailStok, updateStok } from '../../redux/stockDetailSlice'
-import { getIngridients } from '../../redux/ingridientsSlice'
 import TextInput from '../../component/TextInput'
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
+import { getIngridients } from '../../redux/ingridientsSlice'
+import { addStok, deleteStock, getDetailStok, updateStok } from '../../redux/stockDetailSlice'
+import { showMessage, useForm } from '../../utils'
+import useAxios from '../../api/useAxios'
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 const AdminDetailStock = ({ navigation, route }) => {
     const { id, kode, tipe, tanggal } = route.params;
-    const [isUpdate, setIsUpdate] = useState(false);
     const bottomSheetModalRef = useRef(null);
     const { details } = useSelector(state => state.stockDetailReducer);
     const { ingridients } = useSelector(state => state.ingridientsReducer);
     const dispatch = useDispatch();
     const [refreshing, setRefreshing] = useState(false);
     const [selectedStock, setSelectedDetailStock] = useState(null);
+    const { fetchData: axiosBe } = useAxios();
 
     const onRefresh = useCallback(() => {
         setRefreshing(true);
@@ -36,14 +33,17 @@ const AdminDetailStock = ({ navigation, route }) => {
         }, 1000);
     }, []);
     useEffect(() => {
-        navigation.addListener('focus', () => {
-            getData();
-        });
-    }, [navigation]);
+        const unsubscribe = navigation.addListener('focus', getData);
+        return unsubscribe;  // Cleanup the listener on unmount or when navigation changes
+    }, [navigation, dispatch, axiosBe]);
 
-    const getData = () => {
-        dispatch(getDetailStok(id))
-        dispatch(getIngridients())
+    const getData = async () => {
+        try {
+            await dispatch(getDetailStok({ id, axiosBe })).unwrap();
+            await dispatch(getIngridients(axiosBe)).unwrap();
+        } catch (error) {
+            console.error("Failed to fetch data:", error);
+        }
     };
 
     const setRefreshData = (val) => {
@@ -51,7 +51,7 @@ const AdminDetailStock = ({ navigation, route }) => {
     }
 
     const handleDelete = useCallback(async (id) => {
-        const param = { id, setRefreshData };
+        const param = { id, setRefreshData, axiosBe };
         dispatch(deleteStock(param))
     }, []);
 
@@ -106,7 +106,7 @@ const AdminDetailStock = ({ navigation, route }) => {
                     dataInput.append(key, form[key]);
                 }
                 closeModal();
-                const param = { dataInput, setRefreshData };
+                const param = { dataInput, setRefreshData, axiosBe };
                 if (selected !== null) {//update
                     const updatedParam = { ...param, id: selected.id };
                     dispatch(updateStok(updatedParam));

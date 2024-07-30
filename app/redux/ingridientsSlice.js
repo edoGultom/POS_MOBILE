@@ -10,64 +10,56 @@ const initialState = {
     error: null,
 };
 // Async thunk for posting user data
-export const getIngridients = createAsyncThunk('ingridients/getIngridients', async (_, thunkAPI) => {
+export const getIngridients = createAsyncThunk('ingridients/getIngridients', async (axiosInstance, thunkAPI) => {
     const { dispatch } = thunkAPI;
     dispatch(addLoading(true));
     try {
-        const response = await axiosInstance.get('/bahan-baku');
-        if (response.status === 200) {
-            dispatch(addLoading(false));
-            return response.data;
-        } else {
-            dispatch(addLoading(false));
-            console.error('Response not okay');
-        }
-
-    } catch (error) {
+        const result = await axiosInstance({ url: "/bahan-baku", method: "GET" })
         dispatch(addLoading(false));
-        console.error('Error: ', error);
+        return result;
+    } catch (err) {
+        dispatch(addLoading(false));
+        console.error(err.message);
     }
 });
 export const addIngridients = createAsyncThunk('ingridients/addIngridients', async (param, thunkAPI) => {
     const { dispatch } = thunkAPI;
 
-    const { setRefreshData, dataInput } = param
+    const { setRefreshData, dataInput, axiosBe } = param
     setRefreshData(true);
     try {
-
-        const response = await axiosInstance.post(`/bahan-baku/add`, dataInput, {
+        const response = await axiosBe({
+            url: "/bahan-baku/add",
+            method: "POST",
+            data: dataInput,
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
-        });
-        if (response.status === 200) {
-            setRefreshData(false);
-            dispatch(addIngridientsState(response.data.data))
-        } else {
-            setRefreshData(false)
-            console.error('Response not okay');
-        }
+        })
+        setRefreshData(false);
+        dispatch(addIngridientsState(response.data))
     } catch (error) {
         console.error('Error: ', error);
     }
 });
 export const updateIngridients = createAsyncThunk('ingridients/updateIngridients', async (param, thunkAPI) => {
     const { dispatch } = thunkAPI;
-    const { id, setRefreshData, dataInput } = param
+    const { id, setRefreshData, dataInput, axiosBe } = param
     setRefreshData(true);
     try {
-        const response = await axiosInstance.post(`/bahan-baku/update?id=${id}`, dataInput, {
+        const response = await axiosBe({
+            url: `/bahan-baku/update`,
+            method: "POST",
+            data: dataInput,
+            params: {
+                id,
+            },
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
-        });
-        if (response.status === 200) {
-            setRefreshData(false);
-            dispatch(updateIngridientsState(response.data.data))
-        } else {
-            setRefreshData(false)
-            console.error('Response not okay');
-        }
+        })
+        setRefreshData(false);
+        dispatch(updateIngridientsState(response.data))
     } catch (error) {
         setRefreshData(false)
         console.error('Error: ', error);
@@ -75,17 +67,18 @@ export const updateIngridients = createAsyncThunk('ingridients/updateIngridients
 });
 export const deleteIngridients = createAsyncThunk('ingridients/deleteIngridients', async (param, thunkAPI) => {
     const { dispatch } = thunkAPI;
-    const { id, setRefreshData } = param
+    const { id, setRefreshData, axiosBe } = param
     setRefreshData(true);
     try {
-        const response = await axiosInstance.delete(`/bahan-baku/delete?id=${id}`);
-        if (response.status === 200) {
-            setRefreshData(false);
-            dispatch(deleteIngridientsState(id))
-        } else {
-            setRefreshData(false)
-            console.error('Response not okay');
-        }
+        await axiosBe({
+            url: `/bahan-baku/delete`,
+            method: "DELETE",
+            params: {
+                id
+            }
+        })
+        setRefreshData(false);
+        dispatch(deleteIngridientsState(id))
     } catch (error) {
         console.error('Error: ', error);
     }
@@ -127,7 +120,7 @@ const ingridientsSlice = createSlice({
             })
             .addCase(getIngridients.fulfilled, (state, action) => {
                 state.loading = false;
-                state.ingridients = action.payload.data;
+                state.ingridients = action.payload.data ?? [];
             })
             .addCase(getIngridients.rejected, (state, action) => {
                 state.loading = false;

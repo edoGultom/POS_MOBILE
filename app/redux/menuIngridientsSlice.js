@@ -10,18 +10,13 @@ const initialState = {
     error: null,
 };
 // Async thunk for posting user data
-export const getMenuIngridients = createAsyncThunk('menuIngridients/getMenuIngridients', async (_, thunkAPI) => {
+export const getMenuIngridients = createAsyncThunk('menuIngridients/getMenuIngridients', async (axiosInstance, thunkAPI) => {
     const { dispatch } = thunkAPI;
     dispatch(addLoading(true));
     try {
-        const response = await axiosInstance.get('/menu-bahan-baku');
-        if (response.status === 200) {
-            dispatch(addLoading(false));
-            return response.data;
-        } else {
-            dispatch(addLoading(false));
-            console.error('Response not okay');
-        }
+        const result = await axiosInstance({ url: "/menu-bahan-baku", method: "GET" })
+        dispatch(addLoading(false));
+        return result;
 
     } catch (error) {
         dispatch(addLoading(false));
@@ -30,43 +25,42 @@ export const getMenuIngridients = createAsyncThunk('menuIngridients/getMenuIngri
 });
 export const addMenuIngridients = createAsyncThunk('menuIngridients/addMenuIngridients', async (param, thunkAPI) => {
     const { dispatch } = thunkAPI;
-    const { setRefreshData, dataInput } = param
+    const { setRefreshData, dataInput, axiosBe } = param
     setRefreshData(true);
     try {
-
-        const response = await axiosInstance.post(`/menu-bahan-baku/add`, dataInput, {
+        const response = await axiosBe({
+            url: "/menu-bahan-baku/add",
+            method: "POST",
+            data: dataInput,
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
-        });
-        if (response.status === 200) {
-            setRefreshData(false);
-            dispatch(addMenuIngridientsState(response.data.data))
-        } else {
-            setRefreshData(false)
-            console.error('Response not okay');
-        }
+        })
+        setRefreshData(false);
+        dispatch(addMenuIngridientsState(response.data))
+
     } catch (error) {
         console.error('Error: ', error);
     }
 });
 export const updateMenuIngridients = createAsyncThunk('menuIngridients/updateMenuIngridients', async (param, thunkAPI) => {
     const { dispatch } = thunkAPI;
-    const { id, setRefreshData, dataInput } = param
+    const { id, setRefreshData, dataInput, axiosBe } = param
     setRefreshData(true);
     try {
-        const response = await axiosInstance.post(`/menu-bahan-baku/update?id=${id}`, dataInput, {
+        const response = await axiosBe({
+            url: `/menu-bahan-baku/update?id=${id}`,
+            method: "POST",
+            data: dataInput,
+            params: {
+                id,
+            },
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
-        });
-        if (response.status === 200) {
-            setRefreshData(false);
-            dispatch(updateMenuIngridientsState(response.data.data))
-        } else {
-            setRefreshData(false)
-            console.error('Response not okay');
-        }
+        })
+        setRefreshData(false);
+        dispatch(updateMenuIngridientsState(response.data))
     } catch (error) {
         setRefreshData(false)
         console.error('Error: ', error);
@@ -74,17 +68,18 @@ export const updateMenuIngridients = createAsyncThunk('menuIngridients/updateMen
 });
 export const deleteMenuIngridients = createAsyncThunk('menuIngridients/deleteMenuIngridients', async (param, thunkAPI) => {
     const { dispatch } = thunkAPI;
-    const { id, setRefreshData } = param
+    const { id, setRefreshData, axiosBe } = param
     setRefreshData(true);
     try {
-        const response = await axiosInstance.delete(`/menu-bahan-baku/delete?id=${id}`);
-        if (response.status === 200) {
-            setRefreshData(false);
-            dispatch(deleteMenuIngridientsState(id))
-        } else {
-            setRefreshData(false)
-            console.error('Response not okay');
-        }
+        await axiosBe({
+            url: `/menu-bahan-baku/update`,
+            method: "DELETE",
+            params: {
+                id,
+            },
+        })
+        setRefreshData(false);
+        dispatch(deleteMenuIngridientsState(id))
     } catch (error) {
         console.error('Error: ', error);
     }
@@ -133,7 +128,7 @@ const menuIngridientsSlice = createSlice({
             })
             .addCase(getMenuIngridients.fulfilled, (state, action) => {
                 state.loading = false;
-                state.menu_ingridients = action.payload.data;
+                state.menu_ingridients = action.payload.data ?? [];
             })
             .addCase(getMenuIngridients.rejected, (state, action) => {
                 state.loading = false;

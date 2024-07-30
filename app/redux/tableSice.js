@@ -1,7 +1,6 @@
 
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { addLoading } from './globalSlice';
-// import axiosInstance from '../api/useAxiosBackend';
 
 // Initial state
 const initialState = {
@@ -10,61 +9,53 @@ const initialState = {
     error: null,
 };
 // Async thunk for posting user data
-export const getTables = createAsyncThunk('table/getTables', async (_, thunkAPI) => {
+export const getTables = createAsyncThunk('table/getTables', async (axiosInstance, thunkAPI) => {
     const { dispatch } = thunkAPI;
     dispatch(addLoading(true));
     try {
-        const response = await axios.get(`/table`);
-        if (response.status === 200) {
-            dispatch(addLoading(false));
-            return response.data;
-        } else {
-            dispatch(addLoading(false));
-            console.error('Response not okay');
-        }
-    } catch (error) {
+        const result = await axiosInstance({ url: "/table", method: "GET" })
         dispatch(addLoading(false));
-        console.error('Error: ', error);
+        return result
+    } catch (err) {
+        dispatch(addLoading(false));
+        console.error(err.message);
     }
 });
 export const addTable = createAsyncThunk('table/addTable', async (param, thunkAPI) => {
     const { dispatch } = thunkAPI;
-    const { setRefreshData, dataInput } = param
+    const { setRefreshData, dataInput, axiosBe } = param
     setRefreshData(true);
     try {
-        const response = await axios.post(`/table/add`, dataInput, {
+        const response = await axiosBe({
+            url: "/table/add",
+            method: "POST",
+            data: dataInput,
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
-        });
-        if (response.status === 200) {
-            setRefreshData(false);
-            dispatch(addTablesState(response.data.data))
-        } else {
-            setRefreshData(false)
-            console.error('Response not okay');
-        }
+        })
+        setRefreshData(false);
+        dispatch(addTablesState(response.data))
     } catch (error) {
+        setRefreshData(false);
         console.error('Error: ', error);
     }
 });
 export const updateTable = createAsyncThunk('table/updateTable', async (param, thunkAPI) => {
     const { dispatch } = thunkAPI;
-    const { id, setRefreshData, dataInput } = param
+    const { id, setRefreshData, dataInput, axiosBe } = param
     setRefreshData(true);
     try {
-        const response = await axios.post(`/table/update?id=${id}`, dataInput, {
+        const response = await axiosBe({
+            url: `/table/update?id=${id}`,
+            method: "POST",
+            data: dataInput,
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
-        });
-        if (response.status === 200) {
-            setRefreshData(false);
-            dispatch(updateTablesState(response.data.data))
-        } else {
-            setRefreshData(false)
-            console.error('Response not okay');
-        }
+        })
+        setRefreshData(false);
+        dispatch(updateTablesState(response.data))
     } catch (error) {
         setRefreshData(false)
         console.error('Error: ', error);
@@ -72,18 +63,17 @@ export const updateTable = createAsyncThunk('table/updateTable', async (param, t
 });
 export const deleteTable = createAsyncThunk('table/deleteTable', async (param, thunkAPI) => {
     const { dispatch } = thunkAPI;
-    const { id, setRefreshData } = param
+    const { id, setRefreshData, axiosBe } = param
     setRefreshData(true);
     try {
-        const response = await axios.delete(`/table/delete?id=${id}`);
-        if (response.status === 200) {
-            setRefreshData(false);
-            dispatch(deleteTablesState(id))
-        } else {
-            setRefreshData(false)
-            console.error('Response not okay');
-        }
+        const response = await axiosBe({
+            url: `/table/delete?id=${id}`,
+            method: "DELETE",
+        })
+        setRefreshData(false);
+        dispatch(deleteTablesState(id))
     } catch (error) {
+        setRefreshData(false)
         console.error('Error: ', error);
     }
 });
@@ -123,7 +113,7 @@ const tableSlice = createSlice({
             })
             .addCase(getTables.fulfilled, (state, action) => {
                 state.loading = false;
-                state.tables = action.payload.data;
+                state.tables = action.payload.data ?? [];
             })
             .addCase(getTables.rejected, (state, action) => {
                 state.loading = false;

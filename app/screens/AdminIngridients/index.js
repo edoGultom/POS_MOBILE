@@ -13,6 +13,7 @@ import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../confi
 import { addIngridients, deleteIngridients, getIngridients, updateIngridients } from '../../redux/ingridientsSlice'
 import { getUnits } from '../../redux/unitsSlice'
 import { showMessage, useForm } from '../../utils'
+import useAxios from '../../api/useAxios'
 
 const AdminIngridients = ({ navigation }) => {
     const { units } = useSelector(state => state.unitsReducer);
@@ -22,6 +23,7 @@ const AdminIngridients = ({ navigation }) => {
     const dispatch = useDispatch();
     const [refreshing, setRefreshing] = useState(false);
     const [selectedIngridients, setSelectedIngridients] = useState(null);
+    const { fetchData: axiosBe } = useAxios();
 
     useEffect(() => {
         if (dataUnit.length < 1 && units.length > 0) {
@@ -34,14 +36,17 @@ const AdminIngridients = ({ navigation }) => {
     }, [units])
 
     useEffect(() => {
-        navigation.addListener('focus', () => {
-            getData();
-        });
-    }, [navigation]);
+        const unsubscribe = navigation.addListener('focus', getData);
+        return unsubscribe;  // Cleanup the listener on unmount or when navigation changes
+    }, [navigation, dispatch, axiosBe]);
 
-    const getData = () => {
-        dispatch(getUnits())
-        dispatch(getIngridients())
+    const getData = async () => {
+        try {
+            await dispatch(getUnits(axiosBe)).unwrap();
+            await dispatch(getIngridients(axiosBe)).unwrap();
+        } catch (error) {
+            console.error("Failed to fetch data:", error);
+        }
     };
 
     const fetchData = useCallback(async () => {
@@ -55,16 +60,12 @@ const AdminIngridients = ({ navigation }) => {
         }
     }, []);
 
-    // useEffect(() => {
-    //     fetchData();
-    // }, [fetchData]);
-
     const setRefreshData = (val) => {
         setRefreshing(val);
     }
 
     const handleDelete = useCallback(async (id) => {
-        const param = { id, setRefreshData };
+        const param = { id, setRefreshData, axiosBe };
         dispatch(deleteIngridients(param))
     }, []);
 
@@ -108,7 +109,7 @@ const AdminIngridients = ({ navigation }) => {
                     dataInput.append(key, form[key]);
                 }
                 closeModal();
-                const param = { dataInput, setRefreshData };
+                const param = { dataInput, setRefreshData, axiosBe };
                 if (selected !== null) {//update
                     const updatedParam = { ...param, id: selected.id };
                     dispatch(updateIngridients(updatedParam));
@@ -144,7 +145,7 @@ const AdminIngridients = ({ navigation }) => {
             <View style={styles.ScreenContainer}>
                 <StatusBar style='light' />
                 <HeaderBar title="Daftar Bahan Baku" onBack={() => navigation.goBack()} />
-                {!ingridients ? (
+                {ingridients.length < 1 ? (
                     <View style={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
                         <Text style={{ fontSize: FONTSIZE.size_18, color: COLORS.primaryLightGreyHex }}>Tidak ada item yang tersedia</Text>
                     </View>

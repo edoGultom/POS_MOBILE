@@ -10,18 +10,19 @@ const initialState = {
     error: null,
 };
 // Async thunk for posting user data
-export const getDetailStok = createAsyncThunk('stock/getDetailStok', async (idTrx, thunkAPI) => {
+export const getDetailStok = createAsyncThunk('stock/getDetailStok', async (params, thunkAPI) => {
     const { dispatch } = thunkAPI;
+    const { id, axiosBe } = params
     dispatch(addLoading(true));
     try {
-        const response = await axiosInstance.get(`/stock/detail-stock?id=${idTrx}`);
-        if (response.status === 200) {
-            dispatch(addLoading(false));
-            return response.data;
-        } else {
-            dispatch(addLoading(false));
-            console.error('Response not okay');
-        }
+        const result = await axiosBe({
+            url: "/stock/detail-stock", method: "GET",
+            params: {
+                id
+            }
+        })
+        dispatch(addLoading(false));
+        return result;
     } catch (error) {
         dispatch(addLoading(false));
         console.error('Error: ', error);
@@ -29,42 +30,41 @@ export const getDetailStok = createAsyncThunk('stock/getDetailStok', async (idTr
 });
 export const addStok = createAsyncThunk('stock/addStock', async (param, thunkAPI) => {
     const { dispatch } = thunkAPI;
-    const { setRefreshData, dataInput } = param
+    const { setRefreshData, dataInput, axiosBe } = param
     setRefreshData(true);
     try {
-        const response = await axiosInstance.post(`/stock/add-stock`, dataInput, {
+        const response = await axiosBe({
+            url: "/stock/add-stock",
+            method: "POST",
+            data: dataInput,
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
-        });
-        if (response.status === 200) {
-            setRefreshData(false);
-            dispatch(addStockState(response.data.data))
-        } else {
-            setRefreshData(false)
-            console.error('Response not okay');
-        }
+        })
+        setRefreshData(false);
+        dispatch(addStockState(response.data))
     } catch (error) {
         console.error('Error: ', error);
     }
 });
 export const updateStok = createAsyncThunk('stock/updateStok', async (param, thunkAPI) => {
     const { dispatch } = thunkAPI;
-    const { id, setRefreshData, dataInput } = param
+    const { id, setRefreshData, dataInput, axiosBe } = param
     setRefreshData(true);
     try {
-        const response = await axiosInstance.post(`/stock/update-stock?id=${id}`, dataInput, {
+        const response = await axiosBe({
+            url: `/stock/update-stock`,
+            method: "POST",
+            data: dataInput,
+            params: {
+                id,
+            },
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
-        });
-        if (response.status === 200) {
-            setRefreshData(false);
-            dispatch(updateStockState(response.data.data))
-        } else {
-            setRefreshData(false)
-            console.error('Response not okay');
-        }
+        })
+        setRefreshData(false);
+        dispatch(updateStockState(response.data))
     } catch (error) {
         setRefreshData(false)
         console.error('Error: ', error);
@@ -72,17 +72,18 @@ export const updateStok = createAsyncThunk('stock/updateStok', async (param, thu
 });
 export const deleteStock = createAsyncThunk('stock/deleteStock', async (param, thunkAPI) => {
     const { dispatch } = thunkAPI;
-    const { id, setRefreshData } = param
+    const { id, setRefreshData, axiosBe } = param
     setRefreshData(true);
     try {
-        const response = await axiosInstance.delete(`/stock/delete-stock?id=${id}`);
-        if (response.status === 200) {
-            setRefreshData(false);
-            dispatch(deleteStockState(id))
-        } else {
-            setRefreshData(false)
-            console.error('Response not okay');
-        }
+        await axiosBe({
+            url: `/stock/delete-stock`,
+            method: "DELETE",
+            params: {
+                id
+            }
+        })
+        setRefreshData(false);
+        dispatch(deleteStockState(id))
     } catch (error) {
         console.error('Error: ', error);
     }
@@ -123,7 +124,7 @@ const stockDetailSlice = createSlice({
             })
             .addCase(getDetailStok.fulfilled, (state, action) => {
                 state.loading = false;
-                state.details = action.payload.data;
+                state.details = action.payload.data ?? [];
             })
             .addCase(getDetailStok.rejected, (state, action) => {
                 state.loading = false;

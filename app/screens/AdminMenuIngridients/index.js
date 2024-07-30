@@ -13,6 +13,7 @@ import { getIngridients } from '../../redux/ingridientsSlice'
 import { addMenuIngridients, deleteMenuIngridients, getMenuIngridients, updateMenuIngridients } from '../../redux/menuIngridientsSlice'
 import { getMenu } from '../../redux/menuSlice'
 import { showMessage, useForm } from '../../utils'
+import useAxios from '../../api/useAxios'
 
 const AdminMenuIngridients = ({ navigation }) => {
     const { menu_ingridients } = useSelector(state => state.menuIngridientsReducer);
@@ -23,17 +24,21 @@ const AdminMenuIngridients = ({ navigation }) => {
     const [isUpdate, setIsUpdate] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const [selectedMenuIngridients, setSelectedMenuIngridients] = useState(null);
+    const { fetchData: axiosBe } = useAxios();
 
     useEffect(() => {
-        navigation.addListener('focus', () => {
-            getData()
-        });
-    }, [navigation]);
+        const unsubscribe = navigation.addListener('focus', getData);
+        return unsubscribe;  // Cleanup the listener on unmount or when navigation changes
+    }, [navigation, dispatch, axiosBe]);
 
-    const getData = () => {
-        dispatch(getMenuIngridients())
-        dispatch(getMenu())
-        dispatch(getIngridients())
+    const getData = async () => {
+        try {
+            await dispatch(getMenuIngridients(axiosBe)).unwrap();
+            await dispatch(getMenu(axiosBe)).unwrap();
+            await dispatch(getIngridients(axiosBe)).unwrap();
+        } catch (error) {
+            console.error("Failed to fetch data:", error);
+        }
     };
 
     const fetchData = useCallback(async () => {
@@ -52,7 +57,7 @@ const AdminMenuIngridients = ({ navigation }) => {
     }
 
     const handleDelete = useCallback(async (id) => {
-        const param = { id, setRefreshData };
+        const param = { id, setRefreshData, axiosBe };
         dispatch(deleteMenuIngridients(param))
     }, []);
 
@@ -104,7 +109,7 @@ const AdminMenuIngridients = ({ navigation }) => {
                     dataInput.append(key, form[key]);
                 }
                 closeModal();
-                const param = { dataInput, setRefreshData };
+                const param = { dataInput, setRefreshData, axiosBe };
                 if (isUpdate) {//update
                     const updatedParam = { ...param, id: selected.list_bahan_baku[0].id };
                     dispatch(updateMenuIngridients(updatedParam));
@@ -153,7 +158,7 @@ const AdminMenuIngridients = ({ navigation }) => {
             <View style={styles.ScreenContainer}>
                 <StatusBar style='light' />
                 <HeaderBar title="Daftar Menu Bahan Baku" onBack={() => navigation.goBack()} />
-                {!menu_ingridients ? (
+                {menu_ingridients.length < 1 ? (
                     <View style={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
                         <Text style={{ fontSize: FONTSIZE.size_18, color: COLORS.primaryLightGreyHex }}>Tidak ada item yang tersedia</Text>
                     </View>

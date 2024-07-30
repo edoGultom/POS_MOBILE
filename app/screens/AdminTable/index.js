@@ -1,16 +1,17 @@
 import { BottomSheetBackdrop, BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { StatusBar } from 'expo-status-bar'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Button, Dimensions, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Button, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { MaskedTextInput } from "react-native-mask-text"
 import { useDispatch, useSelector } from 'react-redux'
+import useAxios from '../../api/useAxios'
 import BottomSheetCustom from '../../component/BottomSheet'
 import CustomIcon from '../../component/CustomIcon'
 import HeaderBar from '../../component/HeaderBar'
 import ListItemTable from '../../component/ListItemTable'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
 import { addTable, deleteTable, getTables, updateTable } from '../../redux/tableSice'
-import { getData, showMessage, useForm } from '../../utils'
+import { showMessage, useForm } from '../../utils'
 
 // const windowWidth = Dimensions.get('window').width;
 
@@ -20,15 +21,19 @@ const AdminTable = ({ navigation }) => {
     const dispatch = useDispatch();
     const [refreshing, setRefreshing] = useState(false);
     const [selectedMenu, setSelectedMenu] = useState(null);
+    const { fetchData: axiosBe } = useAxios();
 
     useEffect(() => {
-        navigation.addListener('focus', () => {
-            getDataTable();
-        });
-    }, [navigation]);
+        const unsubscribe = navigation.addListener('focus', getDataTable);
+        return unsubscribe;  // Cleanup the listener on unmount or when navigation changes
+    }, [navigation, dispatch, axiosBe]);
 
-    const getDataTable = () => {
-        dispatch(getTables())
+    const getDataTable = async () => {
+        try {
+            await dispatch(getTables(axiosBe)).unwrap();
+        } catch (error) {
+            console.error("Failed to fetch data:", error);
+        }
     };
 
     const fetchData = useCallback(async () => {
@@ -47,7 +52,7 @@ const AdminTable = ({ navigation }) => {
     }
 
     const handleDelete = useCallback(async (id) => {
-        const param = { id, setRefreshData };
+        const param = { id, setRefreshData, axiosBe };
         dispatch(deleteTable(param))
     }, []);
 
@@ -92,7 +97,7 @@ const AdminTable = ({ navigation }) => {
                     dataInput.append(key, form[key]);
                 }
                 closeModal();
-                const param = { dataInput, setRefreshData };
+                const param = { dataInput, setRefreshData, axiosBe };
                 if (selected !== null) {//update
                     const updatedParam = { ...param, id: selected.id };
                     dispatch(updateTable(updatedParam));
@@ -101,7 +106,6 @@ const AdminTable = ({ navigation }) => {
                 }
             }
         };
-        // console.log(form, 'formx')
         return (
             <View style={{ marginBottom: 5, gap: 20 }}>
                 <Text style={{ color: COLORS.primaryOrangeHex, fontFamily: FONTFAMILY.poppins_bold, fontSize: FONTSIZE.size_20 }}>{Title}</Text>
@@ -142,7 +146,7 @@ const AdminTable = ({ navigation }) => {
             <View style={styles.ScreenContainer}>
                 <StatusBar style='light' />
                 <HeaderBar title="Meja" onBack={() => navigation.goBack()} />
-                {!tables ? (
+                {tables.length < 1 ? (
                     <View style={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
                         <Text style={{ fontSize: FONTSIZE.size_18, color: COLORS.primaryLightGreyHex }}>Tidak ada item yang tersedia</Text>
                     </View>

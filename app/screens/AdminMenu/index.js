@@ -74,6 +74,10 @@ const AdminMenu = ({ navigation }) => {
         const param = { id, setRefreshData, axiosBe };
         dispatch(deleteMenu(param))
     }, []);
+    // const handleDelete = (id) => {
+    //     const param = { id, setRefreshData, axiosBe };
+    //     dispatch(deleteMenu(param))
+    // }
 
     const renderBackdrop = useCallback(
         props => (
@@ -229,13 +233,12 @@ const AdminMenu = ({ navigation }) => {
             </View>
         );
     }
-
     return (
         <BottomSheetModalProvider>
             <View style={styles.ScreenContainer}>
                 <StatusBar style='light' />
                 <HeaderBar title="Menu" onBack={() => navigation.goBack()} />
-                {!menus ? (
+                {menus.length < 1 ? (
                     <View style={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
                         <Text style={{ fontSize: FONTSIZE.size_18, color: COLORS.primaryLightGreyHex }}>Tidak ada item yang tersedia</Text>
                     </View>

@@ -14,6 +14,7 @@ import Select from '../../component/Select'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
 import { addTransaksiStok, deleteTransaksiStok, getTransaksiStok, updateTransaksiStok } from '../../redux/stockSlice'
 import { useForm } from '../../utils'
+import useAxios from '../../api/useAxios'
 
 const AdminStock = ({ navigation }) => {
     const bottomSheetModalRef = useRef(null);
@@ -22,15 +23,20 @@ const AdminStock = ({ navigation }) => {
     const dispatch = useDispatch();
     const [refreshing, setRefreshing] = useState(false);
     const [selectedStock, setSelectedStock] = useState(null);
+    const { fetchData: axiosBe } = useAxios();
 
     useEffect(() => {
-        navigation.addListener('focus', () => {
-            getData();
-        });
-    }, [navigation]);
+        const unsubscribe = navigation.addListener('focus', getData);
+        return unsubscribe;  // Cleanup the listener on unmount or when navigation changes
+    }, [navigation, dispatch, axiosBe]);
 
-    const getData = () => {
-        dispatch(getTransaksiStok())
+
+    const getData = async () => {
+        try {
+            await dispatch(getTransaksiStok(axiosBe)).unwrap();
+        } catch (error) {
+            console.error("Failed to fetch data:", error);
+        }
     };
 
     const fetchData = useCallback(async () => {
@@ -49,7 +55,7 @@ const AdminStock = ({ navigation }) => {
     }
 
     const handleDelete = useCallback(async (id) => {
-        const param = { id, setRefreshData };
+        const param = { id, setRefreshData, axiosBe };
         dispatch(deleteTransaksiStok(param))
     }, []);
 
@@ -117,7 +123,7 @@ const AdminStock = ({ navigation }) => {
                 }
             }
             closeModal();
-            const param = { dataInput, setRefreshData };
+            const param = { dataInput, setRefreshData, axiosBe };
             if (selected !== null) {//update
                 const updatedParam = { ...param, id: selected.id };
                 dispatch(updateTransaksiStok(updatedParam));
@@ -172,7 +178,7 @@ const AdminStock = ({ navigation }) => {
             <View style={styles.ScreenContainer}>
                 <StatusBar style='light' />
                 <HeaderBar title="Tansaksi Stok" onBack={() => navigation.goBack()} />
-                {!stocks ? (
+                {stocks.length < 1 ? (
                     <View style={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
                         <Text style={{ fontSize: FONTSIZE.size_18, color: COLORS.primaryLightGreyHex }}>Tidak ada item yang tersedia</Text>
                     </View>

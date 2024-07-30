@@ -1,8 +1,6 @@
 
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { addLoading } from './globalSlice';
-import axiosInstance from '../api/useAxios';
-import useAxios from '../api/useAxios';
 
 // Initial state
 const initialState = {
@@ -68,11 +66,9 @@ export const deleteMenu = createAsyncThunk('menu/deleteMenu', async (param, thun
     setRefreshData(true);
     try {
         const response = await axiosBe({
-            url: `/menu/delete`,
+            url: `/menu/delete?id=${id}`,
             method: "DELETE",
-            params: { id }
         })
-        console.log(response, 'responsedelete')
         setRefreshData(false);
         dispatch(deleteMenuState(id))
     } catch (error) {
@@ -116,7 +112,7 @@ const menuSlice = createSlice({
             })
             .addCase(getMenu.fulfilled, (state, action) => {
                 state.loading = false;
-                state.menus = action.payload.data;
+                state.menus = action.payload.data ?? [];
             })
             .addCase(getMenu.rejected, (state, action) => {
                 state.loading = false;

@@ -12,9 +12,9 @@ const useAxios = () => {
 
     const axiosInstance = axios.create({
         baseURL: BE_API_HOST,
-        headers: {
-            'Content-Type': 'multipart/form-data',
-        },
+        // headers: {
+        //     'Content-Type': 'multipart/form-data',
+        // },
     });
     const refreshAuthToken = async (refreshToken) => {
         try {
@@ -59,7 +59,6 @@ const useAxios = () => {
                     await refreshAuthToken(refreshToken.value);
                     await getData('token');
                     const newToken = await getData('token');
-                    console.log(newToken, 'newTokenData')
                     originalRequest.headers.Authorization = `Bearer ${newToken.value}`;
                     return axiosInstance(originalRequest);
                 }
@@ -73,7 +72,7 @@ const useAxios = () => {
         return () => controller.abort()
     }, [])
 
-    const fetchData = async ({ url, method, data = {}, params = {} }) => {
+    const fetchData = async ({ url, method, data = {}, params = {}, headers = {} }) => {
         setLoading(true);
         controller.abort();
         controller = new AbortController()
@@ -83,6 +82,7 @@ const useAxios = () => {
                 method,
                 data,
                 params,
+                headers,
                 signal: controller.signal
             })
             if (result.status === 200) {
@@ -99,7 +99,7 @@ const useAxios = () => {
         }
     }
 
-    return { fetchData }
+    return { response, loading, error, fetchData }
 };
 
 export default useAxios;

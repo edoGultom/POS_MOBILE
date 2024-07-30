@@ -10,10 +10,10 @@ const initialState = {
     error: null,
 };
 // Async thunk for posting user data
-export const getUnits = createAsyncThunk('unit/getUnits', async () => {
+export const getUnits = createAsyncThunk('unit/getUnits', async (axiosInstance) => {
     try {
-        const response = await axiosInstance.get('/bahan-baku/units');
-        return response.data.data;
+        const result = await axiosInstance({ url: "/bahan-baku/units", method: "GET" })
+        return result
     } catch (error) {
         console.error(error);
     }
@@ -31,7 +31,7 @@ const unitsSlice = createSlice({
             })
             .addCase(getUnits.fulfilled, (state, action) => {
                 state.loading = false;
-                state.units = action.payload;
+                state.units = action.payload.data ?? [];
             })
             .addCase(getUnits.rejected, (state, action) => {
                 state.loading = false;
