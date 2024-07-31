@@ -3,6 +3,7 @@ import React from 'react'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
 import CustomIcon from '../CustomIcon'
 import Select from '../Select'
+import CustomIconFa6 from '../CustomIconFa6'
 
 const PaymentFooter = ({ price, buttonTitle, buttonPressHandler, pembayaran, setPembayaran }) => {
     return (
@@ -42,11 +43,11 @@ const PaymentFooter = ({ price, buttonTitle, buttonPressHandler, pembayaran, set
                     disabled={price.totalBayar === 0}
                     style={[styles.PayButton, (price.totalBayar === 0) ? { backgroundColor: COLORS.secondaryLightGreyHex } : {}]}
                     onPress={() => buttonPressHandler()}>
-                    <CustomIcon
-                        name={'sack-dollar'}
+                    {/* <CustomIconFa6
+                        name={'rupiah-sign'}
                         color={COLORS.primaryBlackRGBA}
                         size={FONTSIZE.size_30}
-                    />
+                    /> */}
                     <Text style={styles.ButtonText}>{buttonTitle}</Text>
                 </TouchableOpacity>
             </View>

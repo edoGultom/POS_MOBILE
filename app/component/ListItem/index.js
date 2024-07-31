@@ -8,7 +8,7 @@ import CustomIcon from '../CustomIcon'
 
 const ListItem = (props) => {
     const [photo, setPhoto] = useState(null);
-    const { name, url, kind, price, onPressDelete, onPressUpdate } = props;
+    const { name, url, kind, sub_kind, price, onPressDelete, onPressUpdate } = props;
 
     useEffect(() => {
         const fetchData = () => {
@@ -31,7 +31,7 @@ const ListItem = (props) => {
                 <View style={styles.ItemSingleInfoContainer}>
                     <View>
                         <Text style={styles.ItemTitle}>{name}</Text>
-                        <Text style={styles.ItemSubtitle}>{kind}</Text>
+                        <Text style={styles.ItemSubtitle}>{sub_kind} - {kind}</Text>
                         <Text style={styles.SizeCurrency}>
                             IDR <Text style={styles.SizePrice}>{price.toLocaleString('id-ID')}</Text>
                         </Text>

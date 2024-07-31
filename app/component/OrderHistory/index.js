@@ -32,7 +32,7 @@ const OrderHistory = ({
                 {detail && detail.map((item, idx) => (
                     <OrderHistoryItem
                         key={idx}
-                        name={item.nama_barang}
+                        name={item.nama}
                         kind={item.kategori}
                         link={item.link}
                         price={item.harga}

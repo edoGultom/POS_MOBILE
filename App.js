@@ -9,6 +9,7 @@ import { Provider, useSelector } from 'react-redux';
 import Loading from './app/component/Loading';
 import store from './app/redux/store';
 import Router from './app/router';
+import HeaderBar from './app/component/HeaderBar';
 SplashScreens.preventAutoHideAsync();
 
 const MainApp = () => {

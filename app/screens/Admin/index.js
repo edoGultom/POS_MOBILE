@@ -75,7 +75,7 @@ const Admin = ({ navigation }) => {
             label: 'POS',
             icon: 'point-of-sale',
             onPress: () => {
-                navigation.navigate('PosTable')
+                navigation.navigate('MainAppAdmin')
             },
         },
         {
@@ -103,22 +103,6 @@ const Admin = ({ navigation }) => {
             },
         },
     ]
-
-    // useEffect(() => {
-    //     navigation.addListener('focus', () => {
-    //         async function fetch() {
-    //             axiosInstance.get('/menu/test')
-    //                 .then((response) => {
-    //                     console.log(response, 'resx')
-    //                 })
-    //                 .catch((error) => {
-    //                     console.error(error, 'er');
-    //                 });
-    //         }
-    //         fetch()
-    //     });
-    // }, [navigation]);
-
     return (
         <View style={styles.ScreenContainer}>
             <StatusBar style='light' />

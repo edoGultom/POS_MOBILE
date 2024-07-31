@@ -7,7 +7,7 @@ import { BE_API_HOST } from '@env'
 import { Ionicons } from '@expo/vector-icons';
 const CARD_WIDTH = Dimensions.get('window').width * 0.25;
 
-const CoffeCard = ({ id, link, name, kind, price, buttonPressHandler }) => {
+const CoffeCard = ({ id, link, name, kind, sub_kind, price, buttonPressHandler }) => {
     const [checked, setChecked] = useState({
         label: 'HOT',
         value: price,
@@ -29,14 +29,14 @@ const CoffeCard = ({ id, link, name, kind, price, buttonPressHandler }) => {
             end={{ x: 0.9, y: 0.7 }}
             style={styles.CardLinearGradientContainer}
             colors={[COLORS.primaryBlackHex, COLORS.primaryOrangeHex]}>
-            <View style={{ padding: SPACING.space_10, justifyContent: 'center', alignItems: 'center', flex: 1, flexDirection: 'row', gap: SPACING.space_15 }}>
+            <View style={{ padding: SPACING.space_10, justifyContent: 'flex-start', alignItems: 'center', flex: 1, flexDirection: 'row', gap: SPACING.space_15 }}>
                 <ImageBackground
                     source={{ uri: `${BE_API_HOST}/lihat-file/profile?path=${link}` }}
                     style={styles.CardImageBG}
                     resizeMode="cover">
                     <View style={styles.CardRatingContainer}>
                         <CustomIcon
-                            name={'hand-holding-heart'}
+                            name={'recommend'}
                             color={COLORS.primaryOrangeHex}
                             size={FONTSIZE.size_16}
                         />
@@ -45,35 +45,38 @@ const CoffeCard = ({ id, link, name, kind, price, buttonPressHandler }) => {
                 <View>
                     <Text style={styles.CardTitle}>{name}</Text>
                     <Text style={styles.CardSubtitle}>{kind}</Text>
-                    <View style={{
-                        flexDirection: 'row',
-                        gap: 8,
-                        alignItems: 'center'
-                    }}>
-                        {Checkboxs.map((item, idx) => (
-                            <View style={{
-                                marginTop: 5,
-                                flexDirection: 'row',
-                                gap: 8,
-                                alignItems: 'center'
-                            }}
-                                key={idx}
-                            >
-                                <Pressable
-                                    style={[styles.checkboxBase, checked && styles.checkboxChecked]}
-                                    onPress={() => {
-                                        if (checked.label === item.label) {
-                                            setChecked({ label: '', value: '' });
-                                        } else {
-                                            setChecked({ label: item.label, value: item.value });
-                                        }
-                                    }}>
-                                    {checked.label == item.label && <Ionicons name="checkmark" size={24} color="white" />}
-                                </Pressable>
-                                <Text style={{ color: COLORS.primaryWhiteHex }}>{item.label}</Text>
-                            </View>
-                        ))}
-                    </View>
+                    {kind !== 'Makanan' && (
+                        <View style={{
+                            flexDirection: 'row',
+                            gap: 8,
+                            alignItems: 'center'
+                        }}>
+                            {Checkboxs.map((item, idx) => (
+                                <View style={{
+                                    marginTop: 5,
+                                    flexDirection: 'row',
+                                    gap: 8,
+                                    alignItems: 'center',
+                                }}
+                                    key={idx}
+                                >
+                                    <Pressable
+                                        style={[styles.checkboxBase, checked && styles.checkboxChecked]}
+                                        onPress={() => {
+                                            if (checked.label === item.label) {
+                                                setChecked({ label: '', value: '' });
+                                            } else {
+                                                setChecked({ label: item.label, value: item.value });
+                                            }
+                                        }}>
+                                        {checked.label == item.label && <Ionicons name="checkmark" size={24} color="white" />}
+                                    </Pressable>
+                                    <Text style={{ color: COLORS.primaryWhiteHex }}>{item.label}</Text>
+                                </View>
+                            ))}
+                        </View>
+                    )}
+
                     <View style={styles.CardFooterRow}>
                         <Text style={styles.CardPriceCurrency}>
                             IDR <Text style={styles.CardPrice}>{price.toLocaleString('id-ID')}</Text>
@@ -95,11 +98,10 @@ const CoffeCard = ({ id, link, name, kind, price, buttonPressHandler }) => {
                     width: SPACING.space_20 * 3
                 }}
             >
-
                 <CustomIcon
-                    name={'plus'}
+                    name={'add-circle'}
                     color={COLORS.primaryWhiteHex}
-                    size={FONTSIZE.size_18}
+                    size={FONTSIZE.size_24}
                 />
             </TouchableOpacity>
         </LinearGradient >

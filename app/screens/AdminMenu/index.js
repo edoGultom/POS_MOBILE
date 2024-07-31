@@ -14,7 +14,7 @@ import ListItem from '../../component/ListItem'
 import Select from '../../component/Select'
 import TextInput from '../../component/TextInput'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
-import { getKategori } from '../../redux/kategoriSlice'
+import { getKategori, getSubKategori } from '../../redux/kategoriSlice'
 import { addMenu, deleteMenu, getMenu, updateMenu } from '../../redux/menuSlice'
 import { showMessage, useForm } from '../../utils'
 import useAxios from '../../api/useAxios'
@@ -22,10 +22,11 @@ import useAxios from '../../api/useAxios'
 const windowWidth = Dimensions.get('window').width;
 
 const AdminMenu = ({ navigation }) => {
-    const { kategori } = useSelector(state => state.kategoriReducer);
+    const { kategori, subKategori } = useSelector(state => state.kategoriReducer);
     const bottomSheetModalRef = useRef(null);
     const { menus } = useSelector(state => state.menuReducer);
     const [dataKategori, setDataKategori] = useState([]);
+    const [dataSubKategori, setDataSubKategori] = useState([]);
     const dispatch = useDispatch();
     const [refreshing, setRefreshing] = useState(false);
     const [selectedMenu, setSelectedMenu] = useState(null);
@@ -42,6 +43,16 @@ const AdminMenu = ({ navigation }) => {
     }, [kategori])
 
     useEffect(() => {
+        if (dataSubKategori.length < 1 && subKategori?.length > 0) {
+            const data = subKategori.map((item) => ({
+                id: item.id,
+                nama: item.nama_sub_kategori
+            }));
+            setDataSubKategori(data)
+        }
+    }, [subKategori])
+
+    useEffect(() => {
         const unsubscribe = navigation.addListener('focus', getDataMenu);
         return unsubscribe;  // Cleanup the listener on unmount or when navigation changes
     }, [navigation, dispatch, axiosBe]);
@@ -50,6 +61,7 @@ const AdminMenu = ({ navigation }) => {
         try {
             await dispatch(getMenu(axiosBe)).unwrap();
             await dispatch(getKategori(axiosBe)).unwrap();
+            await dispatch(getSubKategori(axiosBe)).unwrap();
         } catch (error) {
             console.error("Failed to fetch data:", error);
         }
@@ -74,10 +86,6 @@ const AdminMenu = ({ navigation }) => {
         const param = { id, setRefreshData, axiosBe };
         dispatch(deleteMenu(param))
     }, []);
-    // const handleDelete = (id) => {
-    //     const param = { id, setRefreshData, axiosBe };
-    //     dispatch(deleteMenu(param))
-    // }
 
     const renderBackdrop = useCallback(
         props => (
@@ -103,7 +111,7 @@ const AdminMenu = ({ navigation }) => {
         bottomSheetModalRef.current.dismiss();
     };
 
-    const FormComponent = ({ dataKategori, selected }) => {
+    const FormComponent = ({ dataKategori, dataSubKategori, selected }) => {
         const [photo, setPhoto] = useState(null);
 
         const fetchImage = useCallback(async () => {
@@ -132,6 +140,7 @@ const AdminMenu = ({ navigation }) => {
         const [form, setForm] = useForm({
             nama: selected !== null ? selected.nama : '',
             id_kategori: selected !== null ? selected.id_kategori : '1',
+            id_sub_kategori: selected !== null ? selected.id_sub_kategori : '1',
             harga: selected !== null ? selected.harga.toString() : null,
         });
         const Title = selected !== null ? 'Ubah Menu' : 'Tambah Menu';
@@ -190,6 +199,12 @@ const AdminMenu = ({ navigation }) => {
                     data={dataKategori}
                     value={form.id_kategori}
                     onSelectChange={(value) => setForm('id_kategori', value)}
+                />
+                <Select
+                    label="Sub Kategori"
+                    data={dataSubKategori}
+                    value={form.id_sub_kategori}
+                    onSelectChange={(value) => setForm('id_sub_kategori', value)}
                 />
                 <CurrencyInput
                     value={form.harga}
@@ -255,6 +270,7 @@ const AdminMenu = ({ navigation }) => {
                                 name={item.nama}
                                 url={item.path}
                                 kind={item.nama_kategori}
+                                sub_kind={item.nama_sub_kategori}
                                 price={item.harga}
                                 onPressDelete={() => handleDelete(item.id)}
                                 onPressUpdate={() => setSelectedMenu(item)}
@@ -270,7 +286,7 @@ const AdminMenu = ({ navigation }) => {
                     ref={bottomSheetModalRef}
                     backdropComponent={renderBackdrop}
                 >
-                    <FormComponent dataKategori={dataKategori} selected={selectedMenu} />
+                    <FormComponent dataKategori={dataKategori} dataSubKategori={dataSubKategori} selected={selectedMenu} />
                 </BottomSheetCustom>
 
                 <View style={styles.buttonContainer}>

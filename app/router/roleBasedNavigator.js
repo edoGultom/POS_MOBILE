@@ -2,7 +2,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import BottomNavigator from '../component/BottomNavigator';
+import UserBottomNavigator from '../component/UserBottomNavigator';
 import { Admin, AdminHistory, AdminMenu, AdminStock, Home, Order, PosMenu, Profile, SignIn, SignUp, SplashScreen, SuccessSignUp } from '../screens';
 import AdminDetailStock from '../screens/AdminDetailStock';
 import AdminIngridients from '../screens/AdminIngridients';
@@ -13,14 +13,16 @@ import AdminTable from '../screens/AdminTable';
 import PosTable from '../screens/PosTable';
 import SuccessPaymentCash from '../screens/SuccessPaymentCash';
 import { useRole } from '../utils/roles';
+import AdminBottomNavigator from '../component/AdminBottomNavigator';
+import CustomHeader from '../component/CutomHeader';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const MainApp = () => {
+const MainAppUser = () => {
     return (
         <Tab.Navigator
-            tabBar={props => <BottomNavigator {...props} />}
+            tabBar={props => <UserBottomNavigator {...props} />}
         >
             <Tab.Screen name="Home" component={Home} options={{ headerShown: false }} />
             <Tab.Screen name="Order" component={Order} options={{ headerShown: false, tabBarVisible: false }} />
@@ -28,10 +30,24 @@ const MainApp = () => {
         </Tab.Navigator>
     )
 }
+const MainAppAdmin = () => {
+    return (
+        <Tab.Navigator
+            tabBar={props => <AdminBottomNavigator {...props} />}
+        >
+            <Tab.Screen name="PosTable" component={PosTable} options={{ headerShown: false }} />
+        </Tab.Navigator>
+    )
+}
 const RoleBasedNavigator = () => {
     const { roles } = useRole();
     return (
-        <Stack.Navigator initialRouteName="PosTable">
+        <Stack.Navigator
+            initialRouteName="Admin"
+        // screenOptions={{
+        //     header: (props) => <CustomHeader title={props.scene.route.name} />,
+        // }}
+        >
             <Stack.Screen
                 name="SplashScreen"
                 component={SplashScreen}
@@ -55,69 +71,74 @@ const RoleBasedNavigator = () => {
             <Stack.Screen
                 name="Admin"
                 component={Admin}
-                options={{ headerShown: false, animation: 'slide_from_bottom' }}
+                options={{ headerShown: false }}
             />
             <Stack.Screen
                 name="AdminMenu"
                 component={AdminMenu}
-                options={{ headerShown: false, animation: 'slide_from_bottom' }}
+                options={{ headerShown: false }}
             />
             <Stack.Screen
                 name="AdminTable"
                 component={AdminTable}
-                options={{ headerShown: false, animation: 'slide_from_bottom' }}
+                options={{ headerShown: false }}
             />
             <Stack.Screen
                 name="AdminIngridients"
                 component={AdminIngridients}
-                options={{ headerShown: false, animation: 'slide_from_bottom' }}
+                options={{ headerShown: false }}
             />
             <Stack.Screen
                 name="AdminMenuIngridients"
                 component={AdminMenuIngridients}
-                options={{ headerShown: false, animation: 'slide_from_bottom' }}
-            />
-            <Stack.Screen
-                name="AdminOrder"
-                component={AdminOrder}
-                options={{ headerShown: false, animation: 'slide_from_bottom' }}
+                options={{ headerShown: false }}
             />
             <Stack.Screen
                 name="SuccessPaymentCash"
                 component={SuccessPaymentCash}
-                options={{ headerShown: false, animation: 'slide_from_bottom' }}
+                options={{ headerShown: false }}
             />
             <Stack.Screen
                 name="AdminReport"
                 component={AdminReport}
-                options={{ headerShown: false, animation: 'slide_from_bottom' }}
+                options={{ headerShown: false }}
             />
             <Stack.Screen
                 name="AdminStock"
                 component={AdminStock}
-                options={{ headerShown: false, animation: 'slide_from_bottom' }}
+                options={{ headerShown: false }}
             />
             <Stack.Screen
                 name="AdminDetailStock"
                 component={AdminDetailStock}
-                options={{ headerShown: false, animation: 'slide_from_right' }}
+                options={{ headerShown: false, }}
             />
             <Stack.Screen
                 name="AdminHistory"
                 component={AdminHistory}
-                options={{ headerShown: false, animation: 'slide_from_bottom' }}
+                options={{ headerShown: false }}
             />
             <Stack.Screen
-                name="PosTable"
-                component={PosTable}
-                options={{ headerShown: false, animation: 'slide_from_right' }}
+                name="AdminOrder"
+                component={AdminOrder}
+                options={{ headerShown: false }}
             />
             <Stack.Screen
                 name="PosMenu"
                 component={PosMenu}
-                options={{ headerShown: false, animation: 'slide_from_right' }}
+                options={{ headerShown: false, }}
             />
-            <Stack.Screen name="MainApp" component={MainApp} options={{ headerShown: false }} />
+            {
+                "Admin".includes(roles) ?
+                    (
+                        <Stack.Screen name="MainAppAdmin" component={MainAppAdmin} options={{ headerShown: false }} />
+                    )
+                    :
+                    (
+                        <Stack.Screen name="MainAppUser" component={MainAppUser} options={{ headerShown: false }} />
+
+                    )
+            }
         </Stack.Navigator>
     );
 };

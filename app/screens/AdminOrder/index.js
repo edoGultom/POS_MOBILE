@@ -108,7 +108,7 @@ const AdminOrder = ({ navigation }) => {
         return (
             <OrderItem
                 id={item.id}
-                name={item.nama_barang}
+                name={item.nama}
                 link={item.path}
                 kind={item.nama_kategori}
                 price={item.harga}

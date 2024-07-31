@@ -11,8 +11,11 @@ import { useDispatch, useSelector } from 'react-redux'
 import { getTables } from '../../redux/tableSice'
 import useAxios from '../../api/useAxios'
 import Button from '../../component/Button'
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { Path, Svg } from 'react-native-svg'
 
 const PosTable = ({ navigation }) => {
+    const tabBarHeight = useBottomTabBarHeight();
     const dispatch = useDispatch();
     const { tables } = useSelector(state => state.tablesReducer);
     const [selectedTable, setSelectedTable] = useState({
@@ -34,8 +37,6 @@ const PosTable = ({ navigation }) => {
         }
     };
 
-    console.log(selectedTable, 'xxx')
-
     return (
         <View style={styles.ScreenContainer}>
             <StatusBar style='light' />
@@ -44,7 +45,7 @@ const PosTable = ({ navigation }) => {
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.ScrollViewFlex}>
                 <Text style={styles.ScreenTitle}>
-                    Find the best{'\n'}coffee for you
+                    TABLE  LIST
                 </Text>
                 <View style={{
                     paddingVertical: 15,
@@ -54,12 +55,18 @@ const PosTable = ({ navigation }) => {
                     flexWrap: 'wrap',
                     justifyContent: 'center',
                     flex: 1,
+                    marginBottom: tabBarHeight + 100
                 }}>
                     {tables.length > 0 && tables.map((item, index) => (
                         <TouchableOpacity
                             key={item.id}
                             onPress={() => {
-                                setSelectedTable({ id: item.id, table: item.nomor_meja })
+                                setSelectedTable((prev) => {
+                                    if (prev.id === item.id) {
+                                        return { id: null, table: '' }
+                                    }
+                                    return { id: item.id, table: item.nomor_meja };
+                                })
                             }}
                             style={[
                                 styles.ContainerTable,
@@ -68,11 +75,18 @@ const PosTable = ({ navigation }) => {
                             ]}
                         >
                             <View style={[styles.ContainerTableNumber, { zIndex: 1 }]}>
-                                {/* <IcTableActive /> */}
-                                <Image
-                                    source={IlDisableTable}
-                                    style={{ height: 147, width: 147 }}
-                                />
+                                {
+                                    selectedTable.table === item.nomor_meja ?
+                                        (
+                                            <IcTableActive />
+                                        ) :
+                                        (
+                                            <Image
+                                                source={IlDisableTable}
+                                                style={{ height: 147, width: 147 }}
+                                            />
+                                        )
+                                }
                             </View>
                             <View style={[styles.ContainerTableNumber, { zIndex: 2 }]}>
                                 <Text style={[
@@ -85,33 +99,37 @@ const PosTable = ({ navigation }) => {
                     ))}
                 </View>
             </ScrollView>
-            <View style={{
-                position: 'absolute',
-                bottom: '5%',
-                backgroundColor: COLORS.primaryOrangeHex,
-                justifyContent: 'center',
-                alignItems: 'center',
-                flex: 2,
-                width: '100%',
-                height: '12%',
-                gap: SPACING.space_10
-            }}>
-                <View style={{ flexDirection: 'row', gap: SPACING.space_10 }}>
-                    <IcSmallTable />
-                    <Text style={{
-                        fontSize: FONTSIZE.size_14,
-                        fontFamily: FONTFAMILY.poppins_semibold
-                    }}>Table <Text style={{
-                        marginLeft: 10,
-                        fontFamily: FONTFAMILY.poppins_semibold,
-                        color: COLORS.primaryWhiteHex
+            {
+                selectedTable.id !== null && (
+                    <View style={{
+                        position: 'absolute',
+                        bottom: '10%',
+                        backgroundColor: COLORS.primaryOrangeHex,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        width: '100%',
+                        height: '10%',
+                        gap: SPACING.space_10
                     }}>
-                            {selectedTable.table}
-                        </Text>
-                    </Text>
-                </View>
-                <Button text="Select and Continue" textColor={COLORS.primaryWhiteHex} onPress={() => navigation.navigate('PosMenu')} color={COLORS.secondaryBlackRGBA} />
-            </View>
+                        <View style={{ flexDirection: 'row', gap: SPACING.space_10 }}>
+                            <IcSmallTable />
+                            <Text style={{
+                                fontSize: FONTSIZE.size_14,
+                                fontFamily: FONTFAMILY.poppins_semibold
+                            }}>Table <Text style={{
+                                marginLeft: 10,
+                                fontFamily: FONTFAMILY.poppins_semibold,
+                                color: COLORS.primaryWhiteHex
+                            }}>
+                                    {selectedTable.table}
+                                </Text>
+                            </Text>
+                        </View>
+                        <Button text="Select and Continue" textColor={COLORS.primaryWhiteHex} onPress={() => navigation.navigate('PosMenu')} color={COLORS.secondaryBlackRGBA} />
+                    </View>
+                )
+            }
+
         </View >
     )
 }
@@ -151,6 +169,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     ScreenTitle: {
+        textAlign: 'center',
         fontSize: FONTSIZE.size_24,
         fontFamily: FONTFAMILY.poppins_semibold,
         color: COLORS.primaryWhiteHex,

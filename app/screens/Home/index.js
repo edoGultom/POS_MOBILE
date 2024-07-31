@@ -56,13 +56,13 @@ const Home = ({ navigation }) => {
     }, [navigation]);
 
     const CoffeCardAddToCart = (item, checked) => {
-        const { id, nama_barang, path, nama_kategori, harga } = item
+        const { id, nama, path, nama_kategori, nama_sub_kategori, harga } = item
         const data = {
-            id, nama_barang, path, nama_kategori, harga: checked.value, temperatur: checked.label
+            id, nama, path, nama_kategori, nama_sub_kategori, harga: checked.value, temperatur: checked.label
         }
         dispatch(addToChartList(data))
         ToastAndroid.showWithGravity(
-            `${nama_barang} is Added to Cart`,
+            `${nama} is Added to Cart`,
             ToastAndroid.SHORT,
             ToastAndroid.CENTER,
         )
@@ -152,7 +152,7 @@ const Home = ({ navigation }) => {
                             <CoffeCard
                                 id={`${item.id}-${item.temperatur}`}
                                 link={item.path}
-                                name={item.nama_barang}
+                                name={item.nama}
                                 kind={item.nama_kategori}
                                 price={item.harga}
                                 buttonPressHandler={(valChecked) => CoffeCardAddToCart(item, valChecked)}

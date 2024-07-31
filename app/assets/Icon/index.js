@@ -9,6 +9,9 @@ import IcNonCoffeeOff from './ic-non-coffee-off.svg';
 import IcLogo from './ic-logo.png';
 import IcCoffee from './coffee-shop.svg';
 import IcSmallTable from './ic-small-table.svg';
+import IcFoodOn from './ic-food-on.svg';
+import IcFoodOff from './ic-food-off.svg';
+import IcNoMenu from './ic-no-menu.svg';
 export {
     IcHomeOn,
     IcHomeOff,
@@ -20,5 +23,8 @@ export {
     IcNonCoffeeOff,
     IcLogo,
     IcCoffee,
-    IcSmallTable
+    IcSmallTable,
+    IcFoodOn,
+    IcFoodOff,
+    IcNoMenu
 };

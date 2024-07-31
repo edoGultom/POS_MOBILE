@@ -1,28 +1,34 @@
 import React from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
+import { useSelector } from 'react-redux'
 import { IcCoffee } from '../../assets'
 import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
 import CustomIcon from '../CustomIcon'
-import { useSelector } from 'react-redux'
 
 const Icon = ({ label, focused }) => {
     const { CartList } = useSelector(state => state.orderReducer);
     let countList = CartList.length;
     switch (label) {
-        case 'Home':
+        case 'PosTable':
             return focused ?
-                <CustomIcon
-                    name={'home'}
-                    color={COLORS.primaryOrangeHex}
-                    size={FONTSIZE.size_20}
-                />
+                <View style={styles.containerMenu}>
+                    <CustomIcon
+                        name={'home'}
+                        color={COLORS.primaryOrangeHex}
+                        size={FONTSIZE.size_24}
+                    />
+                    <Text style={{ color: COLORS.primaryOrangeHex }}>Home</Text>
+                </View>
                 :
-                <CustomIcon
-                    name={'home'}
-                    color={COLORS.primaryLightGreyHex}
-                    size={FONTSIZE.size_20}
-                />
-        case 'Order':
+                <View style={styles.containerMenu}>
+                    <CustomIcon
+                        name={'home'}
+                        color={COLORS.primaryLightGreyHex}
+                        size={FONTSIZE.size_24}
+                    />
+                    <Text style={{ color: COLORS.primaryLightGreyHex }}>Home</Text>
+                </View>
+        case 'AdminOrder':
             return <View
                 style={{
                     marginTop: -40,
@@ -48,23 +54,11 @@ const Icon = ({ label, focused }) => {
                     <IcCoffee />
                 </View>
             </View >
-        case 'Profile':
-            return focused ?
-                <CustomIcon
-                    name={'supervised-user-circle'}
-                    color={COLORS.primaryOrangeHex}
-                    size={FONTSIZE.size_20}
-                /> :
-                <CustomIcon
-                    name={'supervised-user-circle'}
-                    color={COLORS.primaryLightGreyHex}
-                    size={FONTSIZE.size_20}
-                />
         default:
             return 'Null'
     }
 }
-const BottomNavigator = ({ state, descriptors, navigation }) => {
+const AdminBottomNavigator = ({ state, descriptors, navigation }) => {
     const focusedOptions = descriptors[state.routes[state.index].key].options;
     if (focusedOptions.tabBarVisible === false) {
         return null;
@@ -127,9 +121,12 @@ const BottomNavigator = ({ state, descriptors, navigation }) => {
     )
 }
 
-export default BottomNavigator
+export default AdminBottomNavigator
 
 const styles = StyleSheet.create({
+    containerMenu: {
+        flexDirection: 'column', justifyContent: 'center', alignItems: 'center'
+    },
     counterList: {
         position: 'absolute',
         fontFamily: FONTFAMILY.poppins_bold,
