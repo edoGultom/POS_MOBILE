@@ -13,22 +13,41 @@ const Icon = ({ label, focused }) => {
             return focused ?
                 <View style={styles.containerMenu}>
                     <CustomIcon
-                        name={'home'}
+                        name={'table-restaurant'}
                         color={COLORS.primaryOrangeHex}
                         size={FONTSIZE.size_24}
                     />
-                    <Text style={{ color: COLORS.primaryOrangeHex }}>Home</Text>
+                    <Text style={{ color: COLORS.primaryOrangeHex }}>Tables</Text>
                 </View>
                 :
                 <View style={styles.containerMenu}>
                     <CustomIcon
-                        name={'home'}
+                        name={'table-restaurant'}
                         color={COLORS.primaryLightGreyHex}
                         size={FONTSIZE.size_24}
                     />
-                    <Text style={{ color: COLORS.primaryLightGreyHex }}>Home</Text>
+                    <Text style={{ color: COLORS.primaryLightGreyHex }}>Tables</Text>
                 </View>
-        case 'AdminOrder':
+        case 'PosMenu':
+            return focused ?
+                <View style={styles.containerMenu}>
+                    <CustomIcon
+                        name={'menu-book'}
+                        color={COLORS.primaryOrangeHex}
+                        size={FONTSIZE.size_24}
+                    />
+                    <Text style={{ color: COLORS.primaryOrangeHex }}>Menu</Text>
+                </View>
+                :
+                <View style={styles.containerMenu}>
+                    <CustomIcon
+                        name={'menu-book'}
+                        color={COLORS.primaryLightGreyHex}
+                        size={FONTSIZE.size_24}
+                    />
+                    <Text style={{ color: COLORS.primaryLightGreyHex }}>Menu</Text>
+                </View>
+        case 'PosOrder':
             return <View
                 style={{
                     marginTop: -40,

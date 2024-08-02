@@ -1,18 +1,16 @@
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs'
+import { Image } from 'expo-image'
 import { StatusBar } from 'expo-status-bar'
+import React, { useEffect, useState } from 'react'
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { useDispatch, useSelector } from 'react-redux'
+import useAxios from '../../api/useAxios'
+import { IcSmallTable, IlDisableTable } from '../../assets'
+import IcTableActive from '../../assets/Icon/IcTableActive'
+import Button from '../../component/Button'
 import HeaderBar from '../../component/HeaderBar'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
-import { Image } from 'expo-image'
-import IcTableActive from '../../assets/Icon/IcTableActive'
-import IcTableNonActive from '../../assets/Icon/IcTableNonActive'
-import { IcSmallTabl, IcSmallTable, IlDisableTable, } from '../../assets'
-import { useDispatch, useSelector } from 'react-redux'
 import { getTables } from '../../redux/tableSice'
-import useAxios from '../../api/useAxios'
-import Button from '../../component/Button'
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import { Path, Svg } from 'react-native-svg'
 
 const PosTable = ({ navigation }) => {
     const tabBarHeight = useBottomTabBarHeight();
@@ -125,7 +123,12 @@ const PosTable = ({ navigation }) => {
                                 </Text>
                             </Text>
                         </View>
-                        <Button text="Select and Continue" textColor={COLORS.primaryWhiteHex} onPress={() => navigation.navigate('PosMenu')} color={COLORS.secondaryBlackRGBA} />
+                        <Button
+                            text="Select and Continue"
+                            textColor={COLORS.primaryWhiteHex}
+                            onPress={() => navigation.navigate('PosMenu', { selectedTable })}
+                            color={COLORS.secondaryBlackRGBA}
+                        />
                     </View>
                 )
             }

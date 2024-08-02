@@ -36,6 +36,7 @@ const MainAppAdmin = () => {
             tabBar={props => <AdminBottomNavigator {...props} />}
         >
             <Tab.Screen name="PosTable" component={PosTable} options={{ headerShown: false }} />
+            <Tab.Screen name="PosMenu" component={PosMenu} options={{ headerShown: false }} />
         </Tab.Navigator>
     )
 }
@@ -128,6 +129,7 @@ const RoleBasedNavigator = () => {
                 component={PosMenu}
                 options={{ headerShown: false, }}
             />
+
             {
                 "Admin".includes(roles) ?
                     (

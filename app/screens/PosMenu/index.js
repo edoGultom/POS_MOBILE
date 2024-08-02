@@ -10,8 +10,11 @@ import HeaderBar from '../../component/HeaderBar';
 import { getMenu } from '../../redux/menuSlice';
 import { addToChartList } from '../../redux/orderSlice';
 import Button from '../../component/Button';
+import ButtonIcon from '../../component/ButtonIcon';
 
-const PosMenu = ({ navigation }) => {
+const PosMenu = ({ route, navigation }) => {
+    const table = route.params;
+
     const ListRef = useRef();
     const dispatch = useDispatch();
     const { menus } = useSelector(state => state.menuReducer);
@@ -68,19 +71,27 @@ const PosMenu = ({ navigation }) => {
         return coffeelist;
     };
     useEffect(() => {
-        setSortedMenu([...getMenuList(catgoryMenu.category, menus)])
-        return () => {
-            if (sortedMenu) {
-                setSortedMenu(null)
+        if (menus) {
+            setSortedMenu([...getMenuList(catgoryMenu.category, menus)])
+            return () => {
+                if (sortedMenu) {
+                    setSortedMenu(null)
+                }
             }
         }
     }, [menus]);
 
     const getDataMenu = async () => {
-        try {
-            await dispatch(getMenu(axiosBe)).unwrap();
-        } catch (error) {
-            console.error("Failed to fetch data:", error);
+        if (table !== undefined) {
+            dispatch(addToChartList([]))
+            try {
+                await dispatch(getMenu(axiosBe)).unwrap();
+            } catch (error) {
+                console.error("Failed to fetch data:", error);
+            }
+        } else {
+            dispatch(addToChartList([]))
+            setSortedMenu(null)
         }
     };
     const fetchDatas = useCallback(async () => {
@@ -105,14 +116,35 @@ const PosMenu = ({ navigation }) => {
             ToastAndroid.CENTER,
         )
     };
-    console.log(CartList, 'CartList')
+
     return (
         <View style={styles.ScreenContainer}>
             <StatusBar style='light' />
             <HeaderBar title="Menu" onBack={() => navigation.goBack()} />
+            {table === undefined ?
+                <View style={{ alignItems: 'flex-end', paddingHorizontal: 20 }}>
+                    <View style={{ width: 120, backgroundColor: COLORS.primaryOrangeHex, padding: 20, borderRadius: 10 }}>
+                        <ButtonIcon
+                            nameIcon='add-circle-outline'
+                            text='Add Table'
+                            sizeIcon={FONTSIZE.size_20}
+                            colorIcon={COLORS.primaryWhiteHex}
+                            isBackground={false}
+                            onPress={() => navigation.navigate('PosTable')}
+                        />
+                    </View>
+                </View>
+                :
+                <View style={{ backgroundColor: 'yellow', alignItems: 'flex-start', padding: 20 }}>
+                    <Text
+                        style={{}}>
+                        {table.nomo_meja}
+                    </Text>
+                </View>
+            }
             <View style={styles.containerMenuAdmin}>
                 <View style={styles.KindOuterContainer}>
-                    {categroyMenu.map((item, index) => (
+                    {table !== undefined && categroyMenu.map((item, index) => (
                         <TouchableOpacity
                             key={item.key}
                             onPress={() => {
@@ -181,8 +213,6 @@ const PosMenu = ({ navigation }) => {
                     <Animated.View style={[styles.container, { transform: [{ translateY: slideUp }] }]}>
 
                         <View style={{
-                            // position: 'absolute',
-                            // bottom: 0,
                             backgroundColor: COLORS.primaryOrangeHex,
                             justifyContent: 'center',
                             alignItems: 'center',
@@ -190,7 +220,7 @@ const PosMenu = ({ navigation }) => {
                             padding: SPACING.space_10,
                             gap: SPACING.space_10
                         }}>
-                            <Button text="Select and Continue" textColor={COLORS.primaryWhiteHex} onPress={() => navigation.navigate('AdminOrder')} color={COLORS.secondaryBlackRGBA} />
+                            <Button text="Select and Continue" textColor={COLORS.primaryWhiteHex} onPress={() => navigation.navigate('PosOrder')} color={COLORS.secondaryBlackRGBA} />
                         </View>
                     </Animated.View>
 
@@ -210,10 +240,11 @@ const styles = StyleSheet.create({
         flexGrow: 1,
     },
     EmptyListContainer: {
-        width: Dimensions.get('window').width - SPACING.space_30 * 2,
+        // width: Dimensions.get('window').width - SPACING.space_30 * 2,
         alignItems: 'center',
         justifyContent: 'center',
         paddingVertical: SPACING.space_36 * 3.6,
+        // paddingHorizontal: SPACING.space_36 * 3.6,
         gap: SPACING.space_20
     },
     EmptyText: {

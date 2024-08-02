@@ -52,6 +52,8 @@
     "react-native-svg": "15.2.0",
     "react-native-tab-view": "^3.5.2",
     "react-native-table-component": "^1.2.2",
+    "react-native-use-websocket": "^0.2.6",
+    "react-native-websocket": "^1.0.2",
     "react-redux": "^9.1.2",
     "typescript": "~5.3.3",
     "updates": "^16.2.0"

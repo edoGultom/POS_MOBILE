@@ -20,7 +20,7 @@ import { addPembayaran, addStateMidtrans, addToOrderHistoryListFromCart, decreme
 import { getData, useForm } from '../../utils';
 import useDebounce from '../../component/UseDebounce';
 
-const AdminOrder = ({ navigation }) => {
+const PosOrder = ({ navigation }) => {
     const { CartList, Midtrans } = useSelector(state => state.orderReducer);
     const [pembayaran, setPembayaran] = useState('cash')
     const ListRef = useRef();
@@ -390,7 +390,7 @@ const AdminOrder = ({ navigation }) => {
     )
 }
 
-export default AdminOrder
+export default PosOrder
 
 const styles = StyleSheet.create({
     processBtnTitle: {

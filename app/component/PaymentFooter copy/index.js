@@ -5,9 +5,31 @@ import CustomIcon from '../CustomIcon'
 import Select from '../Select'
 import CustomIconFa6 from '../CustomIconFa6'
 
-const PaymentFooter = ({ price, buttonTitle, buttonPressHandler, pembayaran, setPembayaran }) => {
+const PaymentFooterCopy = ({ price, buttonTitle, buttonPressHandler, pembayaran, setPembayaran }) => {
     return (
         <>
+            <View style={{
+                paddingHorizontal: SPACING.space_15,
+                // backgroundColor: 'red',
+                gap: SPACING.space_15,
+                flexDirection: 'column',
+                marginTop: 5
+            }}>
+                <Select
+                    label="Pembayaran"
+                    data={[{ id: 'cash', nama: 'CASH' }, { id: 'qris', nama: 'QRIS' }]}
+                    value={pembayaran}
+                    onSelectChange={(value) => setPembayaran(value)}
+                    enabled={price.totalBayar !== 0}
+                />
+                <View style={{
+                    justifyContent: 'space-between',
+                    flexDirection: 'row',
+                }}>
+                    <Text style={{ color: COLORS.secondaryLightGreyHex, fontFamily: FONTFAMILY.poppins_semibold, fontSize: FONTSIZE.size_14 }}>Total Pesanan</Text>
+                    <Text style={{ color: COLORS.secondaryLightGreyHex, fontFamily: FONTFAMILY.poppins_semibold, fontSize: FONTSIZE.size_14, marginRight: 5 }}>{price.totalPesanan}</Text>
+                </View>
+            </View>
             <View style={styles.PriceFooter}>
 
                 <View style={styles.PriceContainer}>
@@ -28,7 +50,7 @@ const PaymentFooter = ({ price, buttonTitle, buttonPressHandler, pembayaran, set
     )
 }
 
-export default PaymentFooter
+export default PaymentFooterCopy
 
 const styles = StyleSheet.create({
     PriceFooter: {

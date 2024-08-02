@@ -73,8 +73,11 @@ const orderSlice = createSlice({
     reducers: {
         addToChartList: (state, action) => {
             const { id, harga, temperatur } = action.payload;
+
             const existingIndex = state.CartList.findIndex(item => item.id === id && item.temperatur === temperatur);
-            if (existingIndex !== -1) {
+            if (action.payload.length < 1) {
+                state.CartList = [];
+            } else if (existingIndex !== -1) {
                 state.CartList[existingIndex] = {
                     ...action.payload,
                     qty: state.CartList[existingIndex].qty + 1,

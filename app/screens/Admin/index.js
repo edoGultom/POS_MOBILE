@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar'
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import CustomIcon from '../../component/CustomIcon'
 import HeaderBar from '../../component/HeaderBar'
@@ -37,6 +37,44 @@ const IconTextView = ({ iconName, text, onPress }) => {
     );
 }
 const Admin = ({ navigation }) => {
+    // const [message, setMessage] = useState('');
+    // const [inputMessage, setInputMessage] = useState('');
+    // let socket;
+
+    // useEffect(() => {
+    //     // Connect to the WebSocket server
+    //     socket = new WebSocket('ws://127.0.0.1:8085');
+
+    //     socket.onopen = () => {
+    //         console.log('Connected to the WebSocket server');
+    //     };
+
+    //     socket.onmessage = (event) => {
+    //         setMessage(event.data);
+    //     };
+
+    //     socket.onclose = () => {
+    //         console.log('Disconnected from the WebSocket server');
+    //     };
+
+    //     socket.onerror = (error) => {
+    //         console.error('WebSocket error: ', error);
+    //     };
+
+    //     // Cleanup on component unmount
+    //     return () => {
+    //         socket.close();
+    //     };
+    // }, []);
+
+    // const sendMessage = () => {
+    //     if (socket && inputMessage) {
+    //         socket.send(inputMessage);
+    //         setInputMessage('');
+    //     }
+    // };
+
+
     const navMenu = [
         {
             key: 1,
