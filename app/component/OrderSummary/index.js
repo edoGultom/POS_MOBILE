@@ -1,41 +1,48 @@
-import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import ItemValue from '../ItemValue'
+import { StyleSheet, Text, View } from 'react-native'
+import { COLORS, FONTFAMILY, FONTSIZE } from '../../config'
 import Button from '../Button'
+import ItemListOrder from '../ItemListOrder'
+import ItemValue from '../ItemValue'
 
-const OrderSummary = () => {
+const OrderSummary = (props) => {
+    const { status, table, ordered } = props.item;
+    const totalBayar = ordered.reduce((acc, curr) => acc + curr.totalHarga, 0);
+
     const onOrdered = () => {
         return
     }
     return (
         <>
+            <Text style={{ fontSize: FONTSIZE.size_20, color: COLORS.primaryOrangeHex }}>Order Summary</Text>
+            <Text style={{ fontSize: FONTSIZE.size_12 + 1, color: COLORS.secondaryLightGreyHex }}>Silahkan periksa kembali pesanan Anda!</Text>
+
             <View style={styles.content}>
                 <Text style={styles.label}>Item Ordered</Text>
+                {ordered.map((item, idx) => (
+                    <ItemListOrder
+                        key={idx}
+                        name={item.nama}
+                        type="order_summary"
+                        price={item.harga}
+                        priceExtra={item.harga_ekstra}
+                        temperatur={item.temperatur}
+                        image={item.path}
+                        qty={item.qty}
+                    />
+                ))}
 
-                {/* <ItemListFood
-                    name={item.name}
-                    type="order_summary"
-                    price={item.price}
-                    image={{ uri: item.picturePath }}
-                    items={transaction.totalItem}
-                /> */}
-
-                <Text style={styles.label}>Details Menus</Text>
-                <ItemValue label={'itemname'} value='xcxc' type='currency' />
-                <ItemValue label="Driver" value={12000} type='currency' />
-                <ItemValue label="Tax 10%" value={12000} type='currency' />
-                <ItemValue label="Total Price" value={12000} valueColor='#1ABC9C' type='currency' />
+                <ItemValue label="Total Harga" value={totalBayar} valueColor='#1ABC9C' type='currency' />
             </View>
 
-            <View style={styles.content}>
+            {/* <View style={styles.content}>
                 <Text style={styles.label}>Deliver to:</Text>
                 <ItemValue label="Name" value={'sdsdsd'} />
                 <ItemValue label="Phone No." value={'sdsdsd'} />
-            </View>
+            </View> */}
 
             <View style={styles.button}>
                 <Button text="Pesan Sekarang" onPress={onOrdered} />
-
             </View>
         </>
     )
@@ -45,16 +52,15 @@ export default OrderSummary
 
 const styles = StyleSheet.create({
     content: {
-        backgroundColor: 'white',
-        paddingHorizontal: 24,
-        paddingVertical: 16,
-        marginTop: 24
+        marginTop: 24,
+        borderRadius: 10,
+        gap: 10
     },
     label: {
-        fontFamily: 'Poppins-Regular',
-        fontSize: 14,
-        color: '#020202',
-        marginBottom: 8
+        fontFamily: FONTFAMILY.poppins_regular,
+        fontSize: FONTSIZE.size_14,
+        color: COLORS.primaryOrangeHex,
+        marginBottom: 8,
     },
     button: {
         paddingHorizontal: 24,

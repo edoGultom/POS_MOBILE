@@ -40,8 +40,7 @@ const styles = StyleSheet.create({
         fontSize: FONTSIZE.size_18,
         color: COLORS.primaryOrangeHex,
     },
-
     SizePrice: {
-        color: COLORS.primaryWhiteHex,
+        color: COLORS.secondaryLightGreyHex,
     },
 })

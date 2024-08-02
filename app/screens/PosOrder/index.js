@@ -1,32 +1,26 @@
-import { BE_API_HOST } from '@env';
 import { BottomSheetBackdrop, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import debounce from 'lodash.debounce';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Dimensions, FlatList, Image, KeyboardAvoidingView, ScrollView, StatusBar, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
-import CurrencyInput from 'react-native-currency-input';
-import QRCode from 'react-native-qrcode-svg';
+import React, { useCallback, useRef, useState } from 'react';
+import { Dimensions, FlatList, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { IcNoMenu, IlQris, IlSuccesFully } from '../../assets';
+import useAxios from '../../api/useAxios';
+import { IcNoMenu } from '../../assets';
 import BottomSheetCustom from '../../component/BottomSheet';
-import CountdownTimer from '../../component/CountdownTimer';
-import EventStatusChecker from '../../component/EventStatusChecker';
 import HeaderBar from '../../component/HeaderBar';
 import OrderItem from '../../component/OrderItem';
+import OrderSummary from '../../component/OrderSummary';
 import PaymentFooter from '../../component/PaymentFooter';
-import PopUpAnimation from '../../component/PopUpAnimation';
-import TextInput from '../../component/TextInput';
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
-import { addOrder, addPembayaran, addStateMidtrans, addToOrderHistoryListFromCart, decrementCartItemQuantity, incrementCartItemQuantity } from '../../redux/orderSlice';
-import { getData, useForm } from '../../utils';
-import useAxios from '../../api/useAxios';
+import { addOrder, decrementCartItemQuantity, incrementCartItemQuantity } from '../../redux/orderSlice';
 
 const PosOrder = ({ route, navigation }) => {
-    const { listMenu, table } = route.params?.order;
+    const { table } = route.params?.order;
+    const { CartList } = useSelector(state => state.orderReducer);
     const [pembayaran, setPembayaran] = useState('cash')
     const ListRef = useRef();
     const dispatch = useDispatch();
-    const totalBayar = listMenu.reduce((acc, curr) => acc + curr.harga * curr.qty, 0);
-    const [showAnimation, setShowAnimation] = useState(false);
+    const totalBayar = CartList.reduce((acc, curr) => acc + (curr.harga + curr.harga_ekstra) * curr.qty, 0);
+    const bottomSheetModalRef = useRef(null);
+
     const { fetchData: axiosBe } = useAxios();
 
     const incrementCartItemQuantityHandler = (id, temperatur) => {
@@ -45,13 +39,8 @@ const PosOrder = ({ route, navigation }) => {
         }
     };
     const buttonPressHandler = () => {
-        const formData = {
-            status: 'ordered',
-            table: table,
-            ordered: listMenu
-        }
-        const data = { formData, setShowAnimation, axiosBe };
-        ordered(data)
+        openModal();
+        // ordered(data)
     };
 
     const renderBackdrop = useCallback(
@@ -73,6 +62,7 @@ const PosOrder = ({ route, navigation }) => {
                 link={item.path}
                 kind={item.nama_kategori}
                 price={item.harga}
+                extraPrice={item.harga_ekstra}
                 totalHarga={item.totalHarga}
                 qty={item.qty}
                 temperatur={item.temperatur}
@@ -85,25 +75,24 @@ const PosOrder = ({ route, navigation }) => {
             />
         );
     };
+    const openModal = () => {
+        bottomSheetModalRef.current.present();
+    };
+    const closeModal = () => {
+        bottomSheetModalRef.current.dismiss();
+    };
 
     return (
         <BottomSheetModalProvider>
             <View style={styles.ScreenContainer}>
                 <StatusBar style='light' />
-                {showAnimation && (
-                    <PopUpAnimation
-                        style={styles.LottieAnimation}
-                        source={IlSuccesFully}
-                    />
-                )}
-
                 <HeaderBar title="Order Detail" onBack={() => navigation.goBack()} />
                 <View style={[styles.orderContainer, { marginBottom: SPACING.space_2 }]}>
                     <View style={styles.orderItemFlatlist}>
                         <FlatList
                             ref={ListRef}
                             showsHorizontalScrollIndicator={false}
-                            data={listMenu}
+                            data={CartList}
                             contentContainerStyle={styles.FlatListContainer}
                             ListEmptyComponent={
                                 <View style={styles.EmptyListContainer}>
@@ -117,17 +106,26 @@ const PosOrder = ({ route, navigation }) => {
                     </View>
                     <PaymentFooter
                         buttonPressHandler={buttonPressHandler}
-                        buttonTitle="Lanjut"
+                        buttonTitle="Checkout"
                         price={{
-                            totalPesanan: listMenu.reduce((sum, item) => sum + item.qty, 0),
+                            totalPesanan: CartList.reduce((sum, item) => sum + item.qty, 0),
                             totalBayar: totalBayar,
                             currency: 'Rp'
                         }}
                         pembayaran={pembayaran}
                         setPembayaran={setPembayaran}
                     />
-
                 </View>
+                <BottomSheetCustom
+                    ref={bottomSheetModalRef}
+                    backdropComponent={renderBackdrop}
+                >
+                    <OrderSummary item={{
+                        status: 'ordered',
+                        table: table,
+                        ordered: CartList
+                    }} />
+                </BottomSheetCustom>
             </View>
         </BottomSheetModalProvider >
     )

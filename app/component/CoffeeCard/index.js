@@ -11,7 +11,7 @@ const CoffeCard = ({ id, link, name, kind, sub_kind, price, extraPrice, buttonPr
     const [finalPrice, setFinalPrice] = useState(price)
     const [checked, setChecked] = useState({
         label: 'HOT',
-        value: price,
+        value: 0,
     });
     const Checkboxs = [
         {
@@ -63,10 +63,10 @@ const CoffeCard = ({ id, link, name, kind, sub_kind, price, extraPrice, buttonPr
                                         onPress={() => {
                                             if (checked.label === item.label) {
                                                 setFinalPrice(price)
-                                                setChecked({ label: 'HOT', value: price });
+                                                setChecked({ label: '', value: 0 });
                                             } else {
-                                                setFinalPrice(item.value)
-                                                setChecked({ label: item.label, value: price + item.value });
+                                                setFinalPrice(price + item.value)
+                                                setChecked({ label: item.label, value: item.value });
                                             }
                                         }}>
                                         {checked.label == item.label && <Ionicons name="checkmark" size={24} color="white" />}
@@ -79,7 +79,7 @@ const CoffeCard = ({ id, link, name, kind, sub_kind, price, extraPrice, buttonPr
 
                     <View style={styles.CardFooterRow}>
                         <Text style={styles.CardPriceCurrency}>
-                            IDR <Text style={styles.CardPrice}>{checked.value.toLocaleString('id-ID')}</Text>
+                            IDR <Text style={styles.CardPrice}>{finalPrice.toLocaleString('id-ID')}</Text>
                         </Text>
                     </View>
                 </View>
@@ -87,7 +87,7 @@ const CoffeCard = ({ id, link, name, kind, sub_kind, price, extraPrice, buttonPr
 
             <TouchableOpacity
                 onPress={() => {
-                    buttonPressHandler(checked);
+                    buttonPressHandler({ priceOriginal: price, checked });
                 }}
                 style={{
                     backgroundColor: COLORS.primaryOrangeHex,

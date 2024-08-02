@@ -106,25 +106,23 @@ const PosMenu = ({ route, navigation }) => {
             setRefreshData(false);
         }
     }, []);
-    const CoffeCardAddToCart = (item, checked) => {
+    const CoffeCardAddToCart = (item, extraPrice) => {
         const { id, nama, path, nama_kategori, nama_sub_kategori, harga } = item
         const data = {
-            id, nama, path, nama_kategori, nama_sub_kategori, harga: checked.value, temperatur: checked.label
+            id, nama, path, nama_kategori, nama_sub_kategori, harga, harga_ekstra: extraPrice.checked.value, temperatur: (extraPrice.checked.label !== '') ? extraPrice.checked.label : 'HOT'
         }
-        // console.log(data, 'xxxx')
-        // return
         dispatch(addToChartList(data))
 
-        const filter = CartList.find((item) => item.nama == nama);
+        const filter = CartList.find((item) => item.nama == nama && item.temperatur == extraPrice.checked.label);
         let qtys = filter !== undefined ? `+${filter.qty + 1}` : `+1`;
 
         ToastAndroid.showWithGravity(
-            `${qtys} ${nama} is Added to Cart`,
+            `${qtys} ${extraPrice.checked.label} ${nama} is Added to Cart`,
             ToastAndroid.SHORT,
             ToastAndroid.CENTER,
         )
     };
-    // console.log(table)
+
     return (
         <View style={styles.ScreenContainer}>
             <StatusBar style='light' />
@@ -232,14 +230,13 @@ const PosMenu = ({ route, navigation }) => {
                             gap: SPACING.space_10
                         }}>
                             <Button
-                                text="Select and Continue"
+                                text="Continue to Cartlist"
                                 textColor={COLORS.primaryWhiteHex}
                                 onPress={() => {
-                                    const dataMenu = {
+                                    const tableOrder = {
                                         table,
-                                        listMenu: CartList
                                     }
-                                    navigation.navigate('PosOrder', { order: dataMenu })
+                                    navigation.navigate('PosOrder', { order: tableOrder })
                                 }}
                                 color={COLORS.primaryOrangeHex} />
                         </View>

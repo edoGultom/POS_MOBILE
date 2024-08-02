@@ -14,6 +14,7 @@ const OrderItem = ({
     link,
     kind,
     price,
+    extraPrice,
     qty,
     temperatur,
     incrementCartItemQuantityHandler,
@@ -53,7 +54,7 @@ const OrderItem = ({
                             </View>
                         )}
                         <Text style={styles.SizeCurrency}>
-                            Rp <Text style={styles.SizePrice}>{price.toLocaleString('id-ID')}</Text>
+                            IDR <Text style={styles.SizePrice}>{(price + extraPrice).toLocaleString('id-ID')}</Text>
                         </Text>
                     </View>
                     <View style={styles.CartItemSingleQuantityContainer}>

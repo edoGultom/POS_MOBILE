@@ -1,21 +1,38 @@
-import React from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import Number from '../Number';
-import Rate from '../Rate';
+import React, { useEffect, useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image } from 'expo-image';
+import { COLORS, FONTFAMILY, FONTSIZE } from '../../config';
+import { BE_API_HOST } from '@env'
 
-const ItemListFood = ({ image, name, onPress, rating, items, price, type, date, status }) => {
+const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtra, type }) => {
+    const [photo, setPhoto] = useState(null);
+    useEffect(() => {
+        const fetchData = () => {
+            setPhoto(`${BE_API_HOST}/lihat-file/profile?path=${image}`);
+        }
+        fetchData();
+        return () => setPhoto(null);
+    }, [image]);
     const renderContent = () => {
         switch (type) {
-
             case 'order_summary':
                 //item order summary
                 return (
                     <>
                         <View style={styles.content}>
                             <Text style={styles.title}>{name}</Text>
-                            <Number number={price} style={styles.price} />
+                            <Text style={styles.SizeCurrency}>
+
+                                IDR <Text style={styles.SizePrice}>{price.toLocaleString('id-ID')}</Text>
+                            </Text>
+                            <Text style={styles.temperatur}>
+                                {priceExtra > 0 && (
+                                    <Text>+IDR {priceExtra.toLocaleString('id-ID')} {` `}</Text>
+                                )}
+                                {temperatur}
+                            </Text>
                         </View>
-                        <Text style={styles.items}>{items} items</Text>
+                        <Text style={styles.items}>{qty} items</Text>
                     </>
                 );
             default:
@@ -25,7 +42,7 @@ const ItemListFood = ({ image, name, onPress, rating, items, price, type, date, 
                     <>
                         <View style={styles.content}>
                             <Text style={styles.title}>{name}</Text>
-                            <Number number={price} style={styles.price} />
+                            IDR. 0
                         </View>
                         <Rate />
                     </>
@@ -39,8 +56,8 @@ const ItemListFood = ({ image, name, onPress, rating, items, price, type, date, 
             style={({ pressed }) => [
                 {
                     backgroundColor: pressed
-                        ? 'rgb(224, 224, 224)'
-                        : 'white'
+                        ? COLORS.primaryOrangeHex
+                        : COLORS.primaryBlackRGBA
                 },
                 {
                     opacity: pressed
@@ -53,16 +70,31 @@ const ItemListFood = ({ image, name, onPress, rating, items, price, type, date, 
 
         >
             <View style={styles.container}>
-                <Image source={image} style={styles.image} />
+                <Image source={{ uri: photo }} style={styles.image} />
                 {renderContent()}
             </View>
         </Pressable>
     )
 }
 
-export default ItemListFood
+export default ItemListOrder
 
 const styles = StyleSheet.create({
+    SizeCurrency: {
+        fontFamily: FONTFAMILY.poppins_regular,
+        fontSize: FONTSIZE.size_12 + 1,
+        color: COLORS.secondaryLightGreyHex,
+    },
+    SizePrice: {
+        fontSize: 13,
+        color: COLORS.secondaryLightGreyHex,
+        fontFamily: FONTFAMILY.poppins_regular,
+    },
+    temperatur: {
+        fontSize: 13,
+        color: COLORS.primaryLightGreyHex,
+        fontFamily: FONTFAMILY.poppins_regular,
+    },
     wrapperCustom: {
         borderRadius: 8,
         padding: 6
@@ -70,7 +102,7 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         paddingVertical: 8,
-        alignItems: 'center'
+        alignItems: 'center',
     },
     image: {
         width: 60,
@@ -84,18 +116,13 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 16,
-        fontFamily: 'Poppins-Regular',
-        color: '#020202'
-    },
-    price: {
-        fontSize: 13,
-        fontFamily: 'Poppins-Regular',
-        color: '#8D92A3'
+        fontFamily: FONTFAMILY.poppins_regular,
+        color: COLORS.secondaryLightGreyHex
     },
     items: {
         fontSize: 13,
-        fontFamily: 'Poppins-Regular',
-        color: '#8D92A3'
+        fontFamily: FONTFAMILY.poppins_regular,
+        color: COLORS.secondaryLightGreyHex
     },
     date: {
         fontFamily: "Poppins-Regular",
