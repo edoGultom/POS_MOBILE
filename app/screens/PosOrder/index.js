@@ -16,27 +16,18 @@ import PaymentFooter from '../../component/PaymentFooter';
 import PopUpAnimation from '../../component/PopUpAnimation';
 import TextInput from '../../component/TextInput';
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
-import { addPembayaran, addStateMidtrans, addToOrderHistoryListFromCart, decrementCartItemQuantity, incrementCartItemQuantity } from '../../redux/orderSlice';
+import { addOrder, addPembayaran, addStateMidtrans, addToOrderHistoryListFromCart, decrementCartItemQuantity, incrementCartItemQuantity } from '../../redux/orderSlice';
 import { getData, useForm } from '../../utils';
-import useDebounce from '../../component/UseDebounce';
+import useAxios from '../../api/useAxios';
 
-const PosOrder = ({ navigation }) => {
-    const { CartList, Midtrans } = useSelector(state => state.orderReducer);
+const PosOrder = ({ route, navigation }) => {
+    const { listMenu, table } = route.params?.order;
     const [pembayaran, setPembayaran] = useState('cash')
     const ListRef = useRef();
     const dispatch = useDispatch();
-    const bottomSheetModalRef = useRef(null);
-    const totalBayar = CartList.reduce((acc, curr) => acc + curr.harga * curr.qty, 0);
+    const totalBayar = listMenu.reduce((acc, curr) => acc + curr.harga * curr.qty, 0);
     const [showAnimation, setShowAnimation] = useState(false);
-
-    const formatCurrency = (amount, currency) => {
-        return new Intl.NumberFormat('id-ID', {
-            style: 'currency',
-            currency: currency,
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        }).format(amount);
-    };
+    const { fetchData: axiosBe } = useAxios();
 
     const incrementCartItemQuantityHandler = (id, temperatur) => {
         const data = { id, temperatur }
@@ -46,36 +37,23 @@ const PosOrder = ({ navigation }) => {
         const data = { id, temperatur }
         dispatch(decrementCartItemQuantity(data))
     };
-
-    const buttonPressHandler = () => {
-        return;
-        if (pembayaran == 'qris') {
-            getData('token').then((resToken) => {
-                const data = {
-                    CartList,
-                    totalBayar,
-                    metode_pembayaran: pembayaran,
-                    status: 'PENDING'
-                }
-                const token = resToken.value;
-                const handleSuccess = handleSuccessQris
-                const properties = { data, token, handleSuccess };
-                dispatch(addPembayaran(properties))
-            });
-        } else {
-            openModal();
+    const ordered = async (data) => {
+        try {
+            await dispatch(addOrder(data)).unwrap();
+        } catch (error) {
+            console.error("Failed to fetch data:", error);
         }
     };
-    useEffect(() => {
-        if (Midtrans !== null) openModal();
-    }, [Midtrans])
+    const buttonPressHandler = () => {
+        const formData = {
+            status: 'ordered',
+            table: table,
+            ordered: listMenu
+        }
+        const data = { formData, setShowAnimation, axiosBe };
+        ordered(data)
+    };
 
-    const openModal = () => {
-        bottomSheetModalRef.current.present();
-    };
-    const closeModal = () => {
-        bottomSheetModalRef.current.dismiss();
-    };
     const renderBackdrop = useCallback(
         props => (
             <BottomSheetBackdrop
@@ -86,25 +64,7 @@ const PosOrder = ({ navigation }) => {
         ),
         []
     );
-    const renderBackdropQris = useCallback(
-        props => (
-            <BottomSheetBackdrop
-                {...props}
-                appearsOnIndex={0}
-            />
-        ),
-        []
-    );
-    const handleSuccessQris = () => {
-        closeModal();
-        setShowAnimation(true);
-        setTimeout(() => {
-            setShowAnimation(false);
-            dispatch(addStateMidtrans(null))
-            dispatch(addToOrderHistoryListFromCart())
-            navigation.reset({ index: 4, routes: [{ name: 'Admin' }] });
-        }, 2000);
-    }
+
     const renderItem = ({ item }) => {
         return (
             <OrderItem
@@ -126,205 +86,6 @@ const PosOrder = ({ navigation }) => {
         );
     };
 
-    // FORM CASH
-    const FormComponentCash = () => {
-        const [form, setForm] = useForm({
-            totalBayar: totalBayar,
-            jumlah_diberikan: 35000,
-            jumlah_kembalian: (35000 > totalBayar) ? 35000 - totalBayar : 0
-        });
-        const [tempKembalian, setTempKembalian] = useState(0);
-        const debounceKembalian = useDebounce(tempKembalian, 500);
-
-        const [currencyMenu, setCurrencyMenu] = useState({
-            index: 0,
-            value: formatCurrency(35000, 'IDR')
-        });
-        const arrCurrency = [
-            {
-                key: 0,
-                label: formatCurrency(35000, 'IDR'),
-                value: 35000
-            },
-            {
-                key: 1,
-                label: formatCurrency(50000, 'IDR'),
-                value: 50000
-            },
-        ];
-        const handleSuccessCash = (data) => {
-            setTimeout(() => {
-                dispatch(addToOrderHistoryListFromCart())
-            }, 1000);
-            const params = {
-                cash: data.cash,
-                redirect: {
-                    index: 4,
-                    name: 'Admin'
-                }
-            }
-            navigation.navigate('SuccessPaymentCash', params);
-
-        }
-        const handleProcessPaymentCash = () => {
-            if (form.jumlah_diberikan < totalBayar) {
-                ToastAndroid.showWithGravity(
-                    `Proses tidak dapat dilakukan, Uang yang harus dibayar adalah ${formatCurrency(totalBayar, 'IDR')}`,
-                    ToastAndroid.SHORT,
-                    ToastAndroid.CENTER,
-                )
-                return;
-            }
-            getData('token').then((resToken) => {
-                const dataPembayaran = {
-                    jumlah_diberikan: form.jumlah_diberikan,
-                    jumlah_kembalian: form.jumlah_kembalian
-                }
-                const data = {
-                    CartList,
-                    totalBayar,
-                    metode_pembayaran: pembayaran,
-                    status: 'PAID',
-                    cash: dataPembayaran
-                }
-                const token = resToken.value;
-                // console.log(data, 'dxxxx'); return;
-                const handleSuccess = handleSuccessCash
-                const properties = { data, token, handleSuccess };
-                dispatch(addPembayaran(properties))
-            });
-        }
-        const isFailedJumlahBayar = useCallback(
-            debounce((val) => {
-                if (val < totalBayar) {
-                    ToastAndroid.showWithGravity(
-                        `Uang yang harus dibayar adalah ${formatCurrency(totalBayar, 'IDR')}`,
-                        ToastAndroid.SHORT,
-                        ToastAndroid.CENTER,
-                    )
-                    return true;
-                }
-                return false
-            }, 500),
-            []
-        );
-        const handleBlur = () => {
-            if (form.jumlah_diberikan !== currencyMenu.value) {
-                setCurrencyMenu({ index: undefined, value: undefined })
-            }
-            const check = isFailedJumlahBayar(form.jumlah_diberikan);
-            if (!check) {
-                let kembalian = parseInt(form.jumlah_diberikan) - parseInt(totalBayar)
-                setForm('jumlah_kembalian', kembalian)
-            }
-        };
-        useEffect(() => {
-            if (debounceKembalian) {
-                if (debounceKembalian < totalBayar) {
-                    ToastAndroid.showWithGravity(
-                        `Uang yang harus dibayar adalah ${formatCurrency(totalBayar, 'IDR')}`,
-                        ToastAndroid.SHORT,
-                        ToastAndroid.CENTER,
-                    )
-                    setForm('jumlah_kembalian', 0)
-                    return;
-                }
-                let kembalian = parseInt(debounceKembalian) - parseInt(totalBayar)
-                setForm('jumlah_kembalian', kembalian)
-            }
-        }, [debounceKembalian]);
-
-        return (
-            <KeyboardAvoidingView style={{ flex: 1 }} behavior={"padding"} >
-                <ScrollView>
-                    <View style={{ marginBottom: 5, gap: 20 }}>
-                        <Text style={{ color: COLORS.secondaryLightGreyHex, fontSize: FONTSIZE.size_16, fontFamily: FONTFAMILY.poppins_semibold }}>Total Pembayaran - <Text style={{ color: COLORS.primaryOrangeHex, fontSize: FONTSIZE.size_20, fontFamily: FONTFAMILY.poppins_semibold }}>{formatCurrency(totalBayar, 'IDR')}</Text></Text>
-                        <CurrencyInput
-                            value={form.jumlah_diberikan}
-                            onChangeValue={(value) => {
-                                setForm('jumlah_diberikan', value)
-                                setCurrencyMenu({ index: undefined, value: '' })
-                            }}
-                            onBlur={handleBlur}
-                            renderTextInput={textInputProps => <TextInput {...textInputProps} variant='filled' />}
-                            prefix="Rp "
-                            delimiter="."
-                            precision={0}
-                            minValue={0}
-                        />
-                        <View style={styles.KindOuterContainer}>
-                            {arrCurrency.map((item, index) => (
-                                <TouchableOpacity
-                                    key={item.key}
-                                    onPress={() => {
-                                        setCurrencyMenu({ index: item.key, value: item.label })
-                                        setForm('jumlah_diberikan', parseInt(item.value))
-                                        setTempKembalian(item.value)
-                                    }}
-                                    style={[
-                                        styles.KindBox,
-                                        currencyMenu.index === item.key
-                                            ? { borderColor: COLORS.primaryOrangeHex } : { borderColor: COLORS.primaryLightGreyHex },
-                                    ]}>
-                                    <Text
-                                        style={[
-                                            styles.SizeText,
-                                            {
-                                                fontSize: FONTSIZE.size_16,
-                                            },
-                                            currencyMenu.index === item.key
-                                                ? { color: COLORS.primaryOrangeHex } : { color: COLORS.primaryWhiteHex },
-                                        ]}>
-                                        {item.label}
-                                    </Text>
-                                </TouchableOpacity>
-                            ))}
-                        </View>
-                        <TouchableOpacity style={styles.processBtn} onPress={handleProcessPaymentCash}>
-                            <Text style={styles.processBtnTitle}>PROCESS</Text>
-                        </TouchableOpacity>
-                    </View>
-                </ScrollView>
-            </KeyboardAvoidingView>
-        );
-    }
-
-    // FORM QRIS
-    const FormComponentQris = ({ dataMidtrans }) => {
-        const expiryTime = dataMidtrans.expiry_time;
-        const orderId = dataMidtrans.order_id;
-        const apiUrl = `${BE_API_HOST}/verify/isfinish?orderId=${orderId}`
-
-        return (
-            <View style={{ marginBottom: 5, gap: 20 }}>
-                <View style={styles.qrContainer}>
-                    <View style={{ justifyContent: 'center', alignItems: 'center', gap: 5 }}>
-                        <Text style={{ fontSize: FONTSIZE.size_20, color: COLORS.secondaryLightGreyHex }}>Scan this QR code to customer</Text>
-                        <View style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: 'white', width: 250, height: 300, gap: 10, borderRadius: BORDERRADIUS.radius_15 }}>
-                            <Image
-                                source={IlQris}
-                                style={{ height: 50, width: 200, margin: 0 }}
-                            />
-                            <QRCode
-                                value={dataMidtrans.qr_string}
-                                size={200}
-                                logoBackgroundColor='transparent'
-                            />
-                        </View>
-                    </View>
-                    {
-                        expiryTime && (
-                            <>
-                                <CountdownTimer targetDate={expiryTime} />
-                                <EventStatusChecker apiUrl={apiUrl} handleSuccess={handleSuccessQris} />
-                            </>
-                        )
-                    }
-                </View>
-            </View>
-        );
-    }
-
     return (
         <BottomSheetModalProvider>
             <View style={styles.ScreenContainer}>
@@ -342,7 +103,7 @@ const PosOrder = ({ navigation }) => {
                         <FlatList
                             ref={ListRef}
                             showsHorizontalScrollIndicator={false}
-                            data={CartList}
+                            data={listMenu}
                             contentContainerStyle={styles.FlatListContainer}
                             ListEmptyComponent={
                                 <View style={styles.EmptyListContainer}>
@@ -356,9 +117,9 @@ const PosOrder = ({ navigation }) => {
                     </View>
                     <PaymentFooter
                         buttonPressHandler={buttonPressHandler}
-                        buttonTitle="Pesan Sekarang"
+                        buttonTitle="Lanjut"
                         price={{
-                            totalPesanan: CartList.reduce((sum, item) => sum + item.qty, 0),
+                            totalPesanan: listMenu.reduce((sum, item) => sum + item.qty, 0),
                             totalBayar: totalBayar,
                             currency: 'Rp'
                         }}
@@ -367,24 +128,6 @@ const PosOrder = ({ navigation }) => {
                     />
 
                 </View>
-                {Midtrans && pembayaran === 'qris' ? (
-                    <BottomSheetCustom
-                        ref={bottomSheetModalRef}
-                        backdropComponent={renderBackdropQris}
-                        enablePanDownToClose={false} // Disable swipe down to close
-                    >
-                        <FormComponentQris dataMidtrans={Midtrans} />
-                    </BottomSheetCustom>
-                ) :
-
-                    <BottomSheetCustom
-                        ref={bottomSheetModalRef}
-                        backdropComponent={renderBackdrop}
-                    >
-                        <FormComponentCash />
-                    </BottomSheetCustom>
-                }
-
             </View>
         </BottomSheetModalProvider >
     )

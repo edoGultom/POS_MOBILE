@@ -19,7 +19,6 @@ import useAxios from '../../api/useAxios'
 const AdminStock = ({ navigation }) => {
     const bottomSheetModalRef = useRef(null);
     const { stocks } = useSelector(state => state.stockReducer);
-    const { ingridients } = useSelector(state => state.ingridientsReducer);
     const dispatch = useDispatch();
     const [refreshing, setRefreshing] = useState(false);
     const [selectedStock, setSelectedStock] = useState(null);

@@ -39,19 +39,17 @@ const OrderItem = ({
                         <Text style={styles.CartItemSubtitle}>{kind}</Text>
                     </View>
                     <View style={styles.CartItemSingleSizeValueContainer}>
-                        {temperatur !== '' && (
-                            <View style={styles.SizeBox}>
-                                <Text
-                                    style={[
-                                        styles.SizeText,
-                                        {
-                                            fontSize: FONTSIZE.size_12
-                                        },
-                                    ]}>
-                                    {temperatur}
-                                </Text>
-                            </View>
-                        )}
+                        <View style={styles.SizeBox}>
+                            <Text
+                                style={[
+                                    styles.SizeText,
+                                    {
+                                        fontSize: FONTSIZE.size_12
+                                    },
+                                ]}>
+                                {temperatur}
+                            </Text>
+                        </View>
                         <Text style={styles.SizeCurrency}>
                             Rp <Text style={styles.SizePrice}>{price.toLocaleString('id-ID')}</Text>
                         </Text>

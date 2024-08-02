@@ -18,6 +18,7 @@ import { getKategori, getSubKategori } from '../../redux/kategoriSlice'
 import { addMenu, deleteMenu, getMenu, updateMenu } from '../../redux/menuSlice'
 import { showMessage, useForm } from '../../utils'
 import useAxios from '../../api/useAxios'
+import { Ionicons } from '@expo/vector-icons'
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -26,7 +27,6 @@ const AdminMenu = ({ navigation }) => {
     const bottomSheetModalRef = useRef(null);
     const { menus } = useSelector(state => state.menuReducer);
     const [dataKategori, setDataKategori] = useState([]);
-    const [dataSubKategori, setDataSubKategori] = useState([]);
     const dispatch = useDispatch();
     const [refreshing, setRefreshing] = useState(false);
     const [selectedMenu, setSelectedMenu] = useState(null);
@@ -42,15 +42,6 @@ const AdminMenu = ({ navigation }) => {
         }
     }, [kategori])
 
-    useEffect(() => {
-        if (dataSubKategori.length < 1 && subKategori?.length > 0) {
-            const data = subKategori.map((item) => ({
-                id: item.id,
-                nama: item.nama_sub_kategori
-            }));
-            setDataSubKategori(data)
-        }
-    }, [subKategori])
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', getDataMenu);
@@ -111,8 +102,16 @@ const AdminMenu = ({ navigation }) => {
         bottomSheetModalRef.current.dismiss();
     };
 
-    const FormComponent = ({ dataKategori, dataSubKategori, selected }) => {
+    const FormComponent = ({ dataKategori, selected }) => {
+        const [form, setForm] = useForm({
+            nama: selected !== null ? selected.nama : '',
+            id_kategori: selected !== null ? selected.id_kategori : '1',
+            id_sub_kategori: selected !== null ? selected.id_sub_kategori : '1',
+            harga: selected !== null ? selected.harga.toString() : 0,
+            harga_ekstra: selected !== null ? selected.harga_ekstra.toString() : 0,
+        });
         const [photo, setPhoto] = useState(null);
+        const [dataSubKategori, setDataSubKategori] = useState(subKategori.filter((item) => item.id_kategori == form.id_kategori));
 
         const fetchImage = useCallback(async () => {
             const fileUrl = `${BE_API_HOST}/lihat-file/profile?path=${selected.path}`
@@ -137,12 +136,16 @@ const AdminMenu = ({ navigation }) => {
             if (selected !== null) fetchImage();
         }, [selected, fetchImage]);
 
-        const [form, setForm] = useForm({
-            nama: selected !== null ? selected.nama : '',
-            id_kategori: selected !== null ? selected.id_kategori : '1',
-            id_sub_kategori: selected !== null ? selected.id_sub_kategori : '1',
-            harga: selected !== null ? selected.harga.toString() : null,
+        const [checked, setChecked] = useState({
+            label: (selected !== null) ? 'COLD' : '',
+            value: (selected !== null) ? form.harga_ekstra : '',
         });
+        const Checkboxs = [
+            {
+                label: 'COLD',
+                value: form.id_sub_kategori == '1' ? 3000 : 2000
+            },
+        ]
         const Title = selected !== null ? 'Ubah Menu' : 'Tambah Menu';
 
         const onSubmit = () => {
@@ -198,14 +201,19 @@ const AdminMenu = ({ navigation }) => {
                     label="Kategori"
                     data={dataKategori}
                     value={form.id_kategori}
-                    onSelectChange={(value) => setForm('id_kategori', value)}
+                    onSelectChange={(value) => {
+                        const filter = subKategori.filter((item) => item.id_kategori == value);
+                        setDataSubKategori(filter)
+                        setForm('id_kategori', value)
+                    }}
                 />
                 <Select
                     label="Sub Kategori"
-                    data={dataSubKategori}
+                    data={dataSubKategori.map((item) => ({ id: item.id, nama: item.nama_sub_kategori }))}
                     value={form.id_sub_kategori}
                     onSelectChange={(value) => setForm('id_sub_kategori', value)}
                 />
+
                 <CurrencyInput
                     value={form.harga}
                     onChangeValue={(value) => setForm('harga', value)}
@@ -220,6 +228,37 @@ const AdminMenu = ({ navigation }) => {
                 //     console.log(formattedValue); // R$ +2.310,46
                 // }}
                 />
+
+                {
+                    form.id_kategori == 2 && (
+                        <Text style={{ color: COLORS.secondaryLightGreyHex }}>Harga Ekstra</Text>
+                    )
+                }
+
+                {form.id_kategori == 2 && Checkboxs.map((item, idx) => (
+                    <View style={{
+                        marginTop: 5,
+                        flexDirection: 'row',
+                        gap: 8,
+                        alignItems: 'center',
+                    }}
+                        key={idx}
+                    >
+                        <Pressable
+                            style={[styles.checkboxBase, checked && styles.checkboxChecked]}
+                            onPress={() => {
+                                if (checked.label === item.label) {
+                                    setChecked({ label: '', value: '' });
+                                } else {
+                                    setForm('harga_ekstra', item.value)
+                                    setChecked({ label: item.label, value: item.value });
+                                }
+                            }}>
+                            {checked.label == item.label && <Ionicons name="checkmark" size={24} color={COLORS.primaryOrangeHex} />}
+                        </Pressable>
+                        <Text style={{ color: COLORS.primaryWhiteHex }}>{item.label} (+{item.value})</Text>
+                    </View>
+                ))}
                 <Text style={{ color: COLORS.secondaryLightGreyHex }}>Pilih Gambar</Text>
                 <Pressable
                     android_ripple={{
@@ -286,7 +325,7 @@ const AdminMenu = ({ navigation }) => {
                     ref={bottomSheetModalRef}
                     backdropComponent={renderBackdrop}
                 >
-                    <FormComponent dataKategori={dataKategori} dataSubKategori={dataSubKategori} selected={selectedMenu} />
+                    <FormComponent dataKategori={dataKategori} selected={selectedMenu} />
                 </BottomSheetCustom>
 
                 <View style={styles.buttonContainer}>
@@ -312,6 +351,19 @@ const AdminMenu = ({ navigation }) => {
 export default AdminMenu
 
 const styles = StyleSheet.create({
+    checkboxBase: {
+        width: 24,
+        height: 24,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 4,
+        borderWidth: 2,
+        borderColor: COLORS.primaryOrangeHex,
+        backgroundColor: 'transparent',
+    },
+    checkboxChecked: {
+        backgroundColor: COLORS.secondaryDarkGreyHex,
+    },
     photoMenu: {
         width: 50,
         height: 50,

@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import UserBottomNavigator from '../component/UserBottomNavigator';
-import { Admin, AdminHistory, AdminMenu, AdminStock, Home, Order, PosMenu, Profile, SignIn, SignUp, SplashScreen, SuccessSignUp } from '../screens';
+import { Admin, AdminHistory, AdminMenu, AdminStock, Home, Order, PosMenu, PosOrder, Profile, SignIn, SignUp, SplashScreen, SuccessSignUp } from '../screens';
 import AdminDetailStock from '../screens/AdminDetailStock';
 import AdminIngridients from '../screens/AdminIngridients';
 import AdminMenuIngridients from '../screens/AdminMenuIngridients';
@@ -44,7 +44,7 @@ const RoleBasedNavigator = () => {
     const { roles } = useRole();
     return (
         <Stack.Navigator
-            initialRouteName="Admin"
+            initialRouteName="PosTable"
         // screenOptions={{
         //     header: (props) => <CustomHeader title={props.scene.route.name} />,
         // }}
@@ -127,6 +127,11 @@ const RoleBasedNavigator = () => {
             <Stack.Screen
                 name="PosMenu"
                 component={PosMenu}
+                options={{ headerShown: false, }}
+            />
+            <Stack.Screen
+                name="PosOrder"
+                component={PosOrder}
                 options={{ headerShown: false, }}
             />
 

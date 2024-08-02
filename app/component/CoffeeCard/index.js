@@ -7,21 +7,19 @@ import { BE_API_HOST } from '@env'
 import { Ionicons } from '@expo/vector-icons';
 const CARD_WIDTH = Dimensions.get('window').width * 0.25;
 
-const CoffeCard = ({ id, link, name, kind, sub_kind, price, buttonPressHandler }) => {
+const CoffeCard = ({ id, link, name, kind, sub_kind, price, extraPrice, buttonPressHandler }) => {
+    const [finalPrice, setFinalPrice] = useState(price)
     const [checked, setChecked] = useState({
         label: 'HOT',
         value: price,
     });
     const Checkboxs = [
         {
-            label: 'HOT',
-            value: price
-        },
-        {
             label: 'COLD',
-            value: kind === 'Coffee' ? price + 3000 : price + 2000
+            value: extraPrice
         },
     ]
+
     return (
         <LinearGradient
             key={id}
@@ -64,9 +62,11 @@ const CoffeCard = ({ id, link, name, kind, sub_kind, price, buttonPressHandler }
                                         style={[styles.checkboxBase, checked && styles.checkboxChecked]}
                                         onPress={() => {
                                             if (checked.label === item.label) {
-                                                setChecked({ label: '', value: '' });
+                                                setFinalPrice(price)
+                                                setChecked({ label: 'HOT', value: price });
                                             } else {
-                                                setChecked({ label: item.label, value: item.value });
+                                                setFinalPrice(item.value)
+                                                setChecked({ label: item.label, value: price + item.value });
                                             }
                                         }}>
                                         {checked.label == item.label && <Ionicons name="checkmark" size={24} color="white" />}
@@ -79,7 +79,7 @@ const CoffeCard = ({ id, link, name, kind, sub_kind, price, buttonPressHandler }
 
                     <View style={styles.CardFooterRow}>
                         <Text style={styles.CardPriceCurrency}>
-                            IDR <Text style={styles.CardPrice}>{price.toLocaleString('id-ID')}</Text>
+                            IDR <Text style={styles.CardPrice}>{checked.value.toLocaleString('id-ID')}</Text>
                         </Text>
                     </View>
                 </View>

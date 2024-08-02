@@ -13,6 +13,7 @@ import AdminHistory from "./AdminHistory";
 import AdminDetailStock from "./AdminDetailStock";
 import PosTable from "./PosTable";
 import PosMenu from "./PosMenu";
+import PosOrder from "./PosOrder";
 
 export {
     Home,
@@ -29,5 +30,6 @@ export {
     AdminHistory,
     AdminDetailStock,
     PosTable,
-    PosMenu
+    PosMenu,
+    PosOrder
 };

@@ -22,9 +22,18 @@ export const getKategori = createAsyncThunk('kategori/getKategori', async (axios
     }
 });
 
-export const getSubKategori = createAsyncThunk('subKategori/getSubKategori', async (axiosInstance) => {
+export const getSubKategori = createAsyncThunk('subKategori/getSubKategori', async (axiosBe, thunkAPI) => {
     try {
-        const result = await axiosInstance({ url: "/kategori/sub", method: "GET" })
+        const result = await axiosBe({ url: `/kategori/sub`, method: "GET" })
+        return result
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+export const getSubKategoriById = createAsyncThunk('subKategori/getSubKategori', async (param, thunkAPI) => {
+    try {
+        const { id, axiosBe } = param
+        const result = await axiosBe({ url: `/kategori/sub-by-id?id=${id}`, method: "GET" })
         return result
     } catch (err) {
         console.error(err.message);

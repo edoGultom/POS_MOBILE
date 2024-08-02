@@ -11,9 +11,10 @@ import { getMenu } from '../../redux/menuSlice';
 import { addToChartList } from '../../redux/orderSlice';
 import Button from '../../component/Button';
 import ButtonIcon from '../../component/ButtonIcon';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
 const PosMenu = ({ route, navigation }) => {
-    const table = route.params;
+    const table = route.params?.selectedTable;
 
     const ListRef = useRef();
     const dispatch = useDispatch();
@@ -21,6 +22,7 @@ const PosMenu = ({ route, navigation }) => {
     const { CartList } = useSelector(state => state.orderReducer);
     const [sortedMenu, setSortedMenu] = useState(null);
     const slideAnim = useRef(new Animated.Value(0)).current;
+    const tabBarHeight = useBottomTabBarHeight();
 
     useEffect(() => {
         Animated.timing(slideAnim, {
@@ -83,7 +85,7 @@ const PosMenu = ({ route, navigation }) => {
 
     const getDataMenu = async () => {
         if (table !== undefined) {
-            dispatch(addToChartList([]))
+            // dispatch(addToChartList([]))
             try {
                 await dispatch(getMenu(axiosBe)).unwrap();
             } catch (error) {
@@ -109,14 +111,20 @@ const PosMenu = ({ route, navigation }) => {
         const data = {
             id, nama, path, nama_kategori, nama_sub_kategori, harga: checked.value, temperatur: checked.label
         }
+        // console.log(data, 'xxxx')
+        // return
         dispatch(addToChartList(data))
+
+        const filter = CartList.find((item) => item.nama == nama);
+        let qtys = filter !== undefined ? `+${filter.qty + 1}` : `+1`;
+
         ToastAndroid.showWithGravity(
-            `${nama} is Added to Cart`,
+            `${qtys} ${nama} is Added to Cart`,
             ToastAndroid.SHORT,
             ToastAndroid.CENTER,
         )
     };
-
+    // console.log(table)
     return (
         <View style={styles.ScreenContainer}>
             <StatusBar style='light' />
@@ -135,10 +143,10 @@ const PosMenu = ({ route, navigation }) => {
                     </View>
                 </View>
                 :
-                <View style={{ backgroundColor: 'yellow', alignItems: 'flex-start', padding: 20 }}>
+                <View style={{ alignItems: 'flex-start', paddingHorizontal: 20 }}>
                     <Text
-                        style={{}}>
-                        {table.nomo_meja}
+                        style={{ fontSize: FONTSIZE.size_20, color: COLORS.primaryLightGreyHex, fontFamily: FONTFAMILY.poppins_bold }}>
+                        Table : {table.table}
                     </Text>
                 </View>
             }
@@ -177,50 +185,63 @@ const PosMenu = ({ route, navigation }) => {
                         </TouchableOpacity>
                     ))}
                 </View>
-                <FlatList
-                    ref={ListRef}
-                    onRefresh={fetchDatas}
-                    refreshing={false}
-                    showsHorizontalScrollIndicator={false}
-                    data={sortedMenu}
-                    contentContainerStyle={styles.FlatListContainer}
-                    ListEmptyComponent={
-                        <View style={styles.EmptyListContainer}>
-                            <IcNoMenu />
-                            <Text style={styles.EmptyText}>No Menu Available</Text>
-                        </View>
-                    }
-                    keyExtractor={item => item.id}
-                    vertical
-                    renderItem={({ item, }) => {
-                        return (
-                            <CoffeCard
-                                id={`${item.id}-${item.temperatur}`}
-                                link={item.path}
-                                name={item.nama}
-                                sub_kind={item.nama_sub_kategori}
-                                kind={item.nama_kategori}
-                                price={item.harga}
-                                buttonPressHandler={(valCheck) => CoffeCardAddToCart(item, valCheck)}
-                            />
-                        );
-                    }}
-                />
-
+                {table !== undefined && (
+                    <FlatList
+                        ref={ListRef}
+                        onRefresh={fetchDatas}
+                        refreshing={false}
+                        showsHorizontalScrollIndicator={false}
+                        data={sortedMenu}
+                        contentContainerStyle={styles.FlatListContainer}
+                        ListEmptyComponent={
+                            <View style={styles.EmptyListContainer}>
+                                <IcNoMenu />
+                                <Text style={styles.EmptyText}>No Menu Available</Text>
+                            </View>
+                        }
+                        keyExtractor={item => item.id}
+                        vertical
+                        renderItem={({ item, }) => {
+                            return (
+                                <CoffeCard
+                                    id={`${item.id}-${item.temperatur}`}
+                                    link={item.path}
+                                    name={item.nama}
+                                    sub_kind={item.nama_sub_kategori}
+                                    kind={item.nama_kategori}
+                                    price={item.harga}
+                                    extraPrice={item.harga_ekstra}
+                                    buttonPressHandler={(valCheck) => CoffeCardAddToCart(item, valCheck)}
+                                />
+                            );
+                        }}
+                    />
+                )}
             </View>
             {
                 CartList.length > 0 && (
-                    <Animated.View style={[styles.container, { transform: [{ translateY: slideUp }] }]}>
-
+                    <Animated.View style={[{ transform: [{ translateY: slideUp }] }]}>
                         <View style={{
-                            backgroundColor: COLORS.primaryOrangeHex,
+                            bottom: tabBarHeight,
+                            position: 'absolute',
+                            backgroundColor: COLORS.primaryBlackRGBA,
                             justifyContent: 'center',
                             alignItems: 'center',
                             width: '100%',
                             padding: SPACING.space_10,
                             gap: SPACING.space_10
                         }}>
-                            <Button text="Select and Continue" textColor={COLORS.primaryWhiteHex} onPress={() => navigation.navigate('PosOrder')} color={COLORS.secondaryBlackRGBA} />
+                            <Button
+                                text="Select and Continue"
+                                textColor={COLORS.primaryWhiteHex}
+                                onPress={() => {
+                                    const dataMenu = {
+                                        table,
+                                        listMenu: CartList
+                                    }
+                                    navigation.navigate('PosOrder', { order: dataMenu })
+                                }}
+                                color={COLORS.primaryOrangeHex} />
                         </View>
                     </Animated.View>
 

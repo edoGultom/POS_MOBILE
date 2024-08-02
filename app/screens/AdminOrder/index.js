@@ -48,7 +48,7 @@ const AdminOrder = ({ navigation }) => {
     };
 
     const buttonPressHandler = () => {
-        return;
+        // return;
         if (pembayaran == 'qris') {
             getData('token').then((resToken) => {
                 const data = {

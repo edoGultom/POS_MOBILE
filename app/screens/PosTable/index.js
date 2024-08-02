@@ -101,7 +101,7 @@ const PosTable = ({ navigation }) => {
                 selectedTable.id !== null && (
                     <View style={{
                         position: 'absolute',
-                        bottom: '10%',
+                        bottom: tabBarHeight + 10,
                         backgroundColor: COLORS.primaryOrangeHex,
                         justifyContent: 'center',
                         alignItems: 'center',

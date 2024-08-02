@@ -11,6 +11,30 @@ const initialState = {
     loading: false,
     error: null,
 };
+export const addOrder = createAsyncThunk('order/addOrder', async (param, thunkAPI) => {
+    const { dispatch } = thunkAPI;
+    const { setShowAnimation, formData, axiosBe } = param
+    setShowAnimation(true);
+    try {
+        const response = await axiosBe({
+            url: "/order/add",
+            method: "POST",
+            data: formData,
+            headers: {
+                'Content-Type': 'application/json', // Adjust content type if necessary
+            },
+        })
+        if (response.status) {
+            console.log(response, 'response')
+            setShowAnimation(false);
+        }
+        // if(response.data.)
+        // dispatch(addTablesState(response.data))
+    } catch (error) {
+        setShowAnimation(false);
+        console.error('Error: ', error);
+    }
+});
 export const addPembayaran = createAsyncThunk('pembayaran/addPembayaran', async (properties, { dispatch }) => {
     const { data, token, handleSuccess } = properties;
     dispatch(addLoading(true));
