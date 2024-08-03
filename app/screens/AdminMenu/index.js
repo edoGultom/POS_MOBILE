@@ -14,7 +14,7 @@ import ListItem from '../../component/ListItem'
 import Select from '../../component/Select'
 import TextInput from '../../component/TextInput'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
-import { getKategori, getSubKategori } from '../../redux/kategoriSlice'
+import { getKategori, getSubKategori, getSubKategoriById } from '../../redux/kategoriSlice'
 import { addMenu, deleteMenu, getMenu, updateMenu } from '../../redux/menuSlice'
 import { showMessage, useForm } from '../../utils'
 import useAxios from '../../api/useAxios'
@@ -23,25 +23,13 @@ import { Ionicons } from '@expo/vector-icons'
 const windowWidth = Dimensions.get('window').width;
 
 const AdminMenu = ({ navigation }) => {
-    const { kategori, subKategori } = useSelector(state => state.kategoriReducer);
     const bottomSheetModalRef = useRef(null);
     const { menus } = useSelector(state => state.menuReducer);
-    const [dataKategori, setDataKategori] = useState([]);
+    const { kategori, subKategori } = useSelector(state => state.kategoriReducer);
     const dispatch = useDispatch();
     const [refreshing, setRefreshing] = useState(false);
     const [selectedMenu, setSelectedMenu] = useState(null);
     const { fetchData: axiosBe } = useAxios();
-
-    useEffect(() => {
-        if (dataKategori.length < 1 && kategori?.length > 0) {
-            const data = kategori.map((item) => ({
-                id: item.id,
-                nama: item.nama_kategori
-            }));
-            setDataKategori(data)
-        }
-    }, [kategori])
-
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', getDataMenu);
@@ -102,17 +90,16 @@ const AdminMenu = ({ navigation }) => {
         bottomSheetModalRef.current.dismiss();
     };
 
-    const FormComponent = ({ dataKategori, selected }) => {
+    const FormComponent = ({ selected }) => {
+        const [dataSubKategori, setDataSubKategori] = useState(subKategori.filter((item) => item.id_kategori == 1));
+        const [photo, setPhoto] = useState(null);
         const [form, setForm] = useForm({
             nama: selected !== null ? selected.nama : '',
-            id_kategori: selected !== null ? selected.id_kategori : '1',
-            id_sub_kategori: selected !== null ? selected.id_sub_kategori : '1',
+            id_kategori: selected !== null ? selected.id_kategori : '1',//1 id katgori (Minuman)
+            id_sub_kategori: selected !== null ? selected.id_sub_kategori : dataSubKategori[0]?.id,
             harga: selected !== null ? selected.harga.toString() : 0,
             harga_ekstra: selected !== null ? selected.harga_ekstra.toString() : 0,
         });
-        const [photo, setPhoto] = useState(null);
-        const [dataSubKategori, setDataSubKategori] = useState(subKategori.filter((item) => item.id_kategori == form.id_kategori));
-
         const fetchImage = useCallback(async () => {
             const fileUrl = `${BE_API_HOST}/lihat-file/profile?path=${selected.path}`
             fetch(fileUrl)
@@ -131,6 +118,10 @@ const AdminMenu = ({ navigation }) => {
                     console.error('Error fetching the content:', error);
                 });
         }, []);
+
+        useEffect(() => {
+            setForm('id_sub_kategori', dataSubKategori[0]?.id)
+        }, [dataSubKategori])
 
         useEffect(() => {
             if (selected !== null) fetchImage();
@@ -187,6 +178,12 @@ const AdminMenu = ({ navigation }) => {
                 setPhoto(result);
             }
         };
+        const changeForm = useCallback(async value => {
+            const filter = subKategori.filter((item) => item.id_kategori == value);
+            await setForm('id_sub_kategori', filter.id)
+            setDataSubKategori(filter)
+        }, []);
+
 
         return (
             <View style={{ marginBottom: 5, gap: 20 }}>
@@ -199,11 +196,11 @@ const AdminMenu = ({ navigation }) => {
                 />
                 <Select
                     label="Kategori"
-                    data={dataKategori}
+                    data={kategori.map((item) => ({ id: item.id, nama: item.nama_kategori }))}
                     value={form.id_kategori}
                     onSelectChange={(value) => {
-                        const filter = subKategori.filter((item) => item.id_kategori == value);
-                        setDataSubKategori(filter)
+                        changeForm(value)
+                        // console.log(filter, 'hhhh')
                         setForm('id_kategori', value)
                     }}
                 />
@@ -235,7 +232,7 @@ const AdminMenu = ({ navigation }) => {
                     )
                 }
 
-                {form.id_kategori == 2 && Checkboxs.map((item, idx) => (
+                {form.id_kategori == 1 && Checkboxs.map((item, idx) => (
                     <View style={{
                         marginTop: 5,
                         flexDirection: 'row',
@@ -325,7 +322,7 @@ const AdminMenu = ({ navigation }) => {
                     ref={bottomSheetModalRef}
                     backdropComponent={renderBackdrop}
                 >
-                    <FormComponent dataKategori={dataKategori} selected={selectedMenu} />
+                    <FormComponent selected={selectedMenu} />
                 </BottomSheetCustom>
 
                 <View style={styles.buttonContainer}>

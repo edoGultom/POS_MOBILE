@@ -10,5 +10,5 @@ export {
     IlSuccess,
     IlQris,
     IlSuccesFully,
-    IlDisableTable
+    IlDisableTable,
 }

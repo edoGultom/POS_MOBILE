@@ -113,7 +113,7 @@ const Admin = ({ navigation }) => {
             label: 'POS',
             icon: 'point-of-sale',
             onPress: () => {
-                navigation.navigate('MainAppAdmin')
+                navigation.navigate('SuccessOrder')
             },
         },
         {

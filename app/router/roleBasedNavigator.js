@@ -1,9 +1,9 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import UserBottomNavigator from '../component/UserBottomNavigator';
-import { Admin, AdminHistory, AdminMenu, AdminStock, Home, Order, PosMenu, PosOrder, Profile, SignIn, SignUp, SplashScreen, SuccessSignUp } from '../screens';
+import { Admin, AdminHistory, AdminMenu, AdminStock, Home, Order, Orders, PosMenu, PosOrder, Profile, SignIn, SignUp, SplashScreen, SuccessOrder, SuccessSignUp } from '../screens';
 import AdminDetailStock from '../screens/AdminDetailStock';
 import AdminIngridients from '../screens/AdminIngridients';
 import AdminMenuIngridients from '../screens/AdminMenuIngridients';
@@ -34,9 +34,13 @@ const MainAppAdmin = () => {
     return (
         <Tab.Navigator
             tabBar={props => <AdminBottomNavigator {...props} />}
+        // screenOptions={{
+        //     header: (props) => <Text>sdsdsds</Text>,
+        // }}
         >
             <Tab.Screen name="PosTable" component={PosTable} options={{ headerShown: false }} />
             <Tab.Screen name="PosMenu" component={PosMenu} options={{ headerShown: false }} />
+            <Tab.Screen name="Orders" component={Orders} options={{ headerShown: true }} />
         </Tab.Navigator>
     )
 }
@@ -44,11 +48,16 @@ const RoleBasedNavigator = () => {
     const { roles } = useRole();
     return (
         <Stack.Navigator
-            initialRouteName="PosTable"
+        // initialRouteName="Admin"
         // screenOptions={{
         //     header: (props) => <CustomHeader title={props.scene.route.name} />,
         // }}
         >
+            <Stack.Screen
+                name="SuccessOrder"
+                component={SuccessOrder}
+                options={{ headerShown: false }}
+            />
             <Stack.Screen
                 name="SplashScreen"
                 component={SplashScreen}
@@ -99,6 +108,7 @@ const RoleBasedNavigator = () => {
                 component={SuccessPaymentCash}
                 options={{ headerShown: false }}
             />
+
             <Stack.Screen
                 name="AdminReport"
                 component={AdminReport}

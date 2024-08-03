@@ -13,8 +13,7 @@ const initialState = {
 };
 export const addOrder = createAsyncThunk('order/addOrder', async (param, thunkAPI) => {
     const { dispatch } = thunkAPI;
-    const { setShowAnimation, formData, axiosBe } = param
-    setShowAnimation(true);
+    const { SetIsShowSuccess, closeModal, formData, axiosBe } = param
     try {
         const response = await axiosBe({
             url: "/order/add",
@@ -25,13 +24,12 @@ export const addOrder = createAsyncThunk('order/addOrder', async (param, thunkAP
             },
         })
         if (response.status) {
-            console.log(response, 'response')
-            setShowAnimation(false);
+            console.log(response, 'responsex')
+            closeModal();
+            SetIsShowSuccess(true);
         }
-        // if(response.data.)
-        // dispatch(addTablesState(response.data))
     } catch (error) {
-        setShowAnimation(false);
+        SetIsShowSuccess(false);
         console.error('Error: ', error);
     }
 });
@@ -97,7 +95,6 @@ const orderSlice = createSlice({
     reducers: {
         addToChartList: (state, action) => {
             const { id, harga, harga_ekstra, temperatur } = action.payload;
-
             const existingIndex = state.CartList.findIndex(item => item.id === id && item.temperatur === temperatur);
             if (action.payload.length < 1) {
                 state.CartList = [];

@@ -1,9 +1,9 @@
 import { BottomSheetBackdrop, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Dimensions, FlatList, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import useAxios from '../../api/useAxios';
-import { IcNoMenu } from '../../assets';
+import { IcNoMenu, IlSuccesFully } from '../../assets';
 import BottomSheetCustom from '../../component/BottomSheet';
 import HeaderBar from '../../component/HeaderBar';
 import OrderItem from '../../component/OrderItem';
@@ -11,6 +11,7 @@ import OrderSummary from '../../component/OrderSummary';
 import PaymentFooter from '../../component/PaymentFooter';
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
 import { addOrder, decrementCartItemQuantity, incrementCartItemQuantity } from '../../redux/orderSlice';
+import PopUpAnimation from '../../component/PopUpAnimation';
 
 const PosOrder = ({ route, navigation }) => {
     const { table } = route.params?.order;
@@ -20,8 +21,7 @@ const PosOrder = ({ route, navigation }) => {
     const dispatch = useDispatch();
     const totalBayar = CartList.reduce((acc, curr) => acc + (curr.harga + curr.harga_ekstra) * curr.qty, 0);
     const bottomSheetModalRef = useRef(null);
-
-    const { fetchData: axiosBe } = useAxios();
+    const [isShowSuccess, SetIsShowSuccess] = useState(true)
 
     const incrementCartItemQuantityHandler = (id, temperatur) => {
         const data = { id, temperatur }
@@ -30,17 +30,6 @@ const PosOrder = ({ route, navigation }) => {
     const decrementCartItemQuantityHandler = (id, temperatur) => {
         const data = { id, temperatur }
         dispatch(decrementCartItemQuantity(data))
-    };
-    const ordered = async (data) => {
-        try {
-            await dispatch(addOrder(data)).unwrap();
-        } catch (error) {
-            console.error("Failed to fetch data:", error);
-        }
-    };
-    const buttonPressHandler = () => {
-        openModal();
-        // ordered(data)
     };
 
     const renderBackdrop = useCallback(
@@ -82,11 +71,26 @@ const PosOrder = ({ route, navigation }) => {
         bottomSheetModalRef.current.dismiss();
     };
 
+    useEffect(() => {
+        if (isShowSuccess)
+            setTimeout(() => {
+                SetIsShowSuccess(false)
+                navigation.reset({ index: 0, routes: [{ name: 'SuccessOrder' }] });
+                // navigation.replace('MainAppAdmin', { screen: 'PosTable' })}
+            }, 2000);
+    }, [isShowSuccess])
+
     return (
         <BottomSheetModalProvider>
             <View style={styles.ScreenContainer}>
                 <StatusBar style='light' />
                 <HeaderBar title="Order Detail" onBack={() => navigation.goBack()} />
+                {isShowSuccess && (
+                    <PopUpAnimation
+                        style={styles.LottieAnimation}
+                        source={IlSuccesFully}
+                    />
+                )}
                 <View style={[styles.orderContainer, { marginBottom: SPACING.space_2 }]}>
                     <View style={styles.orderItemFlatlist}>
                         <FlatList
@@ -105,7 +109,7 @@ const PosOrder = ({ route, navigation }) => {
                         />
                     </View>
                     <PaymentFooter
-                        buttonPressHandler={buttonPressHandler}
+                        buttonPressHandler={() => openModal()}
                         buttonTitle="Checkout"
                         price={{
                             totalPesanan: CartList.reduce((sum, item) => sum + item.qty, 0),
@@ -120,11 +124,15 @@ const PosOrder = ({ route, navigation }) => {
                     ref={bottomSheetModalRef}
                     backdropComponent={renderBackdrop}
                 >
-                    <OrderSummary item={{
-                        status: 'ordered',
-                        table: table,
-                        ordered: CartList
-                    }} />
+                    <OrderSummary
+                        item={{
+                            status: 'ordered',
+                            table: table,
+                            ordered: CartList
+                        }}
+                        SetIsShowSuccess={SetIsShowSuccess}
+                        closeModal={closeModal}
+                    />
                 </BottomSheetCustom>
             </View>
         </BottomSheetModalProvider >

@@ -99,7 +99,7 @@ const PosDetail = ({ navigation }) => {
                     <Text style={{
                         fontSize: FONTSIZE.size_14,
                         fontFamily: FONTFAMILY.poppins_semibold
-                    }}>Table <Text style={{
+                    }}>Tables <Text style={{
                         marginLeft: 10,
                         fontFamily: FONTFAMILY.poppins_semibold,
                         color: COLORS.primaryWhiteHex

@@ -6,7 +6,7 @@ import { COLORS } from '../../config';
 const PopUpAnimation = ({ style, source }) => {
     return (
         <View style={styles.LottieAnimationContainer}>
-            <LottieView style={style} source={source} autoPlay loop={false} />
+            <LottieView style={style} source={source} autoPlay loop={true} />
         </View>
     )
 }

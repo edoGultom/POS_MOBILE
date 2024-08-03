@@ -55,6 +55,7 @@ const HeaderBar = ({ title, onBack }) => {
             )}
 
             <Text style={styles.HeaderText}>{title}</Text>
+            <Text style={styles.subHeaderText}>sdsdsdsd</Text>
 
             <Popover
                 from={(
@@ -145,6 +146,11 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     HeaderText: {
+        fontFamily: FONTFAMILY.poppins_semibold,
+        fontSize: FONTSIZE.size_20,
+        color: COLORS.primaryWhiteHex,
+    },
+    subHeaderText: {
         fontFamily: FONTFAMILY.poppins_semibold,
         fontSize: FONTSIZE.size_20,
         color: COLORS.primaryWhiteHex,

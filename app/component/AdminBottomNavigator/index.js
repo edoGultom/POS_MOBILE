@@ -47,32 +47,25 @@ const Icon = ({ label, focused }) => {
                     />
                     <Text style={{ color: COLORS.primaryLightGreyHex }}>Menu</Text>
                 </View>
-        case 'PosOrder':
-            return <View
-                style={{
-                    marginTop: -40,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    height: 65,
-                    width: 65,
-                    backgroundColor: 'white',
-                    borderRadius: 50,
-                    elevation: 5,
-                    position: 'relative'
-                }}
-            >
-                <Text style={[
-                    styles.counterList,
-                    countList > 0
-                        ? { color: COLORS.primaryOrangeHex }
-                        : { color: COLORS.primaryRedHex },
-                ]}>
-                    +{CartList.length}
-                </Text>
-                <View style={{ position: 'absolute', top: 2, left: 0, bottom: 0 }}>
-                    <IcCoffee />
+        case 'Orders':
+            return focused ?
+                <View style={styles.containerMenu}>
+                    <CustomIcon
+                        name={'shopping-bag'}
+                        color={COLORS.primaryOrangeHex}
+                        size={FONTSIZE.size_24}
+                    />
+                    <Text style={{ color: COLORS.primaryOrangeHex }}>Orders</Text>
                 </View>
-            </View >
+                :
+                <View style={styles.containerMenu}>
+                    <CustomIcon
+                        name={'shopping-bag'}
+                        color={COLORS.primaryLightGreyHex}
+                        size={FONTSIZE.size_24}
+                    />
+                    <Text style={{ color: COLORS.primaryLightGreyHex }}>Orders</Text>
+                </View>
         default:
             return 'Null'
     }

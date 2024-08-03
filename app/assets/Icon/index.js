@@ -12,6 +12,12 @@ import IcSmallTable from './ic-small-table.svg';
 import IcFoodOn from './ic-food-on.svg';
 import IcFoodOff from './ic-food-off.svg';
 import IcNoMenu from './ic-no-menu.svg';
+import IcSuccessOrder from './ic-no-menu.svg';
+import IcWaitingOrder from './ic-waiting-order.png';
+import IcReadyOrder from './ic-ready-order.png';
+import IcReservedOrder from './ic-reserved-order.png';
+import IcProgressOrger from './ic-progress-order.png';
+import IcPayOrder from './ic-pay-order.png';
 export {
     IcHomeOn,
     IcHomeOff,
@@ -26,5 +32,11 @@ export {
     IcSmallTable,
     IcFoodOn,
     IcFoodOff,
-    IcNoMenu
+    IcNoMenu,
+    IcSuccessOrder,
+    IcWaitingOrder,
+    IcReadyOrder,
+    IcReservedOrder,
+    IcProgressOrger,
+    IcPayOrder
 };
