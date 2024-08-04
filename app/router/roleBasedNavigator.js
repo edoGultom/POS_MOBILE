@@ -48,16 +48,12 @@ const RoleBasedNavigator = () => {
     const { roles } = useRole();
     return (
         <Stack.Navigator
-        // initialRouteName="Admin"
+            initialRouteName="Admin"
         // screenOptions={{
         //     header: (props) => <CustomHeader title={props.scene.route.name} />,
         // }}
         >
-            <Stack.Screen
-                name="SuccessOrder"
-                component={SuccessOrder}
-                options={{ headerShown: false }}
-            />
+
             <Stack.Screen
                 name="SplashScreen"
                 component={SplashScreen}
@@ -76,6 +72,16 @@ const RoleBasedNavigator = () => {
             <Stack.Screen
                 name="SuccessSignUp"
                 component={SuccessSignUp}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="SuccessOrder"
+                component={SuccessOrder}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="SuccessPaymentCash"
+                component={SuccessPaymentCash}
                 options={{ headerShown: false }}
             />
             <Stack.Screen
@@ -101,11 +107,6 @@ const RoleBasedNavigator = () => {
             <Stack.Screen
                 name="AdminMenuIngridients"
                 component={AdminMenuIngridients}
-                options={{ headerShown: false }}
-            />
-            <Stack.Screen
-                name="SuccessPaymentCash"
-                component={SuccessPaymentCash}
                 options={{ headerShown: false }}
             />
 
@@ -144,7 +145,6 @@ const RoleBasedNavigator = () => {
                 component={PosOrder}
                 options={{ headerShown: false, }}
             />
-
             {
                 "Admin".includes(roles) ?
                     (

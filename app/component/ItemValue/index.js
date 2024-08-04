@@ -23,7 +23,8 @@ export default ItemValue
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        alignItems: 'center',
     },
     label: {
         fontSize: 14,

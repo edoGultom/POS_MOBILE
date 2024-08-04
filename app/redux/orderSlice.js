@@ -13,7 +13,8 @@ const initialState = {
 };
 export const addOrder = createAsyncThunk('order/addOrder', async (param, thunkAPI) => {
     const { dispatch } = thunkAPI;
-    const { SetIsShowSuccess, closeModal, formData, axiosBe } = param
+    const { closeModal, formData, navigation, axiosBe } = param
+    dispatch(addLoading(true))
     try {
         const response = await axiosBe({
             url: "/order/add",
@@ -23,13 +24,15 @@ export const addOrder = createAsyncThunk('order/addOrder', async (param, thunkAP
                 'Content-Type': 'application/json', // Adjust content type if necessary
             },
         })
+        console.log(response, 'xxxx')
+
         if (response.status) {
-            console.log(response, 'responsex')
+            dispatch(addLoading(false))
             closeModal();
-            SetIsShowSuccess(true);
+            navigation.reset({ index: 4, routes: [{ name: 'SuccessOrder' }] });
         }
     } catch (error) {
-        SetIsShowSuccess(false);
+        dispatch(addLoading(false))
         console.error('Error: ', error);
     }
 });

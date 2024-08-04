@@ -82,7 +82,6 @@ const PosMenu = ({ route, navigation }) => {
             }
         }
     }, [menus]);
-    console.log(menus, 'menus')
 
     const getDataMenu = async () => {
         if (table !== undefined) {

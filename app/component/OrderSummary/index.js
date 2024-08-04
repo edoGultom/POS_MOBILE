@@ -1,41 +1,17 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
+import { useDispatch } from 'react-redux'
+import useAxios from '../../api/useAxios'
 import { COLORS, FONTFAMILY, FONTSIZE } from '../../config'
+import { addOrder } from '../../redux/orderSlice'
 import Button from '../Button'
 import ItemListOrder from '../ItemListOrder'
 import ItemValue from '../ItemValue'
-import useAxios from '../../api/useAxios'
-import { addOrder } from '../../redux/orderSlice'
-import { useDispatch } from 'react-redux'
-import PopUpAnimation from '../PopUpAnimation'
-import { IlSuccesFully } from '../../assets'
 
-const OrderSummary = (props) => {
-    const { status, table, ordered } = props.item;
-    const { SetIsShowSuccess, closeModal } = props;
+const OrderSummary = ({ item, onAddOrder }) => {
+    const { ordered, } = item;
     const totalBayar = ordered.reduce((acc, curr) => acc + curr.totalHarga, 0);
-    const { fetchData: axiosBe } = useAxios();
-    const dispatch = useDispatch();
 
-    const onOrdered = () => {
-        try {
-            const formData = {
-                table,
-                status,
-                ordered,
-            }
-            const data = {
-                formData,
-                SetIsShowSuccess,
-                closeModal,
-                axiosBe,
-            }
-            // console.log(data, 'data'); return
-            dispatch(addOrder(data))
-        } catch (error) {
-            console.error("Failed to fetch data:", error);
-        }
-    };
     return (
         <>
             <Text style={{ fontSize: FONTSIZE.size_20, color: COLORS.primaryOrangeHex }}>Order Summary</Text>
@@ -66,7 +42,7 @@ const OrderSummary = (props) => {
             </View> */}
 
             <View style={styles.button}>
-                <Button text="Pesan Sekarang" onPress={onOrdered} />
+                <Button text="Pesan Sekarang" onPress={onAddOrder} />
             </View>
         </>
     )

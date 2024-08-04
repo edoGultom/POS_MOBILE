@@ -21,7 +21,7 @@ const PosOrder = ({ route, navigation }) => {
     const dispatch = useDispatch();
     const totalBayar = CartList.reduce((acc, curr) => acc + (curr.harga + curr.harga_ekstra) * curr.qty, 0);
     const bottomSheetModalRef = useRef(null);
-    const [isShowSuccess, SetIsShowSuccess] = useState(true)
+    const { fetchData: axiosBe } = useAxios();
 
     const incrementCartItemQuantityHandler = (id, temperatur) => {
         const data = { id, temperatur }
@@ -71,26 +71,45 @@ const PosOrder = ({ route, navigation }) => {
         bottomSheetModalRef.current.dismiss();
     };
 
-    useEffect(() => {
-        if (isShowSuccess)
-            setTimeout(() => {
-                SetIsShowSuccess(false)
-                navigation.reset({ index: 0, routes: [{ name: 'SuccessOrder' }] });
-                // navigation.replace('MainAppAdmin', { screen: 'PosTable' })}
-            }, 2000);
-    }, [isShowSuccess])
+    // useEffect(() => {
+    //     if (isShowSuccess)
+    //         setTimeout(() => {
+    //             SetIsShowSuccess(false)
+    //             navigation.reset({ index: 4, routes: [{ name: 'SuccessOrder' }] });
+    //             // navigation.replace('MainAppAdmin', { screen: 'PosTable' })}
+    //         }, 2000);
+    // }, [isShowSuccess])
+
+    const onOrdered = () => {
+        try {
+            const formData = {
+                table,
+                status: 'ordered',
+                ordered: CartList,
+            }
+            const data = {
+                formData,
+                closeModal,
+                axiosBe,
+                navigation
+            }
+            dispatch(addOrder(data))
+        } catch (error) {
+            console.error("Failed to fetch data:", error);
+        }
+    };
 
     return (
         <BottomSheetModalProvider>
             <View style={styles.ScreenContainer}>
                 <StatusBar style='light' />
                 <HeaderBar title="Order Detail" onBack={() => navigation.goBack()} />
-                {isShowSuccess && (
+                {/* {isShowSuccess && (
                     <PopUpAnimation
                         style={styles.LottieAnimation}
                         source={IlSuccesFully}
                     />
-                )}
+                )} */}
                 <View style={[styles.orderContainer, { marginBottom: SPACING.space_2 }]}>
                     <View style={styles.orderItemFlatlist}>
                         <FlatList
@@ -130,8 +149,7 @@ const PosOrder = ({ route, navigation }) => {
                             table: table,
                             ordered: CartList
                         }}
-                        SetIsShowSuccess={SetIsShowSuccess}
-                        closeModal={closeModal}
+                        onAddOrder={onOrdered}
                     />
                 </BottomSheetCustom>
             </View>

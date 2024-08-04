@@ -7,7 +7,7 @@ import Button from '../../component/Button'
 import { Image } from 'expo-image'
 import { IcWaitingOrder } from '../../assets'
 
-const SuccessOrder = () => {
+const SuccessOrder = ({ navigation }) => {
     return (
         <View style={styles.ScreenContainer}>
             <StatusBar style='light' />
