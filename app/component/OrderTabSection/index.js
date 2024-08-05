@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { HScrollView } from 'react-native-head-tab-view';
 import { SceneMap, TabBar } from 'react-native-tab-view';
@@ -9,6 +9,7 @@ import { COLORS, FONTFAMILY } from '../../config';
 import { getOrders } from '../../redux/orderSlice';
 import useAxios from '../../api/useAxios';
 import ItemListOrder from '../ItemListOrder';
+import IcTableActive from '../../assets/Icon/IcTableActive';
 // import { getInPastOrder, getInProgress } from '../../../redux/action';
 // import { getData } from '../../../utils';
 // import ItemListOrder from '../ItemListOrder';
@@ -30,27 +31,53 @@ const Ordered = () => {
     const navigation = useNavigation();
     const dispatch = useDispatch();
     const { orders } = useSelector(state => state.orderReducer)
+    const [data, setData] = useState([])
     const { fetchData: axiosBe } = useAxios();
 
     useEffect(() => {
         const param = { status: 'ordered', axiosBe };
         dispatch(getOrders(param));
     }, []);
-    console.log(orders, 'orderxxx')
+
+    useEffect(() => {
+        setData(orders)
+        return () => {
+            if (data) {
+                setData([])
+            }
+        }
+    }, [orders])
+
+    // useEffect(() => {
+    //     const unsubscribe = navigation.addListener('focus', getData);
+    //     return unsubscribe;  // Cleanup the listener on unmount or when navigation changes
+    // }, [navigation, dispatch, axiosBe]);
+    // const getData = async () => {
+    //     dispatch(emptyTables([]));
+    //     dispatch(emptySelectedTable({ id: null, table: '', }));
+    //     try {
+    //     const param = { status: 'ordered', axiosBe };
+    //     await dispatch(getOrders(param)).unwrap();
+    //     } catch (error) {
+    //         console.error("Failed to fetch data:", error);
+    //     }
+    // };
     return (
         <HScrollView index={0} vertival showsVerticalScrollIndicator={false}>
             <View style={styles.containerOrdered}>
-                {orders && orders.map((detail) => (
+                {data && data.map((order) => (
                     <ItemListOrder
-                        key={detail.id}
-                        image={detail.menu.path}
-                        name={detail.menu.nama}
-                        qty={detail.quantity}
-                        price={detail.total}
+                        key={order.id}
+                        id={order.id}
+                        orderDetail={order}
+                        status={order.status}
+                        name={order.meja.nomor_meja}
+                        price={parseInt(order.total)}
+                        qty={order.quantity}
                         type="ordered"
                         onPress={() => {
                             return
-                            navigation.navigate('OrderDetail', detail)
+                            navigation.navigate('OrderDetail', order)
                         }}
                     />
                 ))}
@@ -96,7 +123,7 @@ const initialLayout = { width: Dimensions.get('window').width };
 const OrderTabSection = () => {
     const [index, setIndex] = React.useState(0);
     const [routes] = React.useState([
-        { key: '1', title: 'In Progress' },
+        { key: '1', title: 'Running Order' },
         { key: '2', title: 'Past Orders' },
     ]);
 

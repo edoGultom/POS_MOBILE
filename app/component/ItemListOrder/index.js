@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Image } from 'expo-image';
-import { COLORS, FONTFAMILY, FONTSIZE } from '../../config';
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE } from '../../config';
 import { BE_API_HOST } from '@env'
+import IcTableActive from '../../assets/Icon/IcTableActive';
 
-const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtra, type, status }) => {
+const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtra, type, id, orderDetail, status }) => {
     const [photo, setPhoto] = useState(null);
     useEffect(() => {
         const fetchData = () => {
@@ -37,14 +38,21 @@ const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtr
             case 'ordered':
                 return (
                     <>
-                        <View style={styles.content}>
-                            <Text style={styles.title}>{name}</Text>
-                            <View style={styles.row}>
-                                <Text style={styles.SizePrice}>{qty} <Text>items</Text></Text>
-                                <View style={styles.dot} />
-                                <Text style={styles.SizeCurrency}>
-                                    IDR <Text style={styles.SizePrice}>{price.toLocaleString('id-ID')}</Text>
-                                </Text>
+                        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', color: COLORS.primaryOrangeHex }}>
+                            <View style={styles.content}>
+                                <Text style={styles.title}>Order Number <Text style={{ fontFamily: FONTFAMILY.poppins_semibold }}>#{id}</Text></Text>
+                                <View style={styles.row}>
+                                    <Text style={styles.SizePrice}>{qty} <Text>items</Text></Text>
+                                    <View style={styles.dot} />
+                                    <Text style={styles.SizeCurrency}>
+                                        IDR <Text style={styles.SizePrice}>{price.toLocaleString('id-ID')}</Text>
+                                    </Text>
+                                </View>
+                            </View>
+                            <View style={styles.ContainerStatus}>
+                                <View style={styles.StatusCard}>
+                                    <Text style={styles.StatusName}>{status}</Text>
+                                </View>
                             </View>
                         </View>
                     </>
@@ -72,6 +80,7 @@ const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtr
                         ? COLORS.primaryOrangeHex
                         : COLORS.primaryBlackRGBA
                 },
+
                 {
                     opacity: pressed
                         ? 0.7
@@ -83,7 +92,22 @@ const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtr
 
         >
             <View style={styles.container}>
-                <Image source={{ uri: photo }} style={styles.image} />
+                {status === 'ordered' ?
+                    <View style={styles.ContainerTable}>
+                        <View style={[styles.ContainerTableNumber, { zIndex: 1 }]}>
+                            <IcTableActive width={60} />
+                        </View>
+                        <View style={[styles.ContainerTableNumber, { zIndex: 2 }]}>
+                            <Text style={[
+                                styles.NameTable,
+                                { color: COLORS.primaryOrangeHex }
+                            ]}>{name}</Text>
+                        </View>
+                    </View>
+                    : (
+                        <Image source={{ uri: photo }} style={styles.image} />
+                    )}
+
                 {renderContent()}
             </View>
         </Pressable>
@@ -93,6 +117,46 @@ const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtr
 export default ItemListOrder
 
 const styles = StyleSheet.create({
+    StatusName: {
+        color: COLORS.secondaryDarkGreyHex,
+        fontSize: FONTSIZE.size_14,
+        fontFamily: FONTFAMILY.poppins_medium
+    },
+    StatusCard: {
+        backgroundColor: COLORS.primaryOrangeHex,
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 'auto',
+        height: 30,
+        borderRadius: 10,
+        paddingHorizontal: 10,
+        // opacity: 0.6
+    },
+    ContainerStatus: {
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    NameTable: {
+        fontSize: FONTSIZE.size_12,
+        fontFamily: FONTFAMILY.poppins_regular,
+    },
+    ContainerTable: {
+        width: 60,
+        height: 60,
+        borderRadius: BORDERRADIUS.radius_20 + 5,
+        position: 'relative',
+        marginRight: 12
+    },
+    ContainerTableNumber: {
+        borderRadius: 10,
+        position: 'absolute',
+        top: 0, // Center vertically
+        bottom: 0, // Center horizontally
+        left: 0, // Center horizontally
+        right: 0, // Center horizontally
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     SizeCurrency: {
         fontFamily: FONTFAMILY.poppins_regular,
         fontSize: FONTSIZE.size_12 + 1,
@@ -130,6 +194,11 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 16,
+        fontFamily: FONTFAMILY.poppins_regular,
+        color: COLORS.secondaryLightGreyHex
+    },
+    subTitle: {
+        fontSize: 14,
         fontFamily: FONTFAMILY.poppins_regular,
         color: COLORS.secondaryLightGreyHex
     },
