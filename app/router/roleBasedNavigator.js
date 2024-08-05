@@ -40,7 +40,7 @@ const MainAppAdmin = () => {
         >
             <Tab.Screen name="PosTable" component={PosTable} options={{ headerShown: false }} />
             <Tab.Screen name="PosMenu" component={PosMenu} options={{ headerShown: false }} />
-            <Tab.Screen name="Orders" component={Orders} options={{ headerShown: true }} />
+            <Tab.Screen name="Orders" component={Orders} options={{ headerShown: false }} />
         </Tab.Navigator>
     )
 }

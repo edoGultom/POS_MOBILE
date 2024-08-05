@@ -5,6 +5,10 @@ import { addLoading } from './globalSlice';
 // Initial state
 const initialState = {
     tables: [],
+    selectedTable: {
+        id: null,
+        table: '',
+    },
     loading: false,
     error: null,
 };
@@ -82,6 +86,19 @@ const tableSlice = createSlice({
     name: 'tablesReducer',
     initialState,
     reducers: {
+        emptyTables: (state, action) => {
+            state.tables = action.payload;
+        },
+        emptySelectedTable: (state, action) => {
+            state.selectedTable = action.payload;
+        },
+        addSelectedTableState: (state, action) => {
+            if (state.selectedTable.id === action.payload.id) {
+                state.selectedTable = { id: null, table: '' }
+            } else {
+                state.selectedTable = { id: action.payload.id, table: action.payload.nomor_meja };
+            }
+        },
         addTablesState: (state, action) => {
             if (!Array.isArray(state.tables)) {
                 state.tables = [];
@@ -121,5 +138,5 @@ const tableSlice = createSlice({
             });
     },
 });
-export const { addTablesState, deleteTablesState, updateTablesState } = tableSlice.actions;
+export const { emptyTables, emptySelectedTable, addSelectedTableState, addTablesState, deleteTablesState, updateTablesState } = tableSlice.actions;
 export default tableSlice.reducer;

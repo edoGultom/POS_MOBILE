@@ -40,7 +40,7 @@ const OrderItem = ({
                         <Text style={styles.CartItemSubtitle}>{kind}</Text>
                     </View>
                     <View style={styles.CartItemSingleSizeValueContainer}>
-                        {temperatur !== '' && (
+                        {kind !== 'Makanan' && temperatur !== '' && (
                             <View style={styles.SizeBox}>
                                 <Text
                                     style={[

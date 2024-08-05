@@ -71,15 +71,6 @@ const PosOrder = ({ route, navigation }) => {
         bottomSheetModalRef.current.dismiss();
     };
 
-    // useEffect(() => {
-    //     if (isShowSuccess)
-    //         setTimeout(() => {
-    //             SetIsShowSuccess(false)
-    //             navigation.reset({ index: 4, routes: [{ name: 'SuccessOrder' }] });
-    //             // navigation.replace('MainAppAdmin', { screen: 'PosTable' })}
-    //         }, 2000);
-    // }, [isShowSuccess])
-
     const onOrdered = () => {
         try {
             const formData = {
@@ -87,6 +78,7 @@ const PosOrder = ({ route, navigation }) => {
                 status: 'ordered',
                 ordered: CartList,
             }
+            // console.log(formData, 'formData'); return
             const data = {
                 formData,
                 closeModal,

@@ -10,24 +10,22 @@ import IcTableActive from '../../assets/Icon/IcTableActive'
 import Button from '../../component/Button'
 import HeaderBar from '../../component/HeaderBar'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
-import { getTables } from '../../redux/tableSice'
+import { addSelectedTableState, emptySelectedTable, emptyTables, getTables } from '../../redux/tableSice'
 
 const PosTable = ({ navigation }) => {
     const tabBarHeight = useBottomTabBarHeight();
     const dispatch = useDispatch();
-    const { tables } = useSelector(state => state.tablesReducer);
-    const [selectedTable, setSelectedTable] = useState({
-        id: null,
-        table: '',
-    });
-
+    const { tables, selectedTable } = useSelector(state => state.tablesReducer);
     const { fetchData: axiosBe } = useAxios();
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', getData);
         return unsubscribe;  // Cleanup the listener on unmount or when navigation changes
     }, [navigation, dispatch, axiosBe]);
+
     const getData = async () => {
+        dispatch(emptyTables([]));
+        dispatch(emptySelectedTable({ id: null, table: '', }));
         try {
             await dispatch(getTables(axiosBe)).unwrap();
         } catch (error) {
@@ -59,12 +57,7 @@ const PosTable = ({ navigation }) => {
                         <TouchableOpacity
                             key={item.id}
                             onPress={() => {
-                                setSelectedTable((prev) => {
-                                    if (prev.id === item.id) {
-                                        return { id: null, table: '' }
-                                    }
-                                    return { id: item.id, table: item.nomor_meja };
-                                })
+                                dispatch(addSelectedTableState(item))
                             }}
                             style={[
                                 styles.ContainerTable,
@@ -74,7 +67,7 @@ const PosTable = ({ navigation }) => {
                         >
                             <View style={[styles.ContainerTableNumber, { zIndex: 1 }]}>
                                 {
-                                    selectedTable.table === item.nomor_meja ?
+                                    selectedTable && selectedTable.table === item.nomor_meja ?
                                         (
                                             <IcTableActive />
                                         ) :
@@ -126,7 +119,7 @@ const PosTable = ({ navigation }) => {
                         <Button
                             text="Select and Continue"
                             textColor={COLORS.primaryWhiteHex}
-                            onPress={() => navigation.navigate('PosMenu', { selectedTable })}
+                            onPress={() => navigation.navigate('PosMenu')}
                             color={COLORS.secondaryBlackRGBA}
                         />
                     </View>

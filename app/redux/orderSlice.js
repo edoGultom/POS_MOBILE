@@ -8,9 +8,27 @@ import axios from 'axios';
 const initialState = {
     CartList: [],
     Midtrans: null,
+    orders: [],
     loading: false,
     error: null,
 };
+export const getOrders = createAsyncThunk('order/getOrders', async (param, thunkAPI) => {
+    const { dispatch } = thunkAPI;
+    const { status, axiosBe } = param
+    dispatch(addLoading(true));
+    try {
+        const response = await axiosBe({
+            url: `/order/get-orders`,
+            method: "GET",
+            params: { status }
+        })
+        dispatch(addLoading(false));
+        return response
+    } catch (error) {
+        dispatch(addLoading(false));
+        console.error('Error: ', error);
+    }
+});
 export const addOrder = createAsyncThunk('order/addOrder', async (param, thunkAPI) => {
     const { dispatch } = thunkAPI;
     const { closeModal, formData, navigation, axiosBe } = param
@@ -24,8 +42,6 @@ export const addOrder = createAsyncThunk('order/addOrder', async (param, thunkAP
                 'Content-Type': 'application/json', // Adjust content type if necessary
             },
         })
-        console.log(response, 'xxxx')
-
         if (response.status) {
             dispatch(addLoading(false))
             closeModal();
@@ -142,7 +158,20 @@ const orderSlice = createSlice({
             state.CartList = [];
         }
     },
-    extraReducers: () => { },
+    extraReducers: (builder) => {
+        builder
+            .addCase(getOrders.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            }).addCase(getOrders.fulfilled, (state, action) => {
+                state.loading = false;
+                state.orders = action.payload.data ?? [];
+            })
+            .addCase(getOrders.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            });
+    },
 });
 export const { addToChartList, incrementCartItemQuantity, decrementCartItemQuantity, calculateCartPrice, addStateMidtrans, addToOrderHistoryListFromCart } = orderSlice.actions;
 export default orderSlice.reducer;

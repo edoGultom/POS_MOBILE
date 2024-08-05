@@ -55,7 +55,7 @@ const HeaderBar = ({ title, onBack }) => {
             )}
 
             <Text style={styles.HeaderText}>{title}</Text>
-            <Text style={styles.subHeaderText}>sdsdsdsd</Text>
+            <Text style={styles.subHeaderText}></Text>
 
             <Popover
                 from={(

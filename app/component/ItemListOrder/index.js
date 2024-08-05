@@ -4,7 +4,7 @@ import { Image } from 'expo-image';
 import { COLORS, FONTFAMILY, FONTSIZE } from '../../config';
 import { BE_API_HOST } from '@env'
 
-const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtra, type }) => {
+const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtra, type, status }) => {
     const [photo, setPhoto] = useState(null);
     useEffect(() => {
         const fetchData = () => {
@@ -22,7 +22,6 @@ const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtr
                         <View style={styles.content}>
                             <Text style={styles.title}>{name}</Text>
                             <Text style={styles.SizeCurrency}>
-
                                 IDR <Text style={styles.SizePrice}>{price.toLocaleString('id-ID')}</Text>
                             </Text>
                             <Text style={styles.temperatur}>
@@ -35,6 +34,21 @@ const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtr
                         <Text style={styles.items}>{qty} items</Text>
                     </>
                 );
+            case 'ordered':
+                return (
+                    <>
+                        <View style={styles.content}>
+                            <Text style={styles.title}>{name}</Text>
+                            <View style={styles.row}>
+                                <Text style={styles.SizePrice}>{qty} <Text>items</Text></Text>
+                                <View style={styles.dot} />
+                                <Text style={styles.SizeCurrency}>
+                                    IDR <Text style={styles.SizePrice}>{price.toLocaleString('id-ID')}</Text>
+                                </Text>
+                            </View>
+                        </View>
+                    </>
+                );
             default:
                 //item pruduct
                 return (
@@ -42,7 +56,6 @@ const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtr
                     <>
                         <View style={styles.content}>
                             <Text style={styles.title}>{name}</Text>
-                            IDR. 0
                         </View>
                         <Rate />
                     </>
@@ -99,6 +112,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         padding: 6
     },
+
     container: {
         flexDirection: 'row',
         paddingVertical: 8,
@@ -112,7 +126,7 @@ const styles = StyleSheet.create({
         marginRight: 12
     },
     content: {
-        flex: 1
+        flex: 1,
     },
     title: {
         fontSize: 16,

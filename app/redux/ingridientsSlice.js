@@ -1,7 +1,7 @@
 
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { addLoading } from './globalSlice';
-import axiosInstance from '../api/useAxiosBackend';
+import axios from 'axios';
 
 // Initial state
 const initialState = {
@@ -28,7 +28,7 @@ export const addIngridients = createAsyncThunk('ingridients/addIngridients', asy
     const { setRefreshData, dataInput, axiosBe } = param
     setRefreshData(true);
     try {
-        const response = await axiosBe({
+        const response = await axiosInstance({
             url: "/bahan-baku/add",
             method: "POST",
             data: dataInput,
@@ -47,7 +47,7 @@ export const updateIngridients = createAsyncThunk('ingridients/updateIngridients
     const { id, setRefreshData, dataInput, axiosBe } = param
     setRefreshData(true);
     try {
-        const response = await axiosBe({
+        const response = await axiosInstance({
             url: `/bahan-baku/update`,
             method: "POST",
             data: dataInput,
