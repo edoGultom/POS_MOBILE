@@ -9,19 +9,63 @@ const Icon = ({ label, focused }) => {
     const { CartList } = useSelector(state => state.orderReducer);
     let countList = CartList.length;
     switch (label) {
-        case 'Home':
+        case 'PosTable':
             return focused ?
-                <CustomIcon
-                    name={'home'}
-                    color={COLORS.primaryOrangeHex}
-                    size={FONTSIZE.size_20}
-                />
+                <View style={styles.containerMenu}>
+                    <CustomIcon
+                        name={'table-restaurant'}
+                        color={COLORS.primaryOrangeHex}
+                        size={FONTSIZE.size_24}
+                    />
+                    <Text style={{ color: COLORS.primaryOrangeHex }}>Table</Text>
+                </View>
                 :
-                <CustomIcon
-                    name={'home'}
-                    color={COLORS.primaryLightGreyHex}
-                    size={FONTSIZE.size_20}
-                />
+                <View style={styles.containerMenu}>
+                    <CustomIcon
+                        name={'table-restaurant'}
+                        color={COLORS.primaryLightGreyHex}
+                        size={FONTSIZE.size_24}
+                    />
+                    <Text style={{ color: COLORS.primaryLightGreyHex }}>Table</Text>
+                </View>
+        case 'PosMenu':
+            return focused ?
+                <View style={styles.containerMenu}>
+                    <CustomIcon
+                        name={'menu-book'}
+                        color={COLORS.primaryOrangeHex}
+                        size={FONTSIZE.size_24}
+                    />
+                    <Text style={{ color: COLORS.primaryOrangeHex }}>Menu</Text>
+                </View>
+                :
+                <View style={styles.containerMenu}>
+                    <CustomIcon
+                        name={'menu-book'}
+                        color={COLORS.primaryLightGreyHex}
+                        size={FONTSIZE.size_24}
+                    />
+                    <Text style={{ color: COLORS.primaryLightGreyHex }}>Menu</Text>
+                </View>
+        case 'Orders':
+            return focused ?
+                <View style={styles.containerMenu}>
+                    <CustomIcon
+                        name={'shopping-bag'}
+                        color={COLORS.primaryOrangeHex}
+                        size={FONTSIZE.size_24}
+                    />
+                    <Text style={{ color: COLORS.primaryOrangeHex }}>Orders</Text>
+                </View>
+                :
+                <View style={styles.containerMenu}>
+                    <CustomIcon
+                        name={'shopping-bag'}
+                        color={COLORS.primaryLightGreyHex}
+                        size={FONTSIZE.size_24}
+                    />
+                    <Text style={{ color: COLORS.primaryLightGreyHex }}>Orders</Text>
+                </View>
         case 'Order':
             return <View
                 style={{
@@ -48,18 +92,37 @@ const Icon = ({ label, focused }) => {
                     <IcCoffee />
                 </View>
             </View >
-        case 'Profile':
+        case 'ChefHome':
             return focused ?
                 <CustomIcon
-                    name={'supervised-user-circle'}
+                    name={'Home'}
                     color={COLORS.primaryOrangeHex}
                     size={FONTSIZE.size_20}
-                /> :
+                />
+                :
                 <CustomIcon
-                    name={'supervised-user-circle'}
+                    name={'Home'}
                     color={COLORS.primaryLightGreyHex}
                     size={FONTSIZE.size_20}
                 />
+        case 'Profile':
+            return focused ?
+                <View style={styles.containerMenu}>
+                    <CustomIcon
+                        name={'person-pin'}
+                        color={COLORS.primaryOrangeHex}
+                        size={FONTSIZE.size_24}
+                    />
+                    <Text style={{ color: COLORS.primaryOrangeHex }}>Profile</Text>
+                </View> :
+                <View style={styles.containerMenu}>
+                    <CustomIcon
+                        name={'person-pin'}
+                        color={COLORS.primaryLightGreyHex}
+                        size={FONTSIZE.size_24}
+                    />
+                    <Text style={{ color: COLORS.primaryLightGreyHex }}>Profile</Text>
+                </View>
         default:
             return 'Null'
     }
@@ -130,6 +193,9 @@ const UserBottomNavigator = ({ state, descriptors, navigation }) => {
 export default UserBottomNavigator
 
 const styles = StyleSheet.create({
+    containerMenu: {
+        flexDirection: 'column', justifyContent: 'center', alignItems: 'center'
+    },
     counterList: {
         position: 'absolute',
         fontFamily: FONTFAMILY.poppins_bold,

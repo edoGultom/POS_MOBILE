@@ -18,7 +18,7 @@ export const getMenu = createAsyncThunk('menu/getMenu', async (axiosInstance, th
         return result
     } catch (err) {
         dispatch(addLoading(false));
-        console.error(err.message);
+        console.error('errx', err.message);
     }
 });
 export const addMenu = createAsyncThunk('menu/addMenu', async (param, thunkAPI) => {

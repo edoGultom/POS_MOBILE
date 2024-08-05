@@ -9,7 +9,7 @@ const ItemListMenu = ({ text, onPress }) => {
       <View style={styles.container}>
         <Text style={styles.text}>{text}</Text>
         <CustomIcon
-          name="caret-right"
+          name="chevron-right"
           color={COLORS.primaryWhiteHex}
           size={FONTSIZE.size_10}
         />

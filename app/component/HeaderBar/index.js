@@ -12,16 +12,14 @@ import Popover from 'react-native-popover-view';
 const HeaderBar = ({ title, onBack }) => {
     const navigation = useNavigation();
     const [photo, setPhoto] = useState(ProfileDummy);
-    const [visible, setVisible] = useState(false);
+    const [profile, setProfile] = useState(false);
     useEffect(() => {
         updateUserProfile();
     }, [title]);
 
     const updateUserProfile = () => {
         getData('userProfile').then((res) => {
-            setPhoto({
-                uri: `${BE_API_HOST}/lihat-file/profile?path=${res.profile_photo_path}`,
-            });
+            setProfile(res)
         });
     };
 
@@ -59,13 +57,17 @@ const HeaderBar = ({ title, onBack }) => {
 
             <Popover
                 from={(
-                    <TouchableOpacity
-                        style={styles.ImageContainer}
-                    >
-                        <Image
-                            source={photo}
-                            style={styles.Image}
-                        />
+                    <TouchableOpacity>
+                        <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+
+                            <View style={styles.ImageContainer}>
+                                <Image
+                                    source={photo}
+                                    style={styles.Image}
+                                />
+                            </View>
+                            <Text style={{ color: COLORS.secondaryLightGreyHex }}>Hi, {profile.username}</Text>
+                        </View>
                     </TouchableOpacity>
                 )}>
                 <TouchableOpacity
@@ -122,19 +124,21 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     ImageContainer: {
-        height: SPACING.space_20 * 2,
-        width: SPACING.space_20 * 2,
-        borderRadius: SPACING.space_12,
+        backgroundColor: 'yellow',
+        height: 50,
+        width: 50,
+        borderRadius: 50,
         borderWidth: 2,
         borderColor: COLORS.secondaryDarkGreyHex,
         alignItems: 'center',
         justifyContent: 'center',
         overflow: 'hidden',
+        flexDirection: 'column'
         // backgroundColor: 'red',
     },
     Image: {
-        height: SPACING.space_20 * 2,
-        width: SPACING.space_20 * 2,
+        height: 50,
+        width: 50,
     },
     HeaderContainer: {
         // padding: SPACING.space_30,

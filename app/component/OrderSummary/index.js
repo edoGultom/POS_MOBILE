@@ -14,11 +14,11 @@ const OrderSummary = ({ item, onAddOrder }) => {
 
     return (
         <>
-            <Text style={{ fontSize: FONTSIZE.size_20, color: COLORS.primaryOrangeHex }}>Order Summary</Text>
+            <Text style={{ fontSize: FONTSIZE.size_20, color: COLORS.primaryOrangeHex }}>Summary</Text>
             <Text style={{ fontSize: FONTSIZE.size_12 + 1, color: COLORS.secondaryLightGreyHex }}>Silahkan periksa kembali pesanan Anda!</Text>
 
             <View style={styles.content}>
-                <Text style={styles.label}>Item Ordered</Text>
+                <Text style={styles.label}>Item Order</Text>
                 {ordered.map((item, idx) => (
                     <ItemListOrder
                         key={idx}
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     },
     button: {
         paddingHorizontal: 24,
-        marginTop: 24
+        marginVertical: 24
     },
     LottieAnimation: {
         flex: 1,

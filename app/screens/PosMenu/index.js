@@ -12,8 +12,12 @@ import { addToChartList } from '../../redux/orderSlice';
 import Button from '../../component/Button';
 import ButtonIcon from '../../component/ButtonIcon';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import CustomIcon from '../../component/CustomIcon';
+
 
 const PosMenu = ({ navigation }) => {
+    const CARD_WIDTH = Dimensions.get('window').width;
+    const tabBarHeight = useBottomTabBarHeight();
     const { selectedTable } = useSelector(state => state.tablesReducer);
     const table = selectedTable;
     const ListRef = useRef();
@@ -22,7 +26,10 @@ const PosMenu = ({ navigation }) => {
     const { CartList } = useSelector(state => state.orderReducer);
     const [sortedMenu, setSortedMenu] = useState(null);
     const slideAnim = useRef(new Animated.Value(0)).current;
-    const tabBarHeight = useBottomTabBarHeight();
+    const slideUp = slideAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: [300, 0], // Adjust the 300 value to how far you want it to slide
+    });
 
     useEffect(() => {
         Animated.timing(slideAnim, {
@@ -31,11 +38,6 @@ const PosMenu = ({ navigation }) => {
             useNativeDriver: true,
         }).start();
     }, [CartList.length > 0]);
-
-    const slideUp = slideAnim.interpolate({
-        inputRange: [0, 1],
-        outputRange: [300, 0], // Adjust the 300 value to how far you want it to slide
-    });
 
     const { fetchData: axiosBe } = useAxios();
 
@@ -112,18 +114,16 @@ const PosMenu = ({ navigation }) => {
             id, nama, path, nama_kategori, nama_sub_kategori, harga, harga_ekstra: extraPrice.checked.value, temperatur: (extraPrice.checked.label !== '') ? extraPrice.checked.label : 'HOT'
         }
         dispatch(addToChartList(data))
-
-        const filter = CartList.find((item) => item.nama == nama && item.temperatur == extraPrice.checked.label);
-        console.log(filter, 'filter')
-        let qtys = filter !== undefined ? `+${filter.qty + 1}` : `+1`;
-
-        ToastAndroid.showWithGravity(
-            `${qtys} ${(nama_kategori !== 'Makanan') ? extraPrice.checked.label : ''} ${nama} is Added to Cart`,
-            ToastAndroid.SHORT,
-            ToastAndroid.CENTER,
-        )
+        // const filter = CartList.find((item) => item.nama == nama && item.temperatur == extraPrice.checked.label);
+        // console.log(filter, 'filter')
+        // let qtys = filter !== undefined ? `+${filter.qty + 1}` : `+1`;
+        // ToastAndroid.showWithGravity(
+        //     `${qtys} ${(nama_kategori !== 'Makanan') ? extraPrice.checked.label : ''} ${nama} is Added to Cart`,
+        //     ToastAndroid.SHORT,
+        //     ToastAndroid.CENTER,
+        // )
     };
-
+    console.log(CartList, 'CartList')
     return (
         <View style={styles.ScreenContainer}>
             <StatusBar style='light' />
@@ -219,25 +219,47 @@ const PosMenu = ({ navigation }) => {
                 CartList.length > 0 && (
                     <Animated.View style={[{ transform: [{ translateY: slideUp }] }]}>
                         <View style={{
+                            flexDirection: 'row',
                             bottom: tabBarHeight,
                             position: 'absolute',
-                            backgroundColor: COLORS.primaryBlackRGBA,
-                            justifyContent: 'center',
+                            backgroundColor: COLORS.primaryLightGreyHex,
+                            justifyContent: 'space-between',
                             alignItems: 'center',
-                            width: '100%',
-                            padding: SPACING.space_10,
-                            gap: SPACING.space_10
+                            width: CARD_WIDTH,
+                            paddingVertical: SPACING.space_10,
+                            paddingHorizontal: SPACING.space_10,
+                            marginVertical: SPACING.space_10,
+                            gap: SPACING.space_10,
+                            borderRadius: 20,
                         }}>
-                            <Button
-                                text="Continue to Cartlist"
-                                textColor={COLORS.primaryWhiteHex}
-                                onPress={() => {
-                                    const tableOrder = {
-                                        table,
-                                    }
-                                    navigation.navigate('PosOrder', { order: tableOrder })
-                                }}
-                                color={COLORS.primaryOrangeHex} />
+                            <View style={{
+                                flexDirection: 'row',
+                                justifyContent: 'flex-start',
+                                alignItems: 'center',
+                                gap: SPACING.space_10
+                            }}>
+                                <CustomIcon
+                                    name={'shopping-cart'}
+                                    color={COLORS.primaryOrangeHex}
+                                    size={FONTSIZE.size_24}
+                                />
+                                <Text style={{ color: COLORS.primaryWhiteHex, fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12 }}><Text style={{ fontFamily: FONTFAMILY.poppins_semibold }}>{CartList.length} Item</Text>  add to order</Text>
+                            </View>
+                            <View style={{
+                                flexDirection: 'row',
+                                justifyContent: 'flex-end'
+                            }}>
+                                <Button
+                                    text="NEXT"
+                                    textColor={COLORS.primaryWhiteHex}
+                                    onPress={() => {
+                                        const tableOrder = {
+                                            table,
+                                        }
+                                        navigation.navigate('PosOrder', { order: tableOrder })
+                                    }}
+                                    color={COLORS.primaryOrangeHex} />
+                            </View>
                         </View>
                     </Animated.View>
 

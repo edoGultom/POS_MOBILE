@@ -1,8 +1,8 @@
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs'
 import { Image } from 'expo-image'
 import { StatusBar } from 'expo-status-bar'
-import React, { useEffect, useState } from 'react'
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React, { useEffect, useRef } from 'react'
+import { Animated, Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import useAxios from '../../api/useAxios'
 import { IcSmallTable, IlDisableTable } from '../../assets'
@@ -13,16 +13,29 @@ import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../confi
 import { addSelectedTableState, emptySelectedTable, emptyTables, getTables } from '../../redux/tableSice'
 
 const PosTable = ({ navigation }) => {
+    const CARD_WIDTH = Dimensions.get('window').width;
     const tabBarHeight = useBottomTabBarHeight();
     const dispatch = useDispatch();
     const { tables, selectedTable } = useSelector(state => state.tablesReducer);
     const { fetchData: axiosBe } = useAxios();
+    const slideAnim = useRef(new Animated.Value(0)).current;
+    const slideUp = slideAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: [300, 0], // Adjust the 300 value to how far you want it to slide
+    });
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', getData);
         return unsubscribe;  // Cleanup the listener on unmount or when navigation changes
     }, [navigation, dispatch, axiosBe]);
 
+    useEffect(() => {
+        Animated.timing(slideAnim, {
+            toValue: (selectedTable.id !== null) ? 1 : 0,
+            duration: 300,
+            useNativeDriver: true,
+        }).start();
+    }, [selectedTable.id !== null]);
     const getData = async () => {
         dispatch(emptyTables([]));
         dispatch(emptySelectedTable({ id: null, table: '', }));
@@ -36,15 +49,16 @@ const PosTable = ({ navigation }) => {
     return (
         <View style={styles.ScreenContainer}>
             <StatusBar style='light' />
-            <HeaderBar />
+            <HeaderBar title="Table List" />
+            <Text style={styles.ScreenTitle}>
+                Let's choose a table ,{'\n'}
+                to get some food and drink
+            </Text>
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.ScrollViewFlex}>
-                <Text style={styles.ScreenTitle}>
-                    TABLE  LIST
-                </Text>
                 <View style={{
-                    paddingVertical: 15,
+                    // paddingVertical: 15,
                     // paddingHorizontal: 15,
                     flexDirection: 'row',
                     gap: 10,
@@ -56,6 +70,7 @@ const PosTable = ({ navigation }) => {
                     {tables.length > 0 && tables.map((item, index) => (
                         <TouchableOpacity
                             key={item.id}
+                            disabled={item.status === 'Occupied'}
                             onPress={() => {
                                 dispatch(addSelectedTableState(item))
                             }}
@@ -63,6 +78,8 @@ const PosTable = ({ navigation }) => {
                                 styles.ContainerTable,
                                 selectedTable.id === item.id
                                     ? { backgroundColor: COLORS.secondaryBlackRGBA, borderColor: COLORS.primaryOrangeHex } : { backgroundColor: COLORS.primaryBlackRGBA, borderColor: COLORS.secondaryLightGreyHex },
+                                item.status === 'Occupied'
+                                    ? { backgroundColor: COLORS.primaryDarkGreyHex, borderColor: COLORS.secondaryDarkGreyHex } : {},
                             ]}
                         >
                             <View style={[styles.ContainerTableNumber, { zIndex: 1 }]}>
@@ -83,8 +100,12 @@ const PosTable = ({ navigation }) => {
                                 <Text style={[
                                     styles.NameTable,
                                     selectedTable.id === item.id ?
-                                        { color: COLORS.primaryOrangeHex } : { color: COLORS.secondaryLightGreyHex }
-                                ]}>{item.nomor_meja}</Text>
+                                        { color: COLORS.primaryOrangeHex } : { color: COLORS.secondaryLightGreyHex },
+                                    item.status === 'Occupied' ?
+                                        { transform: [{ rotate: '-45deg' }], color: COLORS.secondaryLightGreyHex, } : {}
+                                ]}>
+                                    {item.status === 'Occupied' ? item.status : item.nomor_meja}
+                                </Text>
                             </View>
                         </TouchableOpacity>
                     ))}
@@ -92,37 +113,41 @@ const PosTable = ({ navigation }) => {
             </ScrollView>
             {
                 selectedTable.id !== null && (
-                    <View style={{
-                        position: 'absolute',
-                        bottom: tabBarHeight + 10,
-                        backgroundColor: COLORS.primaryOrangeHex,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        width: '100%',
-                        height: '10%',
-                        gap: SPACING.space_10
-                    }}>
-                        <View style={{ flexDirection: 'row', gap: SPACING.space_10 }}>
-                            <IcSmallTable />
-                            <Text style={{
-                                fontSize: FONTSIZE.size_14,
-                                fontFamily: FONTFAMILY.poppins_semibold
-                            }}>Table <Text style={{
-                                marginLeft: 10,
-                                fontFamily: FONTFAMILY.poppins_semibold,
-                                color: COLORS.primaryWhiteHex
-                            }}>
-                                    {selectedTable.table}
+                    <Animated.View style={[{ transform: [{ translateY: slideUp }] }]}>
+                        <View style={{
+                            position: 'absolute',
+                            bottom: tabBarHeight,
+                            backgroundColor: COLORS.primaryOrangeHex,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            width: CARD_WIDTH,
+                            gap: SPACING.space_10,
+                            paddingVertical: SPACING.space_10,
+                            paddingHorizontal: SPACING.space_10,
+                            marginVertical: SPACING.space_10,
+                        }}>
+                            <View style={{ flexDirection: 'row', gap: SPACING.space_10 }}>
+                                <IcSmallTable />
+                                <Text style={{
+                                    fontSize: FONTSIZE.size_14,
+                                    fontFamily: FONTFAMILY.poppins_semibold
+                                }}>Table <Text style={{
+                                    marginLeft: 10,
+                                    fontFamily: FONTFAMILY.poppins_semibold,
+                                    color: COLORS.primaryWhiteHex
+                                }}>
+                                        {selectedTable.table}
+                                    </Text>
                                 </Text>
-                            </Text>
+                            </View>
+                            <Button
+                                text="Select and Continue"
+                                textColor={COLORS.primaryWhiteHex}
+                                onPress={() => navigation.navigate('PosMenu')}
+                                color={COLORS.secondaryBlackRGBA}
+                            />
                         </View>
-                        <Button
-                            text="Select and Continue"
-                            textColor={COLORS.primaryWhiteHex}
-                            onPress={() => navigation.navigate('PosMenu')}
-                            color={COLORS.secondaryBlackRGBA}
-                        />
-                    </View>
+                    </Animated.View>
                 )
             }
 
@@ -164,8 +189,14 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.primaryBlackHex,
         flex: 1,
     },
+    // ScreenTitle: {
+    //     textAlign: 'center',
+    //     fontSize: FONTSIZE.size_24,
+    //     fontFamily: FONTFAMILY.poppins_semibold,
+    //     color: COLORS.primaryWhiteHex,
+    //     paddingLeft: SPACING.space_15,
+    // },
     ScreenTitle: {
-        textAlign: 'center',
         fontSize: FONTSIZE.size_24,
         fontFamily: FONTFAMILY.poppins_semibold,
         color: COLORS.primaryWhiteHex,

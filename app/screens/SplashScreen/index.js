@@ -20,7 +20,8 @@ const SplashScreen = ({ navigation }) => {
           getData('token').then(res => {
             if (res) {
               getData('userProfile').then((res) => {
-                if (res?.scope?.includes('Admin')) {
+                // console.log(res.user.scope, 'xxx')
+                if (res?.user?.scope.includes('Admin')) {
                   navigation.dispatch(
                     CommonActions.reset({
                       index: 1,
@@ -28,10 +29,17 @@ const SplashScreen = ({ navigation }) => {
                     })
                   );
                   // navigation.reset({ index: 4, routes: [{ name: 'Admin' }] });
+                } else if (res?.user?.scope.includes('Chef')) {
+                  navigation.dispatch(
+                    CommonActions.reset({
+                      index: 19,
+                      routes: [{ name: 'MainAppChef' }],
+                    })
+                  );
                 } else {
                   navigation.dispatch(
                     CommonActions.reset({
-                      index: 12,
+                      index: 20,
                       routes: [{ name: 'MainAppUser' }],
                     })
                   );

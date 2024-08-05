@@ -24,9 +24,20 @@ const MainAppUser = () => {
         <Tab.Navigator
             tabBar={props => <UserBottomNavigator {...props} />}
         >
-            <Tab.Screen name="Home" component={Home} options={{ headerShown: false }} />
+            <Tab.Screen name="PosTable" component={PosTable} options={{ headerShown: false }} />
+            <Tab.Screen name="PosMenu" component={PosMenu} options={{ headerShown: false }} />
             {/* <Tab.Screen name="Order" component={Order} options={{ headerShown: false, tabBarVisible: false }} /> */}
-            {/* <Tab.Screen name="Profile" component={Profile} options={{ headerShown: false }} /> */}
+            <Tab.Screen name="Orders" component={Orders} options={{ headerShown: false }} />
+            <Tab.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
+        </Tab.Navigator>
+    )
+}
+const MainAppChef = () => {
+    return (
+        <Tab.Navigator
+            tabBar={props => <UserBottomNavigator {...props} />}
+        >
+            <Tab.Screen name="ChefHome" component={Home} options={{ headerShown: false }} />
         </Tab.Navigator>
     )
 }
@@ -46,7 +57,7 @@ const MainAppAdmin = () => {
 }
 const RoleBasedNavigator = () => {
     const { roles } = useRole();
-    console.log(roles, 'roles')
+    // console.log(roles, 'roles')
     return (
         <Stack.Navigator
             initialRouteName="SplashScreen"
@@ -146,17 +157,9 @@ const RoleBasedNavigator = () => {
                 component={PosOrder}
                 options={{ headerShown: false, }}
             />
-            {
-                "Admin".includes(roles) ?
-                    (
-                        <Stack.Screen name="MainAppAdmin" component={MainAppAdmin} options={{ headerShown: false }} />
-                    )
-                    :
-                    (
-                        <Stack.Screen name="MainAppUser" component={MainAppUser} options={{ headerShown: false }} />
-
-                    )
-            }
+            <Stack.Screen name="MainAppAdmin" component={MainAppAdmin} options={{ headerShown: false }} />
+            <Stack.Screen name="MainAppChef" component={MainAppChef} options={{ headerShown: false }} />
+            <Stack.Screen name="MainAppUser" component={MainAppUser} options={{ headerShown: false }} />
         </Stack.Navigator>
     );
 };

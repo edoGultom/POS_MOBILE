@@ -38,8 +38,7 @@ const Profile = ({ navigation }) => {
                         </View>
                     </TouchableOpacity>
                 </View>
-                <Text style={styles.name}>
-                    {userProfile.username}</Text>
+                <Text style={styles.name}>{userProfile.username}</Text>
                 <Text style={styles.email}>{userProfile.email}</Text>
 
                 <View style={styles.content}>

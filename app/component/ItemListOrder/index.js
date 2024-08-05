@@ -109,7 +109,7 @@ const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtr
 
         >
             <View style={styles.container}>
-                {/* {status === 'ordered' || 'past_order' ?
+                {status === 'ordered' || status === 'past_order' ?
                     <View style={styles.ContainerTable}>
                         <View style={[styles.ContainerTableNumber, { zIndex: 1 }]}>
                             <IcTableActive width={60} />
@@ -121,9 +121,10 @@ const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtr
                             ]}>{name}</Text>
                         </View>
                     </View>
-                    : ( */}
-                {/* <Image source={{ uri: photo }} style={styles.image} /> */}
-                <View style={styles.ContainerTable}>
+                    : (
+                        <Image source={{ uri: photo }} style={styles.image} />)
+                }
+                {/* <View style={styles.ContainerTable}>
                     <View style={[styles.ContainerTableNumber, { zIndex: 1 }]}>
                         <IcTableActive width={60} />
                     </View>
@@ -133,7 +134,7 @@ const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtr
                             { color: COLORS.primaryOrangeHex }
                         ]}>{name}</Text>
                     </View>
-                </View>
+                </View> */}
 
                 {renderContent()}
             </View>

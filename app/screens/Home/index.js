@@ -2,21 +2,22 @@ import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Dimensions, FlatList, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
-import { IcCoffeeOff, IcCoffeeOn, IcNonCoffeeOff, IcNonCoffeeOn, ImChocolate, ImCoffAmericano, ImLangitMatcha, ImLangitTaro } from '../../assets';
+import { useDispatch, useSelector } from 'react-redux';
+import useAxios from '../../api/useAxios';
+import { IcCoffeeOff, IcCoffeeOn, IcFoodOff, IcFoodOn, IcNoMenu, IcNonCoffeeOff, IcNonCoffeeOn } from '../../assets';
 import CoffeCard from '../../component/CoffeeCard';
 import HeaderBar from '../../component/HeaderBar';
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
-import { useDispatch, useSelector } from 'react-redux';
-import { getData } from '../../utils';
 import { getMenu } from '../../redux/menuSlice';
 import { addToChartList } from '../../redux/orderSlice';
 
 const Home = ({ navigation }) => {
     const tabBarHeight = useBottomTabBarHeight();
+    const [sortedMenu, setSortedMenu] = useState(null);
     const ListRef = useRef();
     const dispatch = useDispatch();
+    const { fetchData: axiosBe } = useAxios();
     const { menus } = useSelector(state => state.menuReducer);
-
     const [catgoryMenu, setCategoryMenu] = useState({
         index: 0,
         category: 'Coffee',
@@ -34,26 +35,40 @@ const Home = ({ navigation }) => {
             iconOff: <IcNonCoffeeOff />,
             iconOn: <IcNonCoffeeOn />,
         },
+        {
+            key: 2,
+            label: 'Snack',
+            iconOff: <IcFoodOff />,
+            iconOn: <IcFoodOn />,
+        },
     ];
-    const [sortedMenu, setSortedMenu] = useState(null);
     const getMenuList = (category, data) => {
-        let coffeelist = data?.filter((item) => item.nama_kategori == category) || [];
+        let coffeelist = data?.filter((item) => item.nama_sub_kategori == category) || [];
         return coffeelist;
     };
     useEffect(() => {
-        setSortedMenu([...getMenuList(catgoryMenu.category, menus)])
+        if (menus) {
+            setSortedMenu([...getMenuList(catgoryMenu.category, menus)])
+            return () => {
+                if (sortedMenu) {
+                    setSortedMenu(null)
+                }
+            }
+        }
     }, [menus]);
 
-    const getDataMenu = () => {
-        getData('token').then((res) => {
-            dispatch(getMenu(res.value))
-        });
+    const getDataMenu = async () => {
+        try {
+            await dispatch(getMenu(axiosBe)).unwrap();
+        } catch (error) {
+            console.error("Failed to fetch data:", error);
+        }
+
     };
     useEffect(() => {
-        navigation.addListener('focus', () => {
-            getDataMenu();
-        });
-    }, [navigation]);
+        const unsubscribe = navigation.addListener('focus', getDataMenu);
+        return unsubscribe;  // Cleanup the listener on unmount or when navigation changes
+    }, [navigation, dispatch, axiosBe]);
 
     const CoffeCardAddToCart = (item, checked) => {
         const { id, nama, path, nama_kategori, nama_sub_kategori, harga } = item
@@ -68,28 +83,33 @@ const Home = ({ navigation }) => {
         )
     };
 
-    const fetchData = useCallback(async () => {
+    const fetchDatas = useCallback(async () => {
         try {
             getDataMenu();
         } catch (error) {
             console.log(error);
         }
     }, []);
+
     useEffect(() => {
-        fetchData();
-    }, [fetchData]);
+        fetchDatas();
+    }, [fetchDatas]);
+
     return (
         <View style={styles.ScreenContainer}>
             <StatusBar style='light' />
+            <HeaderBar />
+            <Text style={styles.ScreenTitle}>
+                Find the best{'\n'}coffee or food for you
+            </Text>
             <View
                 style={{
                     flex: 1,
                     flexDirection: 'column',
                     justifyContent: 'space-between'
                 }}>
-                <HeaderBar />
                 <Text style={styles.ScreenTitle}>
-                    Find the best{'\n'}coffee for you
+                    Find the best{'\n'}coffee or food for you
                 </Text>
                 <View style={styles.KindOuterContainer}>
                     {categroyMenu.map((item, index) => (
@@ -135,14 +155,15 @@ const Home = ({ navigation }) => {
             >
                 <FlatList
                     ref={ListRef}
-                    onRefresh={fetchData}
+                    onRefresh={fetchDatas}
                     refreshing={false}
                     showsHorizontalScrollIndicator={false}
                     data={sortedMenu}
                     contentContainerStyle={styles.FlatListContainer}
                     ListEmptyComponent={
                         <View style={styles.EmptyListContainer}>
-                            <Text style={styles.EmptyText}>No Coffee Available</Text>
+                            <IcNoMenu />
+                            <Text style={styles.EmptyText}>No Menu Available</Text>
                         </View>
                     }
                     keyExtractor={item => item.id}
