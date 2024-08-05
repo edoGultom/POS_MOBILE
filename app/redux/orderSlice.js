@@ -16,6 +16,7 @@ const initialState = {
 export const getOrders = createAsyncThunk('order/getOrders', async (param, thunkAPI) => {
     const { dispatch } = thunkAPI;
     const { status, axiosBe } = param
+    dispatch(addLoading(true));
     try {
         const response = await axiosBe({
             url: `/order/get-orders`,

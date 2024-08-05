@@ -28,7 +28,7 @@ export const addIngridients = createAsyncThunk('ingridients/addIngridients', asy
     const { setRefreshData, dataInput, axiosBe } = param
     setRefreshData(true);
     try {
-        const response = await axiosInstance({
+        const response = await axiosBe({
             url: "/bahan-baku/add",
             method: "POST",
             data: dataInput,
@@ -47,7 +47,7 @@ export const updateIngridients = createAsyncThunk('ingridients/updateIngridients
     const { id, setRefreshData, dataInput, axiosBe } = param
     setRefreshData(true);
     try {
-        const response = await axiosInstance({
+        const response = await axiosBe({
             url: `/bahan-baku/update`,
             method: "POST",
             data: dataInput,

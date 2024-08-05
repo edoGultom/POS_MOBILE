@@ -1,4 +1,3 @@
-import Home from "./Home";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 import Orders from "./Orders";
@@ -14,9 +13,9 @@ import AdminDetailStock from "./AdminDetailStock";
 import PosTable from "./PosTable";
 import PosMenu from "./PosMenu";
 import PosOrder from "./PosOrder";
+import ChefHome from "./ChefHome";
 
 export {
-    Home,
     SignIn,
     SignUp,
     Orders,
@@ -31,5 +30,6 @@ export {
     AdminDetailStock,
     PosTable,
     PosMenu,
-    PosOrder
+    PosOrder,
+    ChefHome
 };

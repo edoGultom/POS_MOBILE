@@ -1,20 +1,20 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet } from 'react-native';
+import AdminBottomNavigator from '../component/AdminBottomNavigator';
 import UserBottomNavigator from '../component/UserBottomNavigator';
-import { Admin, AdminHistory, AdminMenu, AdminStock, Home, Order, Orders, PosMenu, PosOrder, Profile, SignIn, SignUp, SplashScreen, SuccessOrder, SuccessSignUp } from '../screens';
+import { Admin, AdminHistory, AdminMenu, AdminStock, Orders, PosMenu, PosOrder, Profile, SignIn, SignUp, SplashScreen, SuccessOrder, SuccessSignUp } from '../screens';
 import AdminDetailStock from '../screens/AdminDetailStock';
 import AdminIngridients from '../screens/AdminIngridients';
 import AdminMenuIngridients from '../screens/AdminMenuIngridients';
 import AdminOrder from '../screens/AdminOrder';
 import AdminReport from '../screens/AdminReport';
 import AdminTable from '../screens/AdminTable';
+import ChefHome from '../screens/ChefHome';
 import PosTable from '../screens/PosTable';
 import SuccessPaymentCash from '../screens/SuccessPaymentCash';
 import { useRole } from '../utils/roles';
-import AdminBottomNavigator from '../component/AdminBottomNavigator';
-import CustomHeader from '../component/CutomHeader';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -32,15 +32,15 @@ const MainAppUser = () => {
         </Tab.Navigator>
     )
 }
-const MainAppChef = () => {
-    return (
-        <Tab.Navigator
-            tabBar={props => <UserBottomNavigator {...props} />}
-        >
-            <Tab.Screen name="ChefHome" component={Home} options={{ headerShown: false }} />
-        </Tab.Navigator>
-    )
-}
+// const MainAppChef = () => {
+//     return (
+//         <Tab.Navigator
+//             tabBar={props => <UserBottomNavigator {...props} />}
+//         >
+//             <Tab.Screen name="ChefHome" component={Home} options={{ headerShown: false }} />
+//         </Tab.Navigator>
+//     )
+// }
 const MainAppAdmin = () => {
     return (
         <Tab.Navigator
@@ -158,8 +158,14 @@ const RoleBasedNavigator = () => {
                 options={{ headerShown: false, }}
             />
             <Stack.Screen name="MainAppAdmin" component={MainAppAdmin} options={{ headerShown: false }} />
-            <Stack.Screen name="MainAppChef" component={MainAppChef} options={{ headerShown: false }} />
+            {/* <Stack.Screen name="MainAppChef" component={MainAppChef} options={{ headerShown: false }} /> */}
             <Stack.Screen name="MainAppUser" component={MainAppUser} options={{ headerShown: false }} />
+
+            <Stack.Screen
+                name="ChefHome"
+                component={ChefHome}
+                options={{ headerShown: false, }}
+            />
         </Stack.Navigator>
     );
 };

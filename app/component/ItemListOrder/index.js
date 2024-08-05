@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Image } from 'expo-image';
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE } from '../../config';
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
 import { BE_API_HOST } from '@env'
 import IcTableActive from '../../assets/Icon/IcTableActive';
+import CustomIcon from '../CustomIcon';
 
-const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtra, type, id, orderDetail, status }) => {
+const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtra, type, id, bahanBaku, status }) => {
     const [photo, setPhoto] = useState(null);
     useEffect(() => {
         const fetchData = () => {
@@ -33,6 +34,48 @@ const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtr
                             </Text>
                         </View>
                         <Text style={styles.items}>{qty} items</Text>
+                    </>
+                );
+            case 'chef_detail_order':
+                return (
+                    <>
+                        <View style={styles.content}>
+                            <Text style={styles.title}>{name}</Text>
+                            <Text style={styles.temperatur}>
+                                {temperatur}
+                            </Text>
+                            <Text style={{ color: COLORS.secondaryLightGreyHex }}>Bahan :</Text>
+                            <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+
+                                {bahanBaku.length > 0 && bahanBaku.map((bahan, idx) => (
+                                    <Text key={idx} style={{
+                                        color: COLORS.secondaryLightGreyHex,
+                                        fontFamily: FONTFAMILY.poppins_light,
+                                        fontSize: FONTSIZE.size_12,
+                                    }}
+                                    >
+                                        <View style={styles.dot} />{' '}
+                                        {bahan.bahan_baku} {bahan.quantity} {bahan.unit}
+                                    </Text>
+                                ))}
+                            </View>
+                        </View>
+                        <View style={{ justifyContent: 'flex-start' }}>
+                            <Text style={styles.items}>{qty} items</Text>
+                        </View>
+                        <View style={styles.ContainerButtonChef}>
+                            <TouchableOpacity
+                                activeOpacity={0.4}
+                                style={styles.ButtonChef}
+                            // onPress={onPressUpdate}
+                            >
+                                <CustomIcon
+                                    name="edit"
+                                    color={COLORS.primaryOrangeHex}
+                                    size={FONTSIZE.size_18}
+                                />
+                            </TouchableOpacity>
+                        </View>
                     </>
                 );
             case 'ordered':
@@ -94,8 +137,8 @@ const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtr
             style={({ pressed }) => [
                 {
                     backgroundColor: pressed
-                        ? COLORS.primaryOrangeHex
-                        : COLORS.primaryBlackRGBA
+                        ? COLORS.primaryBlackRGBA
+                        : COLORS.secondaryBlackRGBA
                 },
 
                 {
@@ -145,6 +188,18 @@ const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtr
 export default ItemListOrder
 
 const styles = StyleSheet.create({
+    ButtonChef: {
+        backgroundColor: COLORS.primaryBlackRGBA,
+        padding: SPACING.space_12,
+        borderRadius: BORDERRADIUS.radius_10,
+    },
+    ContainerButtonChef: {
+        marginLeft: 20,
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        alignItems: 'center',
+        gap: SPACING.space_10
+    },
     StatusName: {
         color: COLORS.secondaryDarkGreyHex,
         fontSize: FONTSIZE.size_14,

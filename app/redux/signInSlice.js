@@ -1,10 +1,9 @@
 import { BE_API_HOST } from '@env';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
+import axios from 'axios';
 import { showMessage, storeData } from '../utils';
 import { addLoading } from './globalSlice';
-import axiosInstance from '../api/useAxios';
-import axios from 'axios';
 
 export const signInAction = createAsyncThunk(
   'post/postSignIn',
@@ -34,11 +33,18 @@ export const signInAction = createAsyncThunk(
         const token = res.data.access_token;
         storeData('token', { value: token });
         storeData('refreshToken', { value: res.data.refresh_token });
-
         if (profile.scope.includes('Admin')) {
-          obj.navigation.reset({ index: 0, routes: [{ name: 'Admin' }] });
+          // obj.navigation.reset({ index: 6, routes: [{ name: 'Admin' }] });
+          obj.navigation.replace('Admin');
+
+        } else if (profile.scope.includes('Chef')) {
+          // obj.navigation.reset({ index: 19, routes: [{ name: 'MainChef' }] });
+          // obj.navigation.replace('MainAppChef');
+          obj.navigation.replace('ChefHome');
+
         } else {
-          obj.navigation.reset({ index: 0, routes: [{ name: 'MainApp' }] });
+          // obj.navigation.reset({ index: 20, routes: [{ name: 'MainApp' }] });
+          obj.navigation.replace('MainApp');
         }
       })
       .catch(err => {

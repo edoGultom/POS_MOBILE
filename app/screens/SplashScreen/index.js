@@ -11,6 +11,18 @@ import { CommonActions } from '@react-navigation/native';
 
 const SplashScreen = ({ navigation }) => {
   const [progress, setProgress] = useState(0);
+  const [profile, setProfile] = useState(null);
+  useEffect(() => {
+
+    if (profile) {
+      // console.log(profile, 'sxp[[x')
+
+      return () => {
+        setProfile(null)
+      }
+    }
+
+  }, [profile])
 
   useEffect(() => {
     let progressInterval = setInterval(() => {
@@ -19,31 +31,31 @@ const SplashScreen = ({ navigation }) => {
           clearInterval(progressInterval);
           getData('token').then(res => {
             if (res) {
-              getData('userProfile').then((res) => {
-                // console.log(res.user.scope, 'xxx')
-                if (res?.user?.scope.includes('Admin')) {
-                  navigation.dispatch(
-                    CommonActions.reset({
-                      index: 1,
-                      routes: [{ name: 'Admin' }],
-                    })
-                  );
-                  // navigation.reset({ index: 4, routes: [{ name: 'Admin' }] });
-                } else if (res?.user?.scope.includes('Chef')) {
-                  navigation.dispatch(
-                    CommonActions.reset({
-                      index: 19,
-                      routes: [{ name: 'MainAppChef' }],
-                    })
-                  );
-                } else {
-                  navigation.dispatch(
-                    CommonActions.reset({
-                      index: 20,
-                      routes: [{ name: 'MainAppUser' }],
-                    })
-                  );
-                  // navigation.reset({ index: 0, routes: [{ name: 'MainApp' }] });
+              getData('userProfile').then((profile) => {
+                if (profile) {
+                  if (profile.scope.includes('Admin')) {
+                    navigation.dispatch(
+                      CommonActions.reset({
+                        index: 1,
+                        routes: [{ name: 'Admin' }],
+                      })
+                    );
+                    // navigation.reset({ index: 4, routes: [{ name: 'Admin' }] });
+                  } else if (profile.scope.includes('Chef')) {
+                    navigation.dispatch(
+                      CommonActions.reset({
+                        index: 21,
+                        routes: [{ name: 'ChefHome' }],
+                      })
+                    );
+                  } else {
+                    navigation.dispatch(
+                      CommonActions.reset({
+                        index: 20,
+                        routes: [{ name: 'MainAppUser' }],
+                      })
+                    );
+                  }
                 }
               });
             } else {
