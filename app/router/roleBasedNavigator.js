@@ -25,8 +25,8 @@ const MainAppUser = () => {
             tabBar={props => <UserBottomNavigator {...props} />}
         >
             <Tab.Screen name="Home" component={Home} options={{ headerShown: false }} />
-            <Tab.Screen name="Order" component={Order} options={{ headerShown: false, tabBarVisible: false }} />
-            <Tab.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
+            {/* <Tab.Screen name="Order" component={Order} options={{ headerShown: false, tabBarVisible: false }} /> */}
+            {/* <Tab.Screen name="Profile" component={Profile} options={{ headerShown: false }} /> */}
         </Tab.Navigator>
     )
 }
@@ -46,9 +46,10 @@ const MainAppAdmin = () => {
 }
 const RoleBasedNavigator = () => {
     const { roles } = useRole();
+    console.log(roles, 'roles')
     return (
         <Stack.Navigator
-            initialRouteName="Admin"
+            initialRouteName="SplashScreen"
         // screenOptions={{
         //     header: (props) => <CustomHeader title={props.scene.route.name} />,
         // }}

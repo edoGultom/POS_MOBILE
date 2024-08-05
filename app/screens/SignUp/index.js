@@ -10,10 +10,14 @@ import TextInput from '../../component/TextInput';
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
 import { getRoles, signUpAction } from '../../redux/signUpSlice';
 import { showMessage, useForm } from '../../utils';
+import useAxios from '../../api/useAxios';
 
 const SignUp = ({ navigation }) => {
     const [photo, setPhoto] = useState(null);
     const { roles } = useSelector(state => state.signUpReducer);
+    const dispatch = useDispatch();
+    const { fetchData: axiosBe } = useAxios();
+
     useEffect(() => {
         navigation.addListener('focus', () => {
             dispatch(getRoles())
@@ -42,20 +46,18 @@ const SignUp = ({ navigation }) => {
             setPhoto(result);
         }
     };
-    const dispatch = useDispatch();
 
     const onSubmit = () => {
-        // console.log(form, 'form')
         if (photo === null) {
             showMessage('Silahkan masukkan foto Anda!', 'danger');
             return;
         }
         const data = {
-            ...form,
+            form,
             navigation,
             photo,
+            axiosBe
         };
-        // console.log(data, 'data')
         dispatch(signUpAction(data));
     };
 

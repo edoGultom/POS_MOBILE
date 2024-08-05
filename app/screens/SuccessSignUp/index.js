@@ -21,7 +21,7 @@ const SuccessSignUp = ({ navigation }) => {
                 <Button
                     text="Continue"
                     onPress={() =>
-                        navigation.reset({ index: 0, routes: [{ name: 'MainApp' }] })
+                        navigation.reset({ index: 0, routes: [{ name: 'MainAppUser' }] })
                     }
                 />
             </View>

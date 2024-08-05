@@ -6,10 +6,11 @@ import { SceneMap, TabBar } from 'react-native-tab-view';
 import { CollapsibleHeaderTabView } from 'react-native-tab-view-collapsible-header';
 import { useDispatch, useSelector } from 'react-redux';
 import { COLORS, FONTFAMILY } from '../../config';
-import { getOrders } from '../../redux/orderSlice';
+import { getOrders, getPasOrders } from '../../redux/orderSlice';
 import useAxios from '../../api/useAxios';
 import ItemListOrder from '../ItemListOrder';
 import IcTableActive from '../../assets/Icon/IcTableActive';
+import { addLoading } from '../../redux/globalSlice';
 // import { getInPastOrder, getInProgress } from '../../../redux/action';
 // import { getData } from '../../../utils';
 // import ItemListOrder from '../ItemListOrder';
@@ -35,9 +36,12 @@ const Ordered = () => {
     const { fetchData: axiosBe } = useAxios();
 
     useEffect(() => {
-        const param = { status: 'ordered', axiosBe };
-        dispatch(getOrders(param));
-    }, []);
+        if (data.length < 1) {
+            const param = { status: 'ordered', axiosBe };
+            dispatch(addLoading(true));
+            dispatch(getOrders(param));
+        }
+    }, [data]);
 
     useEffect(() => {
         setData(orders)
@@ -48,20 +52,6 @@ const Ordered = () => {
         }
     }, [orders])
 
-    // useEffect(() => {
-    //     const unsubscribe = navigation.addListener('focus', getData);
-    //     return unsubscribe;  // Cleanup the listener on unmount or when navigation changes
-    // }, [navigation, dispatch, axiosBe]);
-    // const getData = async () => {
-    //     dispatch(emptyTables([]));
-    //     dispatch(emptySelectedTable({ id: null, table: '', }));
-    //     try {
-    //     const param = { status: 'ordered', axiosBe };
-    //     await dispatch(getOrders(param)).unwrap();
-    //     } catch (error) {
-    //         console.error("Failed to fetch data:", error);
-    //     }
-    // };
     return (
         <HScrollView index={0} vertival showsVerticalScrollIndicator={false}>
             <View style={styles.containerOrdered}>
@@ -87,31 +77,50 @@ const Ordered = () => {
 };
 
 const PastOrder = () => {
-    // const navigation = useNavigation();
-    // const dispatch = useDispatch();
-    // const { pastOrder } = useSelector(state => state.orderReducer)
+    const navigation = useNavigation();
+    const dispatch = useDispatch();
+    const { pastOrders } = useSelector(state => state.orderReducer)
+    const [dataPasOrder, setDataPasOrder] = useState([])
+    const { fetchData: axiosBe } = useAxios();
+
+    console.log(dataPasOrder, 'datx')
     useEffect(() => {
-        // getData('token').then(res => {
-        //     dispatch(getInPastOrder(res.value))
-        // })
-    }, []);
+        if (!dataPasOrder) {
+            const param = { status: 'paid', axiosBe };
+            dispatch(addLoading(true));
+            dispatch(getPasOrders(param));
+        }
+    }, [dataPasOrder]);
+
+    useEffect(() => {
+        setDataPasOrder(pastOrders)
+        return () => {
+            if (dataPasOrder) {
+                setDataPasOrder([])
+            }
+        }
+    }, [pastOrders])
+
     return (
         <HScrollView index={1} vertival showsVerticalScrollIndicator={false}>
             <View style={styles.containerPasOrder}>
                 <Text>Past Order</Text>
-                {/* {pastOrder.map(order => {
+                {pastOrders && pastOrders.map(order => {
                     return <ItemListOrder
                         key={order.id}
-                        image={{ uri: order.food.picturePath }}
-                        name={order.food.name}
-                        items={order.quantity}
-                        price={order.total}
-                        type="past_orders"
-                        date={order.created_at}
+                        id={order.id}
+                        orderDetail={order}
                         status={order.status}
-                        onPress={() => navigation.navigate('OrderDetail', order)}
+                        name={order.meja.nomor_meja}
+                        price={parseInt(order.total)}
+                        qty={order.quantity}
+                        type="past_order"
+                        onPress={() => {
+                            return
+                            navigation.navigate('OrderDetail', order)
+                        }}
                     />
-                })} */}
+                })}
             </View>
         </HScrollView>
     );

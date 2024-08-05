@@ -9,13 +9,29 @@ const initialState = {
     CartList: [],
     Midtrans: null,
     orders: [],
+    pasOrders: [],
     loading: false,
     error: null,
 };
 export const getOrders = createAsyncThunk('order/getOrders', async (param, thunkAPI) => {
     const { dispatch } = thunkAPI;
     const { status, axiosBe } = param
-    dispatch(addLoading(true));
+    try {
+        const response = await axiosBe({
+            url: `/order/get-orders`,
+            method: "GET",
+            params: { status }
+        })
+        dispatch(addLoading(false));
+        return response
+    } catch (error) {
+        dispatch(addLoading(false));
+        console.error('Error: ', error);
+    }
+});
+export const getPasOrders = createAsyncThunk('order/getPasOrders', async (param, thunkAPI) => {
+    const { dispatch } = thunkAPI;
+    const { status, axiosBe } = param
     try {
         const response = await axiosBe({
             url: `/order/get-orders`,
@@ -168,6 +184,17 @@ const orderSlice = createSlice({
                 state.orders = action.payload.data ?? [];
             })
             .addCase(getOrders.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            })
+            .addCase(getPasOrders.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            }).addCase(getPasOrders.fulfilled, (state, action) => {
+                state.loading = false;
+                state.pasOrders = action.payload.data ?? [];
+            })
+            .addCase(getPasOrders.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message;
             });

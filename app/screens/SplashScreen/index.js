@@ -32,7 +32,7 @@ const SplashScreen = ({ navigation }) => {
                   navigation.dispatch(
                     CommonActions.reset({
                       index: 12,
-                      routes: [{ name: 'MainApp' }],
+                      routes: [{ name: 'MainAppUser' }],
                     })
                   );
                   // navigation.reset({ index: 0, routes: [{ name: 'MainApp' }] });

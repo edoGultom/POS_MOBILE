@@ -49,6 +49,23 @@ const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtr
                                     </Text>
                                 </View>
                             </View>
+                        </View>
+                    </>
+                );
+            case 'past_order':
+                return (
+                    <>
+                        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', color: COLORS.primaryOrangeHex }}>
+                            <View style={styles.content}>
+                                <Text style={styles.title}>Order Number <Text style={{ fontFamily: FONTFAMILY.poppins_semibold }}>#{id}</Text></Text>
+                                <View style={styles.row}>
+                                    <Text style={styles.SizePrice}>{qty} <Text>items</Text></Text>
+                                    <View style={styles.dot} />
+                                    <Text style={styles.SizeCurrency}>
+                                        IDR <Text style={styles.SizePrice}>{price.toLocaleString('id-ID')}</Text>
+                                    </Text>
+                                </View>
+                            </View>
                             <View style={styles.ContainerStatus}>
                                 <View style={styles.StatusCard}>
                                     <Text style={styles.StatusName}>{status}</Text>
@@ -92,7 +109,7 @@ const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtr
 
         >
             <View style={styles.container}>
-                {status === 'ordered' ?
+                {/* {status === 'ordered' || 'past_order' ?
                     <View style={styles.ContainerTable}>
                         <View style={[styles.ContainerTableNumber, { zIndex: 1 }]}>
                             <IcTableActive width={60} />
@@ -104,9 +121,19 @@ const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtr
                             ]}>{name}</Text>
                         </View>
                     </View>
-                    : (
-                        <Image source={{ uri: photo }} style={styles.image} />
-                    )}
+                    : ( */}
+                {/* <Image source={{ uri: photo }} style={styles.image} /> */}
+                <View style={styles.ContainerTable}>
+                    <View style={[styles.ContainerTableNumber, { zIndex: 1 }]}>
+                        <IcTableActive width={60} />
+                    </View>
+                    <View style={[styles.ContainerTableNumber, { zIndex: 2 }]}>
+                        <Text style={[
+                            styles.NameTable,
+                            { color: COLORS.primaryOrangeHex }
+                        ]}>{name}</Text>
+                    </View>
+                </View>
 
                 {renderContent()}
             </View>
