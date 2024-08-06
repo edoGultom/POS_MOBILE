@@ -11,7 +11,7 @@ const initialState = {
     CartList: [],
     Midtrans: null,
     orders: [],
-    pasOrders: [],
+    readyOrders: [],
     loading: false,
     error: null,
 };
@@ -71,6 +71,35 @@ export const readyOrder = createAsyncThunk('order/readyOrder', async (param, thu
         console.error('Error: ', error);
     }
 });
+export const servedOrder = createAsyncThunk('order/servedOrder', async (param, thunkAPI) => {
+    const { dispatch } = thunkAPI;
+    const { formData, status, axiosBe } = param
+    dispatch(addLoading(true))
+    try {
+        const response = await axiosBe({
+            url: "/order/served-order",
+            method: "POST",
+            data: formData,
+            params: { status },
+            headers: {
+                'Content-Type': 'application/json', // Adjust content type if necessary
+            },
+        })
+        // console.log(response, 'response'); return
+        if (response.status) {
+            dispatch(addLoading(false))
+            ToastAndroid.showWithGravity(`Success served to customer`,
+                ToastAndroid.SHORT,
+                ToastAndroid.CENTER,
+            )
+        } else {
+            showMessage(response.message);
+        }
+    } catch (error) {
+        dispatch(addLoading(false))
+        console.error('Error: ', error);
+    }
+});
 export const getOrders = createAsyncThunk('order/getOrders', async (param, thunkAPI) => {
     const { dispatch } = thunkAPI;
     const { status, axiosBe } = param
@@ -88,7 +117,7 @@ export const getOrders = createAsyncThunk('order/getOrders', async (param, thunk
         console.error('Error: ', error);
     }
 });
-export const getPasOrders = createAsyncThunk('order/getPasOrders', async (param, thunkAPI) => {
+export const getReadyOrder = createAsyncThunk('order/getReadyOrder', async (param, thunkAPI) => {
     const { dispatch } = thunkAPI;
     const { status, axiosBe } = param
     try {
@@ -246,14 +275,14 @@ const orderSlice = createSlice({
                 state.loading = false;
                 state.error = action.error.message;
             })
-            .addCase(getPasOrders.pending, (state) => {
+            .addCase(getReadyOrder.pending, (state) => {
                 state.loading = true;
                 state.error = null;
-            }).addCase(getPasOrders.fulfilled, (state, action) => {
+            }).addCase(getReadyOrder.fulfilled, (state, action) => {
                 state.loading = false;
-                state.pasOrders = action.payload.data ?? [];
+                state.readyOrders = action.payload.data ?? [];
             })
-            .addCase(getPasOrders.rejected, (state, action) => {
+            .addCase(getReadyOrder.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message;
             });

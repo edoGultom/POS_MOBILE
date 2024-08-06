@@ -93,15 +93,14 @@ const ChefHome = ({ navigation }) => {
         }
     };
     const openModal = () => {
-        // toggleContent(expandedKeys.join(', '))
         setIsVisible(true);
     };
 
     const closeModal = () => {
         setIsVisible(false);
     };
-    console.log(expandedState, 'expandedState')
-    console.log(expandedKeys, 'expandedKeys')
+    // console.log(expandedState, 'expandedState')
+    // console.log(expandedKeys, 'expandedKeys')
     const renderItem = ({ item }) => {
         const itemState = expandedState[item.id];
         if (!itemState) {
@@ -158,7 +157,6 @@ const ChefHome = ({ navigation }) => {
                         />
                     </TouchableOpacity>
                 </View>
-
                 {
                     itemState.expanded && (
                         <Animated.View style={[{ height: animatedHeight }]}>

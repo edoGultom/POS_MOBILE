@@ -6,7 +6,7 @@ import { BE_API_HOST } from '@env'
 import IcTableActive from '../../assets/Icon/IcTableActive';
 import CustomIcon from '../CustomIcon';
 
-const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtra, type, id, bahanBaku, status, onProcess }) => {
+const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtra, type, id, bahanBaku, status, isVisible, onProcess }) => {
     const [photo, setPhoto] = useState(null);
     useEffect(() => {
         const fetchData = () => {
@@ -97,6 +97,7 @@ const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtr
                                     </Text>
                                 </View>
                             </View>
+                            <Text style={{ color: COLORS.primaryOrangeHex }}>{status}</Text>
                         </View>
                     </>
                 );
@@ -114,12 +115,29 @@ const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtr
                                     </Text>
                                 </View>
                             </View>
-                            <View style={styles.ContainerStatus}>
-                                <View style={styles.StatusCard}>
-                                    <Text style={styles.StatusName}>{status}</Text>
-                                </View>
+                            <View style={{ justifyContent: 'center', alignItems: 'center', gap: 10 }}>
+                                <Text style={{ color: COLORS.primaryOrangeHex }}>{status}</Text>
+                                <TouchableOpacity
+                                    onPress={onPress}
+                                    disabled={isVisible}
+                                    style={{
+                                        flexDirection: 'row',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        padding: 10,
+                                        backgroundColor: COLORS.primaryOrangeHex,
+                                        borderRadius: 10,
+                                        gap: 5
+                                    }}>
+                                    <CustomIcon
+                                        name={'check-circle'}
+                                        color={COLORS.primaryWhiteHex}
+                                        size={FONTSIZE.size_18}
+                                    />
+                                    <Text style={{ color: COLORS.primaryWhiteHex }}>Reserved</Text>
+                                </TouchableOpacity>
                             </View>
-                        </View>
+                        </View >
                     </>
                 );
             default:
@@ -145,7 +163,10 @@ const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtr
                         ? COLORS.primaryBlackRGBA
                         : COLORS.secondaryBlackRGBA
                 },
-
+                {
+                    gap: 10,
+                    marginVertical: 5
+                },
                 {
                     opacity: pressed
                         ? 0.7
@@ -157,7 +178,7 @@ const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtr
 
         >
             <View style={styles.container}>
-                {status === 'ordered' || status === 'past_order' ?
+                {status === 'Ordered' || status === 'In Progress' || status === 'Ready' ?
                     <View style={styles.ContainerTable}>
                         <View style={[styles.ContainerTableNumber, { zIndex: 1 }]}>
                             <IcTableActive width={60} />
