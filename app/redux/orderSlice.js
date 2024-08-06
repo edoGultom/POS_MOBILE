@@ -4,6 +4,7 @@ import { addLoading } from './globalSlice';
 import { BE_API_HOST } from '@env';
 import axios from 'axios';
 import { showMessage } from '../utils';
+import { ToastAndroid } from 'react-native';
 
 // Initial state
 const initialState = {
@@ -32,6 +33,36 @@ export const processOrder = createAsyncThunk('order/processOrder', async (param,
         if (response.status) {
             dispatch(addLoading(false))
             getDataOrder();
+        } else {
+            showMessage(response.message);
+        }
+    } catch (error) {
+        dispatch(addLoading(false))
+        console.error('Error: ', error);
+    }
+});
+export const readyOrder = createAsyncThunk('order/readyOrder', async (param, thunkAPI) => {
+    const { dispatch } = thunkAPI;
+    const { formData, status, axiosBe } = param
+    dispatch(addLoading(true))
+    try {
+        const response = await axiosBe({
+            url: "/order/ready-order",
+            method: "POST",
+            data: formData,
+            params: { status },
+            headers: {
+                'Content-Type': 'application/json', // Adjust content type if necessary
+            },
+        })
+        // console.log(response, 'response'); return
+        if (response.status) {
+            dispatch(addLoading(false))
+            // getDataOrder();
+            ToastAndroid.showWithGravity(`Success send to waiters`,
+                ToastAndroid.SHORT,
+                ToastAndroid.CENTER,
+            )
         } else {
             showMessage(response.message);
         }

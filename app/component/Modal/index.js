@@ -1,9 +1,9 @@
 import { Dimensions, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import CustomIcon from '../CustomIcon'
-import { BORDERRADIUS, COLORS, FONTSIZE, SPACING } from '../../config'
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
 
-const ModalCustom = ({ visible, onClose, children }) => {
+const ModalCustom = ({ visible, headerName, onClose, children }) => {
     return (
         <Modal
             animationType="fade"
@@ -13,12 +13,13 @@ const ModalCustom = ({ visible, onClose, children }) => {
         >
             <View style={styles.modalOverlay}>
                 <View style={styles.modalView}>
+                    <Text style={{ fontSize: FONTSIZE.size_20, fontFamily: FONTFAMILY.poppins_bold }}>Konfirmasi {headerName}</Text>
                     <TouchableOpacity
                         style={styles.closeButton}
                         onPress={onClose}
                     >
                         <CustomIcon
-                            name="circle-xmark"
+                            name="close"
                             color={COLORS.primaryBlackHex}
                             size={FONTSIZE.size_30}
                         />
@@ -50,6 +51,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderRadius: BORDERRADIUS.radius_25,
         alignItems: 'center',
+        justifyContent: 'flex-start'
     },
     closeButton: {
         position: 'absolute',

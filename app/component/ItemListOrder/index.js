@@ -203,7 +203,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-evenly',
         alignItems: 'center',
-        gap: SPACING.space_10
+        gap: SPACING.space_10,
+        paddingHorizontal: SPACING.space_2
     },
     StatusName: {
         color: COLORS.secondaryDarkGreyHex,
