@@ -32,15 +32,7 @@ const MainAppUser = () => {
         </Tab.Navigator>
     )
 }
-// const MainAppChef = () => {
-//     return (
-//         <Tab.Navigator
-//             tabBar={props => <UserBottomNavigator {...props} />}
-//         >
-//             <Tab.Screen name="ChefHome" component={Home} options={{ headerShown: false }} />
-//         </Tab.Navigator>
-//     )
-// }
+
 const MainAppAdmin = () => {
     return (
         <Tab.Navigator
@@ -158,14 +150,8 @@ const RoleBasedNavigator = () => {
                 options={{ headerShown: false, }}
             />
             <Stack.Screen name="MainAppAdmin" component={MainAppAdmin} options={{ headerShown: false }} />
-            {/* <Stack.Screen name="MainAppChef" component={MainAppChef} options={{ headerShown: false }} /> */}
             <Stack.Screen name="MainAppUser" component={MainAppUser} options={{ headerShown: false }} />
-
-            <Stack.Screen
-                name="ChefHome"
-                component={ChefHome}
-                options={{ headerShown: false, }}
-            />
+            <Stack.Screen name="MainAppChef" component={ChefHome} options={{ headerShown: false, }} />
         </Stack.Navigator>
     );
 };

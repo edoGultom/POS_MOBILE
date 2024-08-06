@@ -33,6 +33,7 @@ const SplashScreen = ({ navigation }) => {
             if (res) {
               getData('userProfile').then((profile) => {
                 if (profile) {
+                  console.log(profile, 'profile')
                   if (profile.scope.includes('Admin')) {
                     navigation.dispatch(
                       CommonActions.reset({
@@ -45,7 +46,7 @@ const SplashScreen = ({ navigation }) => {
                     navigation.dispatch(
                       CommonActions.reset({
                         index: 21,
-                        routes: [{ name: 'ChefHome' }],
+                        routes: [{ name: 'MainAppChef' }],
                       })
                     );
                   } else {

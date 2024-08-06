@@ -40,11 +40,11 @@ export const signInAction = createAsyncThunk(
         } else if (profile.scope.includes('Chef')) {
           // obj.navigation.reset({ index: 19, routes: [{ name: 'MainChef' }] });
           // obj.navigation.replace('MainAppChef');
-          obj.navigation.replace('ChefHome');
+          obj.navigation.replace('MainAppChef');
 
         } else {
           // obj.navigation.reset({ index: 20, routes: [{ name: 'MainApp' }] });
-          obj.navigation.replace('MainApp');
+          obj.navigation.replace('MainAppUser');
         }
       })
       .catch(err => {
