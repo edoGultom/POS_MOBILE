@@ -45,14 +45,21 @@ const SplashScreen = ({ navigation }) => {
                   } else if (profile.scope.includes('Chef')) {
                     navigation.dispatch(
                       CommonActions.reset({
-                        index: 21,
+                        index: 20,
                         routes: [{ name: 'MainAppChef' }],
+                      })
+                    );
+                  } else if (profile.scope.includes('Cashier')) {
+                    navigation.dispatch(
+                      CommonActions.reset({
+                        index: 21,
+                        routes: [{ name: 'MainAppCashier' }],
                       })
                     );
                   } else {
                     navigation.dispatch(
                       CommonActions.reset({
-                        index: 20,
+                        index: 19,
                         routes: [{ name: 'MainAppUser' }],
                       })
                     );

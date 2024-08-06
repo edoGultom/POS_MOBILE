@@ -14,6 +14,8 @@ import PosTable from "./PosTable";
 import PosMenu from "./PosMenu";
 import PosOrder from "./PosOrder";
 import ChefHome from "./ChefHome";
+import Cashier from "./Cashier";
+import CashierDetailOrder from "./CashierDetailOrder";
 
 export {
     SignIn,
@@ -31,5 +33,7 @@ export {
     PosTable,
     PosMenu,
     PosOrder,
-    ChefHome
+    ChefHome,
+    Cashier,
+    CashierDetailOrder
 };

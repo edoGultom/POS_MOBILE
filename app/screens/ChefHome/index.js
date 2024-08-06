@@ -101,7 +101,9 @@ const ChefHome = ({ navigation }) => {
     };
     // console.log(expandedState, 'expandedState')
     // console.log(expandedKeys, 'expandedKeys')
+    const touchableOpacityRef = useRef(null);
     const renderItem = ({ item }) => {
+        // console.log(item, 'xxxx')
         const itemState = expandedState[item.id];
         if (!itemState) {
             return null; // Ensure itemState is defined before rendering
@@ -141,7 +143,9 @@ const ChefHome = ({ navigation }) => {
                         <Text style={styles.HeaderName}>Waktu : {item.waktu}</Text>
                         <Text style={styles.HeaderName}>Waiter : {item.pelayan}</Text>
                     </View>
-                    <TouchableOpacity onPress={() => toggleContent(item.id)}
+                    <TouchableOpacity
+                        // ref={touchableOpacityRef}
+                        onPress={() => toggleContent(item.id)}
                         style={{
                             backgroundColor: COLORS.primaryOrangeHex,
                             position: 'absolute',
@@ -173,8 +177,10 @@ const ChefHome = ({ navigation }) => {
                             }}>
                                 {item.order_detail.map((detail, idx) => (//content order detail
                                     <ItemListOrder
+                                        kind={detail.menu.nama_kategori}
                                         key={idx}
                                         name={detail.menu.nama}
+                                        table={item.meja.nomor_meja}
                                         type="chef_detail_order"
                                         price={detail.menu.harga}
                                         priceExtra={detail.menu.harga_ekstra}

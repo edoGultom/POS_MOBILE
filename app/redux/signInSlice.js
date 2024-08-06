@@ -42,6 +42,11 @@ export const signInAction = createAsyncThunk(
           // obj.navigation.replace('MainAppChef');
           obj.navigation.replace('MainAppChef');
 
+        } else if (profile.scope.includes('Cashier')) {
+          // obj.navigation.reset({ index: 19, routes: [{ name: 'MainChef' }] });
+          // obj.navigation.replace('MainAppChef');
+          obj.navigation.replace('MainAppCashier');
+
         } else {
           // obj.navigation.reset({ index: 20, routes: [{ name: 'MainApp' }] });
           obj.navigation.replace('MainAppUser');

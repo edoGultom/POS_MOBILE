@@ -2,9 +2,10 @@ import { BE_API_HOST } from '@env'
 import { Image } from 'expo-image'
 import { LinearGradient } from 'expo-linear-gradient'
 import React from 'react'
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
 import CustomIcon from '../CustomIcon'
+const CARD_WIDTH = Dimensions.get('window').width * 0.32;
 
 const OrderHistoryItem = ({
     name,
@@ -14,6 +15,7 @@ const OrderHistoryItem = ({
     qty,
     temperatur,
     ItemPrice,
+    subKatgori
 }) => {
     return (
         <LinearGradient
@@ -29,11 +31,11 @@ const OrderHistoryItem = ({
                         <Text style={styles.CardSubtitle}>{kind}</Text>
                     </View>
                 </View>
-                <View>
+                {/* <View>
                     <Text style={styles.CardCurrency}>
                         Rp <Text style={styles.CardPrice}>{ItemPrice.toLocaleString('id-ID')}</Text>
                     </Text>
-                </View>
+                </View> */}
             </View>
             <View style={styles.CardTableRow}>
                 <View style={styles.CardTableRow}>
@@ -45,12 +47,12 @@ const OrderHistoryItem = ({
                                     fontSize: FONTSIZE.size_16,
                                 },
                             ]}>
-                            {temperatur}
+                            {kind !== 'Makanan' ? temperatur : subKatgori}
                         </Text>
                     </View>
                     <View style={styles.PriceBoxRight}>
                         <Text style={styles.PriceCurrency}>
-                            Rp
+                            IDR
                             <Text style={styles.Price}> {price.toLocaleString('id-ID')}</Text>
                         </Text>
                     </View>
@@ -61,7 +63,7 @@ const OrderHistoryItem = ({
                         X <Text style={styles.Price}>{qty}</Text>
                     </Text>
                     <Text style={styles.CardQuantityPriceText}>
-                        Rp {(qty * price).toLocaleString('id-ID')}
+                        IDR {(qty * price).toLocaleString('id-ID')}
                     </Text>
                 </View>
             </View>
@@ -138,8 +140,9 @@ const styles = StyleSheet.create({
         color: COLORS.secondaryLightGreyHex,
     },
     CardLinearGradient: {
-        gap: SPACING.space_20,
-        padding: SPACING.space_20,
+        // gap: SPACING.space_20,
+        // padding: SPACING.space_10,
+        padding: SPACING.space_15,
         borderRadius: BORDERRADIUS.radius_25,
     },
     CardInfoContainer: {
@@ -153,8 +156,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     Image: {
-        height: 100,
-        width: 100,
+        width: CARD_WIDTH,
+        height: CARD_WIDTH,
         borderRadius: BORDERRADIUS.radius_15,
+        marginBottom: SPACING.space_15,
     },
 })

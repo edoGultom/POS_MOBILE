@@ -1,11 +1,9 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE } from '../../config'
-import LottieView from 'lottie-react-native';
 import { StatusBar } from 'expo-status-bar';
-import { id } from 'date-fns/locale';
-import { format } from 'date-fns';
+import LottieView from 'lottie-react-native';
+import React from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { IlSuccesFully } from '../../assets';
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE } from '../../config';
 
 const SuccessPaymentCash = ({ navigation, route }) => {
     const {
@@ -13,10 +11,7 @@ const SuccessPaymentCash = ({ navigation, route }) => {
         redirect
     } = route.params;
 
-    const { payment_method, jumlah, jumlah_diberikan, jumlah_kembalian, tanggal_pembayaran } = cash;
-    const date = new Date(tanggal_pembayaran);
-    const formattedDate = format(date, "dd MMMM, HH:mm", { locale: id });
-
+    const { tipe_pembayaran, jumlah, jumlah_diberikan, jumlah_kembalian, waktu_pembayaran } = cash;
     const formatCurrency = (amount, currency) => {
         return new Intl.NumberFormat('id-ID', {
             style: 'currency',
@@ -40,7 +35,7 @@ const SuccessPaymentCash = ({ navigation, route }) => {
                 </View>
                 <View style={{ gap: 5 }}>
                     <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_16, color: COLORS.secondaryLightGreyHex }}>PAYMENT METHOD</Text>
-                    <Text style={{ fontFamily: FONTFAMILY.poppins_semibold, fontSize: FONTSIZE.size_14, color: COLORS.primaryWhiteHex }}>{payment_method}</Text>
+                    <Text style={{ fontFamily: FONTFAMILY.poppins_semibold, fontSize: FONTSIZE.size_14, color: COLORS.primaryWhiteHex }}>{tipe_pembayaran}</Text>
                     <View style={{ borderBottomColor: COLORS.primaryLightGreyHex, borderWidth: 2, height: 5 }} />
                 </View>
                 <View style={{ gap: 5 }}>
@@ -60,7 +55,7 @@ const SuccessPaymentCash = ({ navigation, route }) => {
                 </View>
                 <View style={{ gap: 5 }}>
                     <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_16, color: COLORS.secondaryLightGreyHex }}>TRANSACTION TIME</Text>
-                    <Text style={{ fontFamily: FONTFAMILY.poppins_semibold, fontSize: FONTSIZE.size_14, color: COLORS.primaryWhiteHex }}>{formattedDate}</Text>
+                    <Text style={{ fontFamily: FONTFAMILY.poppins_semibold, fontSize: FONTSIZE.size_14, color: COLORS.primaryWhiteHex }}>{waktu_pembayaran}</Text>
                     <View style={{ borderBottomColor: COLORS.primaryLightGreyHex, borderWidth: 2, height: 5 }} />
                 </View>
                 <TouchableOpacity style={{ alignItems: 'center', justifyContent: 'center', borderRadius: BORDERRADIUS.radius_15, height: 50, backgroundColor: COLORS.primaryOrangeHex }} onPress={handleDone}>

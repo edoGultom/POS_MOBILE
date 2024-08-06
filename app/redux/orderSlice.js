@@ -156,25 +156,40 @@ export const addOrder = createAsyncThunk('order/addOrder', async (param, thunkAP
         console.error('Error: ', error);
     }
 });
-export const addPembayaran = createAsyncThunk('pembayaran/addPembayaran', async (properties, { dispatch }) => {
-    const { data, token, handleSuccess } = properties;
+export const addPembayaran = createAsyncThunk('pembayaran/addPembayaran', async (properties, thunkAPI) => {
+    const { data, axiosBe, navigation } = properties;
+    const { dispatch } = thunkAPI;
+    // console.log(data, 'xxx'); return
     dispatch(addLoading(true));
     try {
-        const response = await axios.post(`${BE_API_HOST}/pembayaran/add`, data, {
+        const response = await axiosBe({
+            url: "/pembayaran/add",
+            method: "POST",
+            data: data,
             headers: {
-                Authorization: `${token}`,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json', // Adjust content type if necessary
             },
-        });
-        if (response.status === 200) {
-            const { midtrans } = response.data
-            console.log(response.data, 'midtrans')
-            if (midtrans !== undefined) {
+        })
+        // console.log(response, 'xxx'); return
+
+        if (response.status) {
+            const { midtrans, cash } = response
+            if (midtrans) {
                 console.log(response.data.midtrans.actions, 'responseMidtrans')
                 dispatch(addStateMidtrans(midtrans))
-            } else {
-                handleSuccess(response.data)
-                console.log(response.data, 'responsePembayaran')
+            } else if (cash) {
+                setTimeout(() => {
+                    dispatch(addToOrderHistoryListFromCart())
+                }, 1000);
+                const params = {
+                    cash: cash,
+                    redirect: {
+                        index: 21,
+                        name: 'MainAppCashier'
+                    }
+                }
+                navigation.reset({ index: 5, routes: [{ name: 'SuccessPaymentCash', params }] });
+                console.log(response.data, 'cash')
             }
             dispatch(addLoading(false));
         } else {

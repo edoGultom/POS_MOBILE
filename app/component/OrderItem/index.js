@@ -4,7 +4,6 @@ import { LinearGradient } from 'expo-linear-gradient'
 import React from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
-import CustomIcon from '../CustomIcon'
 import CustomIconFa6 from '../CustomIconFa6'
 
 const OrderItem = ({

@@ -6,7 +6,7 @@ import { BE_API_HOST } from '@env'
 import IcTableActive from '../../assets/Icon/IcTableActive';
 import CustomIcon from '../CustomIcon';
 
-const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtra, type, id, bahanBaku, status, isVisible, onProcess }) => {
+const ItemListOrder = ({ image, name, onPress, qty, temperatur, kind, price, priceExtra, type, id, table, bahanBaku, status, isVisible, onProcess }) => {
     const [photo, setPhoto] = useState(null);
     useEffect(() => {
         const fetchData = () => {
@@ -42,7 +42,19 @@ const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtr
                         <View style={styles.content}>
                             <Text style={styles.title}>{name}</Text>
                             <Text style={styles.temperatur}>
-                                {temperatur}
+                                {kind !== 'Makanan' && (
+                                    <View style={styles.SizeBox}>
+                                        <Text
+                                            style={[
+                                                styles.SizeText,
+                                                {
+                                                    fontSize: FONTSIZE.size_12
+                                                },
+                                            ]}>
+                                            {temperatur}
+                                        </Text>
+                                    </View>
+                                )}
                             </Text>
                             <Text style={{ color: COLORS.secondaryLightGreyHex }}>Bahan :</Text>
                             <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -187,7 +199,7 @@ const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtr
                             <Text style={[
                                 styles.NameTable,
                                 { color: COLORS.primaryOrangeHex }
-                            ]}>{name}</Text>
+                            ]}>{table}</Text>
                         </View>
                     </View>
                     : (
@@ -214,8 +226,20 @@ const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtr
 export default ItemListOrder
 
 const styles = StyleSheet.create({
+    SizeBox: {
+        backgroundColor: COLORS.primaryBlackHex,
+        height: 40,
+        width: 100,
+        borderRadius: BORDERRADIUS.radius_10,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    SizeText: {
+        fontFamily: FONTFAMILY.poppins_medium,
+        color: COLORS.secondaryLightGreyHex,
+    },
     ButtonChef: {
-        backgroundColor: COLORS.secondaryLightGreyHex,
+        backgroundColor: COLORS.primaryLightGreyHex,
         padding: SPACING.space_12,
         borderRadius: BORDERRADIUS.radius_10,
     },

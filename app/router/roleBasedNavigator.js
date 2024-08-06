@@ -4,7 +4,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import AdminBottomNavigator from '../component/AdminBottomNavigator';
 import UserBottomNavigator from '../component/UserBottomNavigator';
-import { Admin, AdminHistory, AdminMenu, AdminStock, Orders, PosMenu, PosOrder, Profile, SignIn, SignUp, SplashScreen, SuccessOrder, SuccessSignUp } from '../screens';
+import { Admin, AdminHistory, AdminMenu, AdminStock, Cashier, CashierDetailOrder, Orders, PosMenu, PosOrder, Profile, SignIn, SignUp, SplashScreen, SuccessOrder, SuccessSignUp } from '../screens';
 import AdminDetailStock from '../screens/AdminDetailStock';
 import AdminIngridients from '../screens/AdminIngridients';
 import AdminMenuIngridients from '../screens/AdminMenuIngridients';
@@ -152,6 +152,12 @@ const RoleBasedNavigator = () => {
             <Stack.Screen name="MainAppAdmin" component={MainAppAdmin} options={{ headerShown: false }} />
             <Stack.Screen name="MainAppUser" component={MainAppUser} options={{ headerShown: false }} />
             <Stack.Screen name="MainAppChef" component={ChefHome} options={{ headerShown: false, }} />
+            <Stack.Screen name="MainAppCashier" component={Cashier} options={{ headerShown: false, }} />
+            <Stack.Screen
+                name="CashierDetailOrder"
+                component={CashierDetailOrder}
+                options={{ headerShown: false, }}
+            />
         </Stack.Navigator>
     );
 };
