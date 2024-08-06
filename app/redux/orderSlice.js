@@ -3,6 +3,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { addLoading } from './globalSlice';
 import { BE_API_HOST } from '@env';
 import axios from 'axios';
+import { showMessage } from '../utils';
 
 // Initial state
 const initialState = {
@@ -13,6 +14,32 @@ const initialState = {
     loading: false,
     error: null,
 };
+export const processOrder = createAsyncThunk('order/processOrder', async (param, thunkAPI) => {
+    const { dispatch } = thunkAPI;
+    const { formData, status, axiosBe, getDataOrder } = param
+    dispatch(addLoading(true))
+    try {
+        const response = await axiosBe({
+            url: "/order/process-order",
+            method: "POST",
+            data: formData,
+            params: { status },
+            headers: {
+                'Content-Type': 'application/json', // Adjust content type if necessary
+            },
+        })
+        // console.log(response, 'response'); return
+        if (response.status) {
+            dispatch(addLoading(false))
+            getDataOrder();
+        } else {
+            showMessage(response.message);
+        }
+    } catch (error) {
+        dispatch(addLoading(false))
+        console.error('Error: ', error);
+    }
+});
 export const getOrders = createAsyncThunk('order/getOrders', async (param, thunkAPI) => {
     const { dispatch } = thunkAPI;
     const { status, axiosBe } = param

@@ -8,7 +8,7 @@ import CustomIcon from '../../component/CustomIcon'
 import HeaderBar from '../../component/HeaderBar'
 import ItemListOrder from '../../component/ItemListOrder'
 import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
-import { getOrders } from '../../redux/orderSlice'
+import { getOrders, processOrder } from '../../redux/orderSlice'
 
 const ChefHome = ({ navigation }) => {
     const CARD_WIDTH = Dimensions.get('window').width;
@@ -45,17 +45,32 @@ const ChefHome = ({ navigation }) => {
         }).start();
     }, [isExpanded]);
 
-    const toggleContent = () => {
+    const toggleContent = (item) => {
         setIsExpanded(!isExpanded);
     };
-    console.log(orders, 'orders')
+    const onProcess = async (item) => {
+        try {
+            const formData = {
+                id_order: item.id_pemesanan,
+                id_order_detail: item.id,
+                list_bahan_baku: item.menu.list_bahan_baku,
+            }
+            console.log(formData, 'itemxxxxx')
+            // return;
+            await dispatch(processOrder({ status: 'in_progress', formData, axiosBe, getDataOrder })).unwrap();
+        } catch (error) {
+            console.error("Failed to fetch data:", error);
+        }
+    };
+    // console.log(orders, 'orders')
 
     const renderItem = ({ item }) => {
+        // console.log(item, 'itemx')
         return (
             <View style={styles.Content}>
                 <View style={{ position: 'relative' }}>
                     <View style={{
-                        backgroundColor: COLORS.primaryOrangeHex,
+                        backgroundColor: COLORS.primaryLightGreyHex,
                         flexDirection: 'row',
                         justifyContent: 'space-between',
                         alignItems: 'center',
@@ -85,7 +100,7 @@ const ChefHome = ({ navigation }) => {
                         style={{
                             backgroundColor: COLORS.secondaryBlackRGBA,
                             position: 'absolute',
-                            bottom: -12,
+                            bottom: -14,
                             alignSelf: 'center',
                             borderRadius: 50,
                             zIndex: 2
@@ -93,7 +108,7 @@ const ChefHome = ({ navigation }) => {
                         <CustomIcon
                             name={isExpanded ? 'keyboard-arrow-down' : 'keyboard-arrow-up'}
                             color={COLORS.primaryWhiteHex}
-                            size={FONTSIZE.size_28}
+                            size={FONTSIZE.size_30}
                         />
                     </TouchableOpacity>
                 </View>
@@ -106,7 +121,7 @@ const ChefHome = ({ navigation }) => {
                             paddingVertical: 15,
                             gap: SPACING.space_10
                         }}>
-                            {item.order_detail.map((detail, idx) => (
+                            {item.order_detail.map((detail, idx) => (//content order detail
                                 <ItemListOrder
                                     key={idx}
                                     name={detail.menu.nama}
@@ -117,12 +132,29 @@ const ChefHome = ({ navigation }) => {
                                     image={detail.menu.path}
                                     qty={detail.quantity}
                                     bahanBaku={detail.menu.list_bahan_baku}
+                                    status={detail.status}
+                                    onProcess={() => onProcess(detail)}
                                 />
                             ))}
-                            {/* <Button text="Accept Menu" /> */}
+
+                            {item.status == 'In Progress' && (//Button ketika seluruh pesanan di process
+                                <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                                    <TouchableOpacity
+                                        onPress={toggleContent}
+                                        style={{
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            width: 100,
+                                            padding: 15,
+                                            backgroundColor: COLORS.primaryOrangeHex,
+                                            borderRadius: 10
+                                        }}>
+                                        <Text style={{ color: COLORS.primaryWhiteHex }}>Ready</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )}
                         </View>
                     </Animated.View>
-
                 )}
             </View>
         )
@@ -131,7 +163,7 @@ const ChefHome = ({ navigation }) => {
         <View style={styles.ScreenContainer}>
             <StatusBar style='light' />
             <HeaderBar />
-            <Text style={styles.HeaderText}>Welcome to home Chef!</Text>
+            <Text style={styles.HeaderText}>Welcome to kitchen Chef!</Text>
             <View style={styles.ContainerButtonRefresh}>
                 <TouchableOpacity
                     activeOpacity={0.4}

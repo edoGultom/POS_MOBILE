@@ -6,7 +6,7 @@ import { BE_API_HOST } from '@env'
 import IcTableActive from '../../assets/Icon/IcTableActive';
 import CustomIcon from '../CustomIcon';
 
-const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtra, type, id, bahanBaku, status }) => {
+const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtra, type, id, bahanBaku, status, onProcess }) => {
     const [photo, setPhoto] = useState(null);
     useEffect(() => {
         const fetchData = () => {
@@ -46,7 +46,6 @@ const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtr
                             </Text>
                             <Text style={{ color: COLORS.secondaryLightGreyHex }}>Bahan :</Text>
                             <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-
                                 {bahanBaku.length > 0 && bahanBaku.map((bahan, idx) => (
                                     <Text key={idx} style={{
                                         color: COLORS.secondaryLightGreyHex,
@@ -62,19 +61,25 @@ const ItemListOrder = ({ image, name, onPress, qty, temperatur, price, priceExtr
                         </View>
                         <View style={{ justifyContent: 'flex-start' }}>
                             <Text style={styles.items}>{qty} items</Text>
+                            {
+                                status !== 'Ordered' && (
+                                    <Text style={{ color: COLORS.primaryOrangeHex }}>{status}</Text>
+                                )
+                            }
                         </View>
                         <View style={styles.ContainerButtonChef}>
-                            <TouchableOpacity
-                                activeOpacity={0.4}
-                                style={styles.ButtonChef}
-                            // onPress={onPressUpdate}
-                            >
-                                <CustomIcon
-                                    name="edit"
-                                    color={COLORS.primaryOrangeHex}
-                                    size={FONTSIZE.size_18}
-                                />
-                            </TouchableOpacity>
+                            {
+                                status === 'Ordered' &&
+                                (
+                                    <TouchableOpacity
+                                        activeOpacity={0.4}
+                                        style={styles.ButtonChef}
+                                        onPress={onProcess}
+                                    >
+                                        <Text style={{ color: COLORS.primaryWhiteHex }}>Process</Text>
+                                    </TouchableOpacity>
+                                )
+                            }
                         </View>
                     </>
                 );
@@ -189,7 +194,7 @@ export default ItemListOrder
 
 const styles = StyleSheet.create({
     ButtonChef: {
-        backgroundColor: COLORS.primaryBlackRGBA,
+        backgroundColor: COLORS.secondaryLightGreyHex,
         padding: SPACING.space_12,
         borderRadius: BORDERRADIUS.radius_10,
     },
