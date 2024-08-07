@@ -50,6 +50,7 @@ const CashierDetailOrder = ({ route, navigation }) => {
                 metode_pembayaran: pembayaran,
                 status: 'PENDING'
             }
+            // console.log(data, 'dataxx'); return;
             postPembayaran(data)
         } else {
             openModal();
@@ -281,8 +282,8 @@ const CashierDetailOrder = ({ route, navigation }) => {
     // FORM QRIS
     const FormComponentQris = ({ dataMidtrans }) => {
         const expiryTime = dataMidtrans.expiry_time;
-        const orderId = dataMidtrans.order_id;
-        const apiUrl = `${BE_API_HOST}/verify/isfinish?orderId=${orderId}`
+        const trxId = dataMidtrans.transaction_id;
+        const apiUrl = `${BE_API_HOST}/verify/isfinish?idTrx=${trxId}`
 
         return (
             <View style={{ marginBottom: 5, gap: 20 }}>
