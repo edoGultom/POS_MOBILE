@@ -13,6 +13,7 @@ import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../confi
 import { addLoading } from '../../redux/globalSlice'
 import { getData } from '../../utils'
 import { Ionicons } from '@expo/vector-icons';
+import useAxios from '../../api/useAxios'
 const windowWidth = Dimensions.get('window').width;
 
 const AdminReport = ({ navigation }) => {
@@ -22,6 +23,7 @@ const AdminReport = ({ navigation }) => {
     const [showStart, setShowStart] = useState(false);
     const [dateEnd, setDateEnd] = useState(null);
     const [showEnd, setShowEnd] = useState(false);
+    const { fetchData: axiosBe } = useAxios();
 
     const [checked, setChecked] = useState({
         label: '',
@@ -61,19 +63,21 @@ const AdminReport = ({ navigation }) => {
         setDateEnd(currentDateEnd);
     };
 
-    const getFilter = async (url, token, data) => {
+    const getFilter = async (url, data) => {
         dispatch(addLoading(true));
         try {
-            const response = await axios.post(url, data, {
+            const response = await axiosBe({
+                url: `${url}`,
+                method: "POST",
+                data: data,
                 headers: {
-                    Authorization: `${token}`,
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json', // Adjust content type if necessary
                 },
-            });
+            })
+            // console.log(response, 'rxx'); return;
             dispatch(addLoading(false));
-            if (response.status === 200) {
-                const { data } = response.data
-                // console.log(data, 'xdataaaaa')
+            if (response.status) {
+                const { data } = response
                 setData(data)
                 // total = data.reduce((sum, item) => sum + item.total_sales_amount, 0);
             } else {
@@ -92,13 +96,13 @@ const AdminReport = ({ navigation }) => {
         let data = null;
         let url = '';
         if (dateStart && dateEnd) {
-            url = `${BE_API_HOST}/report/by-date-range`
+            url = `/report/by-date-range`
             data = {
                 start,
                 end
             }
         } else if (checked.value !== '') {
-            url = `${BE_API_HOST}/report/by-date`
+            url = `/report/by-date`
             data = {
                 date: checked.value
             }
@@ -111,19 +115,10 @@ const AdminReport = ({ navigation }) => {
             setData(null)
             return;
         }
-
-        getData('token').then((res) => {
-            getFilter(url, res.value, data)
-        });
+        // console.log(data, 'dataxxx')
+        getFilter(url, data)
     }
-    const formatCurrency = (amount, currency) => {
-        return new Intl.NumberFormat('id-ID', {
-            style: 'currency',
-            currency: currency,
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        }).format(amount);
-    };
+
     return (
         <View style={styles.ScreenContainer}>
             <StatusBar style='light' />
@@ -171,7 +166,7 @@ const AdminReport = ({ navigation }) => {
                         style={styles.btnCard}
                     >
                         <CustomIcon
-                            name={'calendar-days'}
+                            name={'calendar-month'}
                             color={COLORS.primaryOrangeHex}
                             size={FONTSIZE.size_20}
                         />
@@ -189,7 +184,7 @@ const AdminReport = ({ navigation }) => {
                         style={styles.btnCard}
                     >
                         <CustomIcon
-                            name={'calendar-days'}
+                            name={'calendar-month'}
                             color={COLORS.primaryOrangeHex}
                             size={FONTSIZE.size_20}
                         />
@@ -207,7 +202,7 @@ const AdminReport = ({ navigation }) => {
                         style={styles.btnCard}
                     >
                         <CustomIcon
-                            name={'searchengin'}
+                            name={'search'}
                             color={COLORS.primaryOrangeHex}
                             size={FONTSIZE.size_20}
                         />
@@ -223,30 +218,39 @@ const AdminReport = ({ navigation }) => {
                                 return (
                                     <View key={idx} style={{
                                         alignItems: 'center',
-                                        marginHorizontal: 15,
                                         // backgroundColor: 'red',
                                         flexDirection: 'row',
                                         marginVertical: 5
                                     }}>
-                                        <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, width: windowWidth / 4, color: COLORS.primaryWhiteHex }}>{format(item.date, "d MMMM yyyy", { locale: id })}</Text>
-                                        <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, width: windowWidth / 4, color: COLORS.primaryWhiteHex }}>{item.nama_barang}</Text>
-                                        <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, width: windowWidth / 4, color: COLORS.primaryWhiteHex }}>{item.total_quantity_sold}</Text>
-                                        <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, width: windowWidth / 4, color: COLORS.primaryWhiteHex }}>{formatCurrency(item.total_sales_amount, 'IDR')}</Text>
+                                        <View style={{ width: (windowWidth / 4) - 10, alignItems: 'center' }}>
+                                            <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, color: COLORS.primaryWhiteHex }}>{item.nama_bahan_baku}</Text>
+                                        </View>
+                                        <View style={{ width: (windowWidth / 4) - 10, alignItems: 'flex-end' }}>
+                                            <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, color: COLORS.primaryWhiteHex }}>{item.total_masuk} {item.satuan}</Text>
+                                        </View>
+                                        <View style={{ width: (windowWidth / 4) - 10, alignItems: 'flex-end' }}>
+                                            <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, color: COLORS.primaryWhiteHex }}>{item.total_keluar} {item.satuan}</Text>
+                                        </View>
+                                        <View style={{ width: (windowWidth / 4), alignItems: 'flex-end' }}>
+                                            <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, color: COLORS.primaryWhiteHex }}>{item.saldo_akhir} {item.satuan}</Text>
+                                        </View>
                                     </View>
                                 )
                             }
                             )}
                         </View>
                         <View style={{
-                            marginVertical: 5,
+                            // backgroundColor: 'red',
+                            paddingHorizontal: 10,
                             flexDirection: 'row',
-                            justifyContent: 'space-around'
+                            justifyContent: 'space-between'
                         }}>
 
                             <View style={{
-                                alignItems: 'flex-start',
-                                paddingLeft: 15,
-                                width: windowWidth / 2
+                                alignItems: 'center',
+                                width: windowWidth / 4,
+                                // backgroundColor: 'grey',
+                                justifyContent: 'center'
                             }}>
                                 <Text style={{
                                     color: COLORS.primaryWhiteHex,
@@ -255,16 +259,18 @@ const AdminReport = ({ navigation }) => {
                                 }}>Total</Text>
                             </View>
                             <View style={{
-                                width: windowWidth / 2,
+                                width: windowWidth / 4,
                                 alignItems: 'flex-end',
-                                paddingRight: 25
+                                justifyContent: 'center',
+                                // backgroundColor: 'blue',
+                                marginRight: 10
                             }}>
                                 <Text style={{
                                     fontFamily: FONTFAMILY.poppins_semibold,
                                     fontSize: FONTSIZE.size_14,
                                     color: COLORS.primaryWhiteHex
                                 }}>
-                                    {formatCurrency(data.reduce((sum, item) => sum + parseInt(item.total_sales_amount), 0), 'IDR')}
+                                    {data.reduce((sum, item) => sum + parseInt(item.saldo_akhir), 0)}
                                 </Text>
                             </View>
                         </View>
@@ -312,7 +318,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'coral',
     },
     container: {
-        marginTop: SPACING.space_30
+        marginTop: SPACING.space_30,
+        paddingHorizontal: 10,
         // backgroundColor: 'gray'
     },
     box1: {
