@@ -71,7 +71,7 @@ export const signUpAction = createAsyncThunk(
                       },
                     })
                     .then(resUpload => {
-                      console.log(resUpload.data, 'resUpload.data')
+                      // console.log(resUpload.data, 'resUpload.data')
                       dispatch(addLoading(false));
                       profile.profile_photo_url = resUpload.data.data.path;
                       storeData('userProfile', profile);

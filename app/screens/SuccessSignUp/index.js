@@ -4,8 +4,11 @@ import { IlSuccess } from '../../assets/Ilustration';
 import Button from '../../component/Button';
 import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
 import { StatusBar } from 'expo-status-bar';
+import { useRole } from '../../utils/roles';
 
 const SuccessSignUp = ({ navigation }) => {
+    const { roles } = useRole();
+    console.log(roles, 'rolex');
     return (
         <View style={styles.page}>
             <StatusBar style='light' />
@@ -20,8 +23,38 @@ const SuccessSignUp = ({ navigation }) => {
             <View style={styles.buttonContainer}>
                 <Button
                     text="Continue"
-                    onPress={() =>
-                        navigation.reset({ index: 20, routes: [{ name: 'MainAppUser' }] })
+                    onPress={() => {
+                        // navigation.reset({ index: 20, routes: [{ name: 'MainAppUser' }] })
+                        if (roles.includes('Admin')) {
+                            navigation.dispatch(
+                                CommonActions.reset({
+                                    index: 1,
+                                    routes: [{ name: 'Admin' }],
+                                })
+                            );
+                        } else if (roles.includes('Chef')) {
+                            navigation.dispatch(
+                                CommonActions.reset({
+                                    index: 20,
+                                    routes: [{ name: 'MainAppChef' }],
+                                })
+                            );
+                        } else if (roles.includes('Cashier')) {
+                            navigation.dispatch(
+                                CommonActions.reset({
+                                    index: 21,
+                                    routes: [{ name: 'MainAppCashier' }],
+                                })
+                            );
+                        } else {
+                            navigation.dispatch(
+                                CommonActions.reset({
+                                    index: 19,
+                                    routes: [{ name: 'MainAppUser' }],
+                                })
+                            );
+                        }
+                    }
                     }
                 />
             </View>
