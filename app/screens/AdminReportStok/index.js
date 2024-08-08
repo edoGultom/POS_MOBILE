@@ -1,22 +1,19 @@
-import { BE_API_HOST } from '@env'
+import { Ionicons } from '@expo/vector-icons'
 import DateTimePicker from '@react-native-community/datetimepicker'
-import axios from 'axios'
-import { format, addMonths, addYears } from 'date-fns'
+import { addMonths, addYears, format } from 'date-fns'
 import { id } from 'date-fns/locale'
 import { StatusBar } from 'expo-status-bar'
 import React, { useEffect, useState } from 'react'
 import { Dimensions, Platform, Pressable, ScrollView, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import { useDispatch } from 'react-redux'
+import useAxios from '../../api/useAxios'
 import CustomIcon from '../../component/CustomIcon'
 import HeaderBar from '../../component/HeaderBar'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
 import { addLoading } from '../../redux/globalSlice'
-import { getData } from '../../utils'
-import { Ionicons } from '@expo/vector-icons';
-import useAxios from '../../api/useAxios'
 const windowWidth = Dimensions.get('window').width;
 
-const AdminReport = ({ navigation }) => {
+const AdminReportStok = ({ navigation }) => {
     const dispatch = useDispatch();
     const [data, setData] = useState(null);
     const [dateStart, setDateStart] = useState(null);
@@ -301,7 +298,7 @@ const AdminReport = ({ navigation }) => {
     )
 }
 
-export default AdminReport
+export default AdminReportStok
 
 const styles = StyleSheet.create({
     checkboxBase: {

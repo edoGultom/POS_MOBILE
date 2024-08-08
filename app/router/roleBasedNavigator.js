@@ -4,12 +4,12 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import AdminBottomNavigator from '../component/AdminBottomNavigator';
 import UserBottomNavigator from '../component/UserBottomNavigator';
-import { Admin, AdminHistory, AdminMenu, AdminStock, Cashier, CashierDetailOrder, Orders, PosMenu, PosOrder, Profile, SignIn, SignUp, SplashScreen, SuccessOrder, SuccessSignUp } from '../screens';
+import { Admin, AdminHistory, AdminMenu, AdminReportPenjualan, AdminReportStok, AdminStock, Cashier, CashierDetailOrder, Orders, PosMenu, PosOrder, Profile, SignIn, SignUp, SplashScreen, SuccessOrder, SuccessSignUp } from '../screens';
 import AdminDetailStock from '../screens/AdminDetailStock';
 import AdminIngridients from '../screens/AdminIngridients';
 import AdminMenuIngridients from '../screens/AdminMenuIngridients';
 import AdminOrder from '../screens/AdminOrder';
-import AdminReport from '../screens/AdminReport';
+// import AdminReport from '../screens/AdminReport';
 import AdminTable from '../screens/AdminTable';
 import ChefHome from '../screens/ChefHome';
 import PosTable from '../screens/PosTable';
@@ -113,10 +113,9 @@ const RoleBasedNavigator = () => {
                 component={AdminMenuIngridients}
                 options={{ headerShown: false }}
             />
-
             <Stack.Screen
-                name="AdminReport"
-                component={AdminReport}
+                name="AdminReportStok"
+                component={AdminReportStok}
                 options={{ headerShown: false }}
             />
             <Stack.Screen
@@ -156,6 +155,11 @@ const RoleBasedNavigator = () => {
             <Stack.Screen
                 name="CashierDetailOrder"
                 component={CashierDetailOrder}
+                options={{ headerShown: false, }}
+            />
+            <Stack.Screen
+                name="AdminReportPenjualan"
+                component={AdminReportPenjualan}
                 options={{ headerShown: false, }}
             />
         </Stack.Navigator>

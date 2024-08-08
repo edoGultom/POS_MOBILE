@@ -34,6 +34,7 @@ export const processOrder = createAsyncThunk('order/processOrder', async (param,
             dispatch(addLoading(false))
             getDataOrder();
         } else {
+            dispatch(addLoading(false))
             showMessage(response.message);
         }
     } catch (error) {

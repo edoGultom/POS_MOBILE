@@ -118,14 +118,22 @@ const Admin = ({ navigation }) => {
         },
         {
             key: 6,
-            label: 'Laporan',
+            label: 'Laporan Penjualan',
             icon: 'print',
             onPress: () => {
-                navigation.navigate('AdminReport')
+                navigation.navigate('AdminReportPenjualan')
             },
         },
         {
             key: 7,
+            label: 'Laporan Stok',
+            icon: 'print',
+            onPress: () => {
+                navigation.navigate('AdminReportStok')
+            },
+        },
+        {
+            key: 8,
             label: 'Stok',
             icon: 'food-bank',
             onPress: () => {
@@ -133,7 +141,7 @@ const Admin = ({ navigation }) => {
             },
         },
         {
-            key: 8,
+            key: 9,
             label: 'Riwayat',
             icon: 'history',
             onPress: () => {

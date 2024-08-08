@@ -10,6 +10,8 @@ import AdminMenu from "./AdminMenu";
 import AdminStock from "./AdminStock";
 import AdminHistory from "./AdminHistory";
 import AdminDetailStock from "./AdminDetailStock";
+import AdminReportPenjualan from "./AdminReportPenjualan";
+import AdminReportStok from "./AdminReportStok";
 import PosTable from "./PosTable";
 import PosMenu from "./PosMenu";
 import PosOrder from "./PosOrder";
@@ -30,6 +32,8 @@ export {
     AdminStock,
     AdminHistory,
     AdminDetailStock,
+    AdminReportPenjualan,
+    AdminReportStok,
     PosTable,
     PosMenu,
     PosOrder,
