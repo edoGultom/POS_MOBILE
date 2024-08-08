@@ -4,14 +4,14 @@ import { addMonths, addYears, format } from 'date-fns'
 import { id } from 'date-fns/locale'
 import { StatusBar } from 'expo-status-bar'
 import React, { useEffect, useState } from 'react'
-import { Dimensions, Platform, Pressable, ScrollView, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
+import { Dimensions, Platform, Pressable, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import { useDispatch } from 'react-redux'
 import useAxios from '../../api/useAxios'
 import CustomIcon from '../../component/CustomIcon'
 import HeaderBar from '../../component/HeaderBar'
+import TableReportStok from '../../component/TableReportStok'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
 import { addLoading } from '../../redux/globalSlice'
-const windowWidth = Dimensions.get('window').width;
 
 const AdminReportStok = ({ navigation }) => {
     const dispatch = useDispatch();
@@ -73,6 +73,7 @@ const AdminReportStok = ({ navigation }) => {
             })
             // console.log(response, 'rxx'); return;
             dispatch(addLoading(false));
+            console.log(response, '')
             if (response.status) {
                 const { data } = response
                 setData(data)
@@ -93,13 +94,13 @@ const AdminReportStok = ({ navigation }) => {
         let data = null;
         let url = '';
         if (dateStart && dateEnd) {
-            url = `/report/by-date-range`
+            url = `/report/stok-by-date-range`
             data = {
                 start,
                 end
             }
         } else if (checked.value !== '') {
-            url = `/report/by-date`
+            url = `/report/stok-by-date`
             data = {
                 date: checked.value
             }
@@ -119,7 +120,7 @@ const AdminReportStok = ({ navigation }) => {
     return (
         <View style={styles.ScreenContainer}>
             <StatusBar style='light' />
-            <HeaderBar title="Report" onBack={() => navigation.goBack()} />
+            <HeaderBar title="Laporan Stok " onBack={() => navigation.goBack()} />
             <View style={{
                 marginTop: 20,
                 paddingHorizontal: 15,
@@ -207,77 +208,15 @@ const AdminReportStok = ({ navigation }) => {
                     </TouchableOpacity>
                 </View>
             </View>
-            <ScrollView vertical={true}>
-                {data ? (
-                    <>
-                        <View style={[styles.container, data ? { borderBottomWidth: 1, borderBottomColor: COLORS.secondaryLightGreyHex } : {}]}>
-                            {data.map((item, idx) => {
-                                return (
-                                    <View key={idx} style={{
-                                        alignItems: 'center',
-                                        // backgroundColor: 'red',
-                                        flexDirection: 'row',
-                                        marginVertical: 5
-                                    }}>
-                                        <View style={{ width: (windowWidth / 4) - 10, alignItems: 'center' }}>
-                                            <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, color: COLORS.primaryWhiteHex }}>{item.nama_bahan_baku}</Text>
-                                        </View>
-                                        <View style={{ width: (windowWidth / 4) - 10, alignItems: 'flex-end' }}>
-                                            <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, color: COLORS.primaryWhiteHex }}>{item.total_masuk} {item.satuan}</Text>
-                                        </View>
-                                        <View style={{ width: (windowWidth / 4) - 10, alignItems: 'flex-end' }}>
-                                            <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, color: COLORS.primaryWhiteHex }}>{item.total_keluar} {item.satuan}</Text>
-                                        </View>
-                                        <View style={{ width: (windowWidth / 4), alignItems: 'flex-end' }}>
-                                            <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_12, color: COLORS.primaryWhiteHex }}>{item.saldo_akhir} {item.satuan}</Text>
-                                        </View>
-                                    </View>
-                                )
-                            }
-                            )}
-                        </View>
-                        <View style={{
-                            // backgroundColor: 'red',
-                            paddingHorizontal: 10,
-                            flexDirection: 'row',
-                            justifyContent: 'space-between'
-                        }}>
-
-                            <View style={{
-                                alignItems: 'center',
-                                width: windowWidth / 4,
-                                // backgroundColor: 'grey',
-                                justifyContent: 'center'
-                            }}>
-                                <Text style={{
-                                    color: COLORS.primaryWhiteHex,
-                                    fontFamily: FONTFAMILY.poppins_semibold,
-                                    fontSize: FONTSIZE.size_14
-                                }}>Total</Text>
-                            </View>
-                            <View style={{
-                                width: windowWidth / 4,
-                                alignItems: 'flex-end',
-                                justifyContent: 'center',
-                                // backgroundColor: 'blue',
-                                marginRight: 10
-                            }}>
-                                <Text style={{
-                                    fontFamily: FONTFAMILY.poppins_semibold,
-                                    fontSize: FONTSIZE.size_14,
-                                    color: COLORS.primaryWhiteHex
-                                }}>
-                                    {data.reduce((sum, item) => sum + parseInt(item.saldo_akhir), 0)}
-                                </Text>
-                            </View>
-                        </View>
-                    </>
-                ) : (
-                    <View style={{ marginTop: SPACING.space_30, justifyContent: 'center', alignItems: 'center' }}>
-                        <Text style={{ color: COLORS.secondaryLightGreyHex, fontSize: FONTSIZE.size_14, fontFamily: FONTFAMILY.poppins_light }}>Data Tidak Ditemukan</Text>
-                    </View>
-                )}
-            </ScrollView>
+            {/* TABLE */}
+            {data ? (
+                <TableReportStok data={data} />
+            ) : (
+                <View style={{ marginTop: SPACING.space_30, justifyContent: 'center', alignItems: 'center' }}>
+                    <Text style={{ color: COLORS.secondaryLightGreyHex, fontSize: FONTSIZE.size_14, fontFamily: FONTFAMILY.poppins_light }}>Data Tidak Ditemukan</Text>
+                </View>
+            )}
+            {/* TABLE */}
             {showStart && (
                 <DateTimePicker
                     value={new Date()}

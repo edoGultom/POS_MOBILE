@@ -33,7 +33,7 @@ const SplashScreen = ({ navigation }) => {
             if (res) {
               getData('userProfile').then((profile) => {
                 if (profile) {
-                  console.log(profile, 'profile')
+                  // console.log(profile, 'profile')
                   if (profile.scope.includes('Admin')) {
                     navigation.dispatch(
                       CommonActions.reset({

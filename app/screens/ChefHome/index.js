@@ -69,7 +69,7 @@ const ChefHome = ({ navigation }) => {
                 id_order_detail: item.id,
                 list_bahan_baku: item.menu.list_bahan_baku,
             }
-            // console.log(formData, 'itemxxxxx')
+            console.log(formData, 'itemxxxxx')
             // return;
             await dispatch(processOrder({ status: 'in_progress', formData, axiosBe, getDataOrder })).unwrap();
         } catch (error) {
