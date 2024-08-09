@@ -24,11 +24,11 @@ const TableReportStok = ({ data }) => {
                     <View style={styles.tableCell}>
                         <Text style={styles.tableHeader}>Bahan Baku</Text>
                     </View>
-                    {/* <View style={styles.tableCell}>
-                        <Text style={styles.tableHeader}>Jumlah Qty Terpakai</Text>
-                    </View> */}
                     <View style={styles.tableCell}>
                         <Text style={styles.tableHeader}>Stok Awal</Text>
+                    </View>
+                    <View style={styles.tableCell}>
+                        <Text style={styles.tableHeader}>Total Penggunaan</Text>
                     </View>
                     <View style={styles.tableCell}>
                         <Text style={styles.tableHeader}>Stok Akhir</Text>
@@ -50,6 +50,9 @@ const TableReportStok = ({ data }) => {
                             </View>
                             <View style={styles.tableCell}>
                                 <Text style={{ color: COLORS.primaryWhiteHex, fontSize: FONTSIZE.size_12, fontFamily: FONTFAMILY.poppins_extralight }}>{item.stok_awal} {item.satuan}</Text>
+                            </View>
+                            <View style={styles.tableCell}>
+                                <Text style={{ color: COLORS.primaryWhiteHex, fontSize: FONTSIZE.size_12, fontFamily: FONTFAMILY.poppins_extralight }}>{item.total_qty_terpakai} {item.satuan}</Text>
                             </View>
                             <View style={styles.tableCell}>
                                 <Text style={{ color: COLORS.primaryWhiteHex, fontSize: FONTSIZE.size_12, fontFamily: FONTFAMILY.poppins_extralight }}>{item.stok_akhir} {item.satuan}</Text>

@@ -157,11 +157,11 @@ const AdminDetailStock = ({ navigation, route }) => {
                 <HeaderBar title={`Detail Transaksi Stok`} onBack={() => navigation.goBack()} />
                 <View style={{ paddingHorizontal: SPACING.space_15, flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 10, }}>
                     <View>
-                        <Text style={{ fontSize: FONTSIZE.size_14, color: COLORS.primaryLightGreyHex }}>Kode: <Text style={{ fontFamily: FONTFAMILY.poppins_semibold }}>{kode}</Text></Text>
-                        <Text style={{ fontSize: FONTSIZE.size_14, color: COLORS.primaryLightGreyHex }}>Tipe: <Text style={{ fontFamily: FONTFAMILY.poppins_semibold }}>{tipe}</Text></Text>
+                        <Text style={{ fontSize: FONTSIZE.size_14, color: COLORS.primaryLightGreyHex }}>Kode: <Text style={{ fontFamily: FONTFAMILY.poppins_semibold, color: COLORS.primaryWhiteHex }}>{kode}</Text></Text>
+                        <Text style={{ fontSize: FONTSIZE.size_14, color: COLORS.primaryLightGreyHex }}>Tipe: <Text style={[{ fontFamily: FONTFAMILY.poppins_semibold }, tipe == 'Keluar' ? { color: COLORS.primaryRedHex } : { color: COLORS.primaryOrangeHex }]}>{tipe}</Text></Text>
                     </View>
                     <View>
-                        <Text style={{ fontSize: FONTSIZE.size_14, color: COLORS.primaryLightGreyHex }}>Tgl. <Text style={{ fontFamily: FONTFAMILY.poppins_semibold }}>{tanggal}</Text></Text>
+                        <Text style={{ fontSize: FONTSIZE.size_14, color: COLORS.primaryLightGreyHex }}>Tgl. <Text style={{ fontFamily: FONTFAMILY.poppins_semibold, color: COLORS.primaryWhiteHex }}>{tanggal}</Text></Text>
                     </View>
                 </View>
                 {!details ? (
@@ -170,7 +170,6 @@ const AdminDetailStock = ({ navigation, route }) => {
                     </View>
                 ) : (
                     <ScrollView
-                        contentContainerStyle={styles.container}
                         refreshControl={
                             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                         }
@@ -179,6 +178,7 @@ const AdminDetailStock = ({ navigation, route }) => {
                             <View style={{
                                 alignItems: 'center',
                                 flexDirection: 'row',
+
                             }}>
                                 <Text style={styles.tableHeader}>Bahan Baku</Text>
                                 <Text style={styles.tableHeader}>Stok / Unit</Text>
