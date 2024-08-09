@@ -87,7 +87,7 @@ const ReadyOrder = () => {
     const closeModal = () => {
         setIsVisible(false);
     };
-    const onReserved = async (id) => {
+    const onServed = async (id) => {
         const item = readyOrders.find((item) => item.id == id);
         closeModal()
         try {
@@ -129,7 +129,7 @@ const ReadyOrder = () => {
                         <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryLightGreyHex }]} onPress={closeModal}>
                             <Text style={styles.buttonText}>Batal</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.primaryOrangeHex }]} onPress={() => onReserved(selectedItem?.id)}>
+                        <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.primaryOrangeHex }]} onPress={() => onServed(selectedItem?.id)}>
                             <Text style={styles.buttonText}>Ya</Text>
                         </TouchableOpacity>
                     </View>

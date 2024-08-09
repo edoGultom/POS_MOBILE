@@ -15,7 +15,7 @@ const EventStatusChecker = ({ apiUrl, handleSuccess }) => {
             setStatus(response.data.message);
             console.log(response.data.message, 'responsexxx')
             // If the status is 'PAID', clear the interval
-            if (response.data.message === 'PAID') {
+            if (response.data.message === 'paid') {
                 handleSuccess();
                 clearInterval(intervalIdRef.current);
             }

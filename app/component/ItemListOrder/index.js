@@ -5,6 +5,7 @@ import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../confi
 import { BE_API_HOST } from '@env'
 import IcTableActive from '../../assets/Icon/IcTableActive';
 import CustomIcon from '../CustomIcon';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const ItemListOrder = ({ image, name, onPress, qty, temperatur, kind, price, priceExtra, type, id, table, bahanBaku, status, isVisible, onProcess }) => {
     const [photo, setPhoto] = useState(null);
@@ -146,7 +147,7 @@ const ItemListOrder = ({ image, name, onPress, qty, temperatur, kind, price, pri
                                         color={COLORS.primaryWhiteHex}
                                         size={FONTSIZE.size_18}
                                     />
-                                    <Text style={{ color: COLORS.primaryWhiteHex }}>Reserved</Text>
+                                    <Text style={{ color: COLORS.primaryWhiteHex }}>Served Order</Text>
                                 </TouchableOpacity>
                             </View>
                         </View >
@@ -169,43 +170,29 @@ const ItemListOrder = ({ image, name, onPress, qty, temperatur, kind, price, pri
     return (
         <Pressable
             onPress={onPress}
-            style={({ pressed }) => [
-                {
-                    backgroundColor: pressed
-                        ? COLORS.primaryBlackRGBA
-                        : COLORS.secondaryBlackRGBA
-                },
-                {
-                    gap: 10,
-                    marginVertical: 5
-                },
-                {
-                    opacity: pressed
-                        ? 0.7
-                        : 1
-                },
-                styles.wrapperCustom
-
-            ]}
-
         >
-            <View style={styles.container}>
-                {status === 'Ordered' || status === 'In Progress' || status === 'Ready' ?
-                    <View style={styles.ContainerTable}>
-                        <View style={[styles.ContainerTableNumber, { zIndex: 1 }]}>
-                            <IcTableActive width={60} />
+            <LinearGradient
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                colors={[COLORS.primaryBlackHex, COLORS.primaryGreyHex]}
+                style={styles.ItemSingleLinearGradient}>
+                <View style={styles.container}>
+                    {status === 'Ordered' || status === 'In Progress' || status === 'Ready' ?
+                        <View style={styles.ContainerTable}>
+                            <View style={[styles.ContainerTableNumber, { zIndex: 1 }]}>
+                                <IcTableActive width={60} />
+                            </View>
+                            <View style={[styles.ContainerTableNumber, { zIndex: 2 }]}>
+                                <Text style={[
+                                    styles.NameTable,
+                                    { color: COLORS.primaryOrangeHex }
+                                ]}>{table}</Text>
+                            </View>
                         </View>
-                        <View style={[styles.ContainerTableNumber, { zIndex: 2 }]}>
-                            <Text style={[
-                                styles.NameTable,
-                                { color: COLORS.primaryOrangeHex }
-                            ]}>{table}</Text>
-                        </View>
-                    </View>
-                    : (
-                        <Image source={{ uri: photo }} style={styles.image} />)
-                }
-                {/* <View style={styles.ContainerTable}>
+                        : (
+                            <Image source={{ uri: photo }} style={styles.image} />)
+                    }
+                    {/* <View style={styles.ContainerTable}>
                     <View style={[styles.ContainerTableNumber, { zIndex: 1 }]}>
                         <IcTableActive width={60} />
                     </View>
@@ -217,8 +204,9 @@ const ItemListOrder = ({ image, name, onPress, qty, temperatur, kind, price, pri
                     </View>
                 </View> */}
 
-                {renderContent()}
-            </View>
+                    {renderContent()}
+                </View>
+            </LinearGradient>
         </Pressable>
     )
 }
@@ -226,6 +214,15 @@ const ItemListOrder = ({ image, name, onPress, qty, temperatur, kind, price, pri
 export default ItemListOrder
 
 const styles = StyleSheet.create({
+    ItemSingleLinearGradient: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: SPACING.space_12,
+        // gap: SPACING.space_12,
+        borderRadius: BORDERRADIUS.radius_25,
+        // marginHorizontal: SPACING.space_15,
+        // marginVertical: SPACING.space_10
+    },
     SizeBox: {
         backgroundColor: COLORS.primaryBlackHex,
         height: 40,

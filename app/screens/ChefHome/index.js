@@ -167,7 +167,7 @@ const ChefHome = ({ navigation }) => {
                             <View style={{
                                 borderWidth: 1,
                                 borderColor: COLORS.primaryWhiteHex,
-                                backgroundColor: COLORS.secondaryDarkGreyHex,
+                                backgroundColor: COLORS.primaryBlackHex,
                                 flexDirection: 'column',
                                 paddingHorizontal: 15,
                                 paddingVertical: 15,

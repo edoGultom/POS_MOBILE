@@ -32,11 +32,11 @@ const OrderHistory = ({
                 {detail && detail.map((item, idx) => (
                     <OrderHistoryItem
                         key={idx}
-                        name={item.nama}
-                        kind={item.kategori}
-                        link={item.link}
+                        name={item.menu.nama}
+                        kind={item.menu.nama_kategori}
+                        link={item.menu.path}
                         price={item.harga}
-                        qty={item.qty}
+                        qty={item.quantity}
                         temperatur={item.temperatur}
                         ItemPrice={item.total}
                     />

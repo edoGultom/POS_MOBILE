@@ -18,9 +18,8 @@ const Cashier = ({ navigation }) => {
     const { orders } = useSelector(state => state.orderReducer)
 
     useEffect(() => {
-        const unsubscribe = navigation.addListener('focus', getDataOrder);
-        return unsubscribe;  // Cleanup the listener on unmount or when navigation changes
-    }, [navigation, dispatch, axiosBe]);
+        dispatch(getOrders({ status: 'served', axiosBe }))
+    }, []);
 
     const getDataOrder = async () => {
         try {
@@ -30,7 +29,6 @@ const Cashier = ({ navigation }) => {
         }
     };
     const renderItem = ({ item }) => {
-        // console.log(item, 'itemx')
         return (
             <View style={styles.OrderCard}>
                 {/* UP */}
@@ -90,6 +88,21 @@ const Cashier = ({ navigation }) => {
         <View style={styles.ScreenContainer}>
             <StatusBar style='light' />
             <HeaderBar />
+            <View style={styles.ContainerButtonRefresh}>
+                <TouchableOpacity
+                    activeOpacity={0.4}
+                    onPress={() => getDataOrder()}
+                >
+                    <View style={styles.ButtonRefresh}>
+                        <CustomIcon
+                            name={'refresh'}
+                            color={COLORS.primaryWhiteHex}
+                            size={FONTSIZE.size_18}
+                        />
+                        <Text style={{ color: COLORS.primaryWhiteHex }}>Refresh</Text>
+                    </View>
+                </TouchableOpacity>
+            </View>
             {orders.length > 0 ? (
                 <FlatList
                     ref={ListRef}
@@ -121,6 +134,21 @@ const Cashier = ({ navigation }) => {
 export default Cashier
 
 const styles = StyleSheet.create({
+    ButtonRefresh: {
+        backgroundColor: COLORS.primaryOrangeHex,
+        width: 100,
+        height: 40,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 4,
+        borderRadius: 8,
+        flexDirection: 'row',
+        gap: 2
+    },
+    ContainerButtonRefresh: {
+        alignItems: 'flex-end',
+        paddingHorizontal: 20,
+    },
     EmptyListContainer: {
         alignItems: 'center',
         justifyContent: 'center',

@@ -93,7 +93,7 @@ const CashierDetailOrder = ({ route, navigation }) => {
             setShowAnimation(false);
             dispatch(addStateMidtrans(null))
             dispatch(addToOrderHistoryListFromCart())
-            navigation.reset({ index: 0, routes: [{ name: 'Home' }] });
+            navigation.reset({ index: 21, routes: [{ name: 'MainAppCashier' }] });
         }, 2000);
     }
     const renderItem = ({ item }) => {
