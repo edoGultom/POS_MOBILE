@@ -26,33 +26,13 @@ const SuccessSignUp = ({ navigation }) => {
                     onPress={() => {
                         // navigation.reset({ index: 20, routes: [{ name: 'MainAppUser' }] })
                         if (roles.includes('Admin')) {
-                            navigation.dispatch(
-                                CommonActions.reset({
-                                    index: 1,
-                                    routes: [{ name: 'Admin' }],
-                                })
-                            );
+                            navigation.reset({ index: 1, routes: [{ name: 'Admin' }] })
                         } else if (roles.includes('Chef')) {
-                            navigation.dispatch(
-                                CommonActions.reset({
-                                    index: 20,
-                                    routes: [{ name: 'MainAppChef' }],
-                                })
-                            );
+                            navigation.reset({ index: 20, routes: [{ name: 'MainAppChef' }] })
                         } else if (roles.includes('Cashier')) {
-                            navigation.dispatch(
-                                CommonActions.reset({
-                                    index: 21,
-                                    routes: [{ name: 'MainAppCashier' }],
-                                })
-                            );
+                            navigation.reset({ index: 21, routes: [{ name: 'MainAppCashier' }] })
                         } else {
-                            navigation.dispatch(
-                                CommonActions.reset({
-                                    index: 19,
-                                    routes: [{ name: 'MainAppUser' }],
-                                })
-                            );
+                            navigation.reset({ index: 19, routes: [{ name: 'MainAppUser' }] })
                         }
                     }
                     }
