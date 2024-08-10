@@ -34,10 +34,15 @@ export const addMenu = createAsyncThunk('menu/addMenu', async (param, thunkAPI) 
                 'Content-Type': 'multipart/form-data',
             },
         })
-        setRefreshData(false);
-        dispatch(addMenuState(response.data))
+        if (response.status) {
+            setRefreshData(false);
+            dispatch(addMenuState(response.data))
+        } else {
+            console.log('error', response)
+        }
+
     } catch (error) {
-        console.error('Error: ', error);
+        console.error('Errorx: ', error);
     }
 });
 export const updateMenu = createAsyncThunk('menu/updateMenu', async (param, thunkAPI) => {

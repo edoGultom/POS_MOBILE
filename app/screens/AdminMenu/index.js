@@ -154,6 +154,8 @@ const AdminMenu = ({ navigation }) => {
                     type: photo.assets[0].mimeType,
                     name: `menu.${fileExtension}`
                 }
+                // console.log(dataPhoto, 'ssdsds');
+                // return
 
                 dataInput.append('file', dataPhoto)
                 closeModal();

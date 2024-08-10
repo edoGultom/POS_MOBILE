@@ -6,7 +6,8 @@
         {
           "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
-      ]
+      ],
+      "expo-build-properties"
     ],
     "name": "LANGIT-COFFEE",
     "slug": "LANGIT-COFFEE",
