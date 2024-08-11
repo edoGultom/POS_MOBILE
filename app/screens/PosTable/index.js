@@ -11,6 +11,7 @@ import Button from '../../component/Button'
 import HeaderBar from '../../component/HeaderBar'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
 import { addSelectedTableState, emptySelectedTable, emptyTables, getTables } from '../../redux/tableSice'
+import { addToOrderHistoryListFromCart } from '../../redux/orderSlice'
 
 const PosTable = ({ navigation }) => {
     const CARD_WIDTH = Dimensions.get('window').width;
@@ -37,6 +38,7 @@ const PosTable = ({ navigation }) => {
         }).start();
     }, [selectedTable.id !== null]);
     const getData = async () => {
+        dispatch(addToOrderHistoryListFromCart())
         dispatch(emptyTables([]));
         dispatch(emptySelectedTable({ id: null, table: '', }));
         try {

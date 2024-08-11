@@ -149,6 +149,7 @@ export const addOrder = createAsyncThunk('order/addOrder', async (param, thunkAP
         })
         if (response.status) {
             dispatch(addLoading(false))
+            dispatch(addToOrderHistoryListFromCart())
             closeModal();
             navigation.reset({ index: 4, routes: [{ name: 'SuccessOrder' }] });
         }

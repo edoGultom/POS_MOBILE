@@ -6,8 +6,12 @@ import { COLORS, FONTFAMILY, FONTSIZE } from '../../config'
 import Button from '../../component/Button'
 import { Image } from 'expo-image'
 import { IcWaitingOrder } from '../../assets'
+import { useDispatch } from 'react-redux'
+import { addToOrderHistoryListFromCart } from '../../redux/orderSlice'
 
 const SuccessOrder = ({ navigation }) => {
+    const dispatch = useDispatch();
+
     return (
         <View style={styles.ScreenContainer}>
             <StatusBar style='light' />
@@ -32,13 +36,20 @@ const SuccessOrder = ({ navigation }) => {
                         <View style={styles.buttonContainer}>
                             <Button
                                 text="Pesan Lagi"
-                                onPress={() => navigation.replace('MainAppAdmin', { screen: 'PosTable' })}
+                                onPress={() => {
+                                    dispatch(addToOrderHistoryListFromCart())
+                                    navigation.replace('MainAppAdmin', { screen: 'PosTable' })
+                                }
+                                }
                             />
                         </View>
                         <View style={styles.buttonContainer}>
                             <Button
                                 text="Lihat Pesanan"
-                                onPress={() => navigation.replace('MainAppAdmin', { screen: 'Orders' })}
+                                onPress={() => {
+                                    dispatch(addToOrderHistoryListFromCart())
+                                    navigation.replace('MainAppAdmin', { screen: 'Orders' })
+                                }}
                                 color={COLORS.secondaryLightGreyHex}
                                 textColor='white'
 

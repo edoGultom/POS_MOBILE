@@ -42,34 +42,41 @@ const ChefHome = ({ navigation }) => {
         }
     };
 
-    const toggleContent = (id) => {
+    const toggleContent = (id, status) => {
+        console.log(id, 'xxxxx')
         const newState = { ...expandedState };
         Object.keys(newState).forEach(key => {
             if (parseInt(key) === id) {
-                newState[key].expanded = !newState[key].expanded;
+                if (status) {
+                    newState[key].expanded = status
+                } else {
+                    newState[key].expanded = !newState[key].expanded;
+                }
             } else {
                 newState[key].expanded = false;
             }
         });
 
-        Object.keys(newState).forEach(key => {
-            Animated.timing(newState[key].animation, {
-                toValue: newState[key].expanded ? 1 : 0,
-                duration: 300,
-                useNativeDriver: false,
-            }).start();
-        });
+        // Object.keys(newState).forEach(key => {
+        //     Animated.timing(newState[key].animation, {
+        //         toValue: newState[key].expanded ? 1 : 0,
+        //         duration: 300,
+        //         useNativeDriver: false,
+        //     }).start();
+        // });
 
         setExpandedState(newState);
     };
-    const onProcess = async (item) => {
+    const onProcess = async (item, selectedId) => {
+        toggleContent(selectedId, true)
+        // return;
         try {
             const formData = {
                 id_order: item.id_pemesanan,
                 id_order_detail: item.id,
                 list_bahan_baku: item.menu.list_bahan_baku,
             }
-            console.log(formData, 'itemxxxxx')
+            // console.log(formData, 'itemxxxxx')
             // return;
             await dispatch(processOrder({ status: 'in_progress', formData, axiosBe, getDataOrder })).unwrap();
         } catch (error) {
@@ -99,19 +106,13 @@ const ChefHome = ({ navigation }) => {
     const closeModal = () => {
         setIsVisible(false);
     };
-    // console.log(expandedState, 'expandedState')
-    // console.log(expandedKeys, 'expandedKeys')
-    const touchableOpacityRef = useRef(null);
+
     const renderItem = ({ item }) => {
-        // console.log(item, 'xxxx')
         const itemState = expandedState[item.id];
         if (!itemState) {
             return null; // Ensure itemState is defined before rendering
         }
-        const animatedHeight = itemState.animation.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, 300], // Sesuaikan tinggi konten Anda
-        });
+        console.log(expandedState, 'xxxx')
         return (
             <>
                 <View style={{
@@ -162,56 +163,60 @@ const ChefHome = ({ navigation }) => {
                     </TouchableOpacity>
                 </View>
                 {
-                    itemState.expanded && (
-                        <Animated.View style={[{ height: animatedHeight }]}>
-                            <View style={{
-                                borderWidth: 1,
-                                borderColor: COLORS.primaryWhiteHex,
-                                backgroundColor: COLORS.primaryBlackHex,
-                                flexDirection: 'column',
-                                paddingHorizontal: 15,
-                                paddingVertical: 15,
-                                gap: SPACING.space_10,
-                                borderBottomStartRadius: 25,
-                                borderBottomEndRadius: 25,
-                            }}>
-                                {item.order_detail.map((detail, idx) => (//content order detail
-                                    <ItemListOrder
-                                        kind={detail.menu.nama_kategori}
-                                        key={idx}
-                                        name={detail.menu.nama}
-                                        table={item.meja.nomor_meja}
-                                        type="chef_detail_order"
-                                        price={detail.menu.harga}
-                                        priceExtra={detail.menu.harga_ekstra}
-                                        temperatur={detail.temperatur}
-                                        image={detail.menu.path}
-                                        qty={detail.quantity}
-                                        bahanBaku={detail.menu.list_bahan_baku}
-                                        status={detail.status}
-                                        onProcess={() => onProcess(detail)}
-                                    />
-                                ))}
+                    itemState.expanded && item.id && (
+                        // <Animated.View style={[{ height: animatedHeight }]}>
+                        <View style={{
+                            borderWidth: 1,
+                            borderColor: COLORS.primaryWhiteHex,
+                            backgroundColor: COLORS.primaryBlackHex,
+                            flexDirection: 'column',
+                            paddingHorizontal: 15,
+                            paddingVertical: 15,
+                            gap: SPACING.space_10,
+                            borderBottomStartRadius: 25,
+                            borderBottomEndRadius: 25,
 
-                                {item.status === 'In Progress' && (//Button ketika seluruh pesanan di process
-                                    <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                                        <TouchableOpacity
-                                            onPress={openModal}
-                                            disabled={isVisible}
-                                            style={{
-                                                justifyContent: 'center',
-                                                alignItems: 'center',
-                                                width: 150,
-                                                padding: 15,
-                                                backgroundColor: COLORS.primaryOrangeHex,
-                                                borderRadius: 10
-                                            }}>
-                                            <Text style={{ color: COLORS.primaryWhiteHex }}>Ready to Waiters</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                )}
-                            </View>
-                        </Animated.View>
+                        }}>
+                            {item.order_detail.map((detail, idx) => (//content order detail
+                                <ItemListOrder
+                                    kind={detail.menu.nama_kategori}
+                                    key={idx}
+                                    name={detail.menu.nama}
+                                    table={item.meja.nomor_meja}
+                                    type="chef_detail_order"
+                                    price={detail.menu.harga}
+                                    priceExtra={detail.menu.harga_ekstra}
+                                    temperatur={detail.temperatur}
+                                    image={detail.menu.path}
+                                    qty={detail.quantity}
+                                    bahanBaku={detail.menu.list_bahan_baku}
+                                    status={detail.status}
+                                    onProcess={() => onProcess(detail, item.id)}
+                                // onProcess={() => {
+                                //     toggleContent(item.id)
+                                // }}
+                                />
+                            ))}
+
+                            {item.status === 'In Progress' && (//Button ketika seluruh pesanan di process
+                                <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                                    <TouchableOpacity
+                                        onPress={openModal}
+                                        disabled={isVisible}
+                                        style={{
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            width: 150,
+                                            padding: 15,
+                                            backgroundColor: COLORS.primaryOrangeHex,
+                                            borderRadius: 10
+                                        }}>
+                                        <Text style={{ color: COLORS.primaryWhiteHex }}>Ready to Waiters</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )}
+                        </View>
+                        // </Animated.View>
                     )
                 }
             </>
@@ -246,7 +251,9 @@ const ChefHome = ({ navigation }) => {
                             marginTop: 12,
                             flexGrow: 1,
                             gap: SPACING.space_18,
-                            paddingHorizontal: 15
+                            paddingHorizontal: 15,
+                            // backgroundColor: 'red',
+                            paddingBottom: SPACING.space_24
                         }}
                         showsHorizontalScrollIndicator={false}
                         data={orders}
