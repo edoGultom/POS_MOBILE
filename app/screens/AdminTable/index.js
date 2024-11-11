@@ -173,7 +173,7 @@ const AdminTable = ({ navigation }) => {
 
                 <BottomSheetCustom
                     ref={bottomSheetModalRef}
-                    backdropComponent={renderBackdrop}
+                // backdropComponent={renderBackdrop}
                 >
                     <FormComponent selected={selectedMenu} />
                 </BottomSheetCustom>

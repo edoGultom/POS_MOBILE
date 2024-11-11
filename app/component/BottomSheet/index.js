@@ -2,18 +2,19 @@ import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
 import React, { forwardRef, useCallback, useMemo, useRef, useState } from 'react';
 import { Button, Dimensions, KeyboardAvoidingView, ScrollView, StyleSheet, View } from 'react-native';
 import { BORDERRADIUS, COLORS, SPACING } from '../../config';
-
+const windowHeight = Dimensions.get('window').height;
 const BottomSheetCustom = forwardRef(({ children, ...rest }, ref) => {
     const [contentHeight, setContentHeight] = useState(0);
     const contentRef = useRef(null);
 
     const calculateSnapPoints = useCallback(() => {
-        const windowHeight = Dimensions.get('window').height;
         const percentageHeight = (contentHeight / windowHeight) * 100;
         const snapHeight = Math.max(percentageHeight, 25); // Ensure the minimum snap point is 25% of the screen height
         return [`${snapHeight}%`];
     }, [contentHeight]);
 
+    const snapPoints = ['25%', '50%', '90%'];
+    console.log(contentHeight, 'contentHeight')
     const onLayoutContent = () => {
         if (contentRef.current) {
             contentRef.current.measure((x, y, width, height) => {
@@ -30,7 +31,9 @@ const BottomSheetCustom = forwardRef(({ children, ...rest }, ref) => {
         }}>
             <BottomSheetModal
                 ref={ref}
-                snapPoints={calculateSnapPoints()}
+                // snapPoints={calculateSnapPoints()}
+                index={1} // Snap point index yang akan dibuka pertama kali
+                snapPoints={snapPoints}
                 {...rest}
             >
                 <BottomSheetView>
