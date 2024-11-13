@@ -69,38 +69,28 @@ const AdminIngridients = ({ navigation }) => {
         dispatch(deleteIngridients(param))
     }, []);
 
-    const renderBackdrop = useCallback(
-        props => (
-            <BottomSheetBackdrop
-                {...props}
-                disappearsOnIndex={-1}
-            // appearsOnIndex={0}
-            />
-        ),
-        []
-    );
-    useEffect(() => {
-        if (selectedIngridients) {
-            bottomSheetModalRef.current.present();
-        }
-    }, [selectedIngridients])
+    const openModal = useCallback(() => {
+        bottomSheetModalRef.current?.present();
+    }, []);
 
-    const openModal = () => {
-        bottomSheetModalRef.current.present();
-    };
+    const closeModal = useCallback(() => {
+        bottomSheetModalRef.current?.dismiss();
+    }, []);
 
-    const closeModal = () => {
-        bottomSheetModalRef.current.dismiss();
-    };
-
-    const FormComponent = ({ dataUnit, selected }) => {
+    const FormComponent = ({ dataUnit, selected, onCloseModal }) => {
         const [form, setForm] = useForm({
             nama: selected !== null ? selected.nama : null,
             id_unit_bahan_baku: selected !== null ? selected.id_unit_bahan_baku : '1',
         });
+        const [loading, setLoading] = useState(false)
+        const toggleLoading = () => {
+            setLoading((prev) => !prev)
+        }
         const Title = selected !== null ? 'Ubah Bahan Baku' : 'Tambah Bahan Baku';
 
-        const onSubmit = () => {
+        const handleSave = () => {
+            // onCloseModal(); // Tutup Bottom Sheet setelah penyimpanan berhasil
+            toggleLoading()
             if (form.nama === null) {
                 showMessage('Please input a ingridient!', 'danger');
             } else {
@@ -108,19 +98,39 @@ const AdminIngridients = ({ navigation }) => {
                 for (const key in form) {
                     dataInput.append(key, form[key]);
                 }
-                closeModal();
                 const param = { dataInput, setRefreshData, axiosBe };
                 if (selected !== null) {//update
                     const updatedParam = { ...param, id: selected.id };
-                    dispatch(updateIngridients(updatedParam));
+                    dispatch(updateIngridients(updatedParam))
+                        .then(() => {
+                            onCloseModal(); // Tutup Bottom Sheet setelah penyimpanan berhasil
+                            toggleLoading()
+
+                        })
+                        .catch((error) => {
+                            showMessage('Update failed!', 'danger');
+                        });
                 } else {//add
-                    dispatch(addIngridients(param));
+                    dispatch(addIngridients(param))
+                        .then(() => {
+                            onCloseModal(); // Tutup Bottom Sheet setelah penyimpanan berhasil
+                            toggleLoading()
+
+                        })
+                        .catch((error) => {
+                            showMessage('Update failed!', 'danger');
+                        });
                 }
             }
         };
 
         return (
-            <View style={{ marginBottom: 5, gap: 20 }}>
+            <View style={{
+                paddingHorizontal: 20,
+                paddingBottom: 15,
+                paddingTop: 20,
+                gap: 10
+            }}>
                 <Text style={{ color: COLORS.primaryOrangeHex, fontFamily: FONTFAMILY.poppins_bold, fontSize: FONTSIZE.size_20 }}>{Title}</Text>
                 <TextInput
                     label="Bahan Baku"
@@ -134,67 +144,91 @@ const AdminIngridients = ({ navigation }) => {
                     value={form.id_unit_bahan_baku}
                     onSelectChange={(value) => setForm('id_unit_bahan_baku', value)}
                 />
-                <Button title="Tutup" onPress={() => { closeModal() }} color={COLORS.primaryLightGreyHex} />
-                <Button title="Simpan" onPress={() => { onSubmit() }} color={COLORS.primaryOrangeHex} />
+                <TouchableOpacity
+                    style={{
+                        justifyContent: 'center', // centers vertically
+                        alignItems: 'center',
+                        padding: SPACING.space_10,
+                        backgroundColor: COLORS.primaryLightGreyHex,
+                        height: 40,
+                        borderRadius: BORDERRADIUS.radius_10
+                    }}
+                    onPress={onCloseModal}>
+                    <Text style={{ color: COLORS.primaryWhiteHex }}>Tutup</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    disabled={loading}
+                    style={{
+                        justifyContent: 'center', // centers vertically
+                        alignItems: 'center',
+                        padding: SPACING.space_10,
+                        backgroundColor: COLORS.primaryOrangeHex,
+                        height: 40,
+                        borderRadius: BORDERRADIUS.radius_10
+                    }}
+                    onPress={handleSave}>
+                    <Text>Simpan</Text>
+                </TouchableOpacity>
             </View>
         );
     }
 
     return (
-        <BottomSheetModalProvider>
-            <View style={styles.ScreenContainer}>
-                <StatusBar style='light' />
-                <HeaderBar title="Daftar Bahan Baku" onBack={() => navigation.goBack()} />
-                {ingridients.length < 1 ? (
-                    <View style={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
-                        <Text style={{ fontSize: FONTSIZE.size_18, color: COLORS.primaryLightGreyHex }}>Tidak ada item yang tersedia</Text>
-                    </View>
-                ) : (
-                    <FlatList
-                        data={ingridients}
-                        onRefresh={fetchData}
-                        refreshing={refreshing}
-                        showsVerticalScrollIndicator={false}
-                        renderItem={({ item }) => (
-                            <ListItemIngridients
-                                key={item.id}
-                                id={item.id}
-                                name={item.nama}
-                                unit={item.unit}
-                                onPressDelete={() => handleDelete(item.id)}
-                                onPressUpdate={() => setSelectedIngridients(item)}
-                            />
-                        )}
-                        keyExtractor={item => item.id}
-                        contentContainerStyle={{ flexGrow: 1, columnGap: SPACING.space_10, paddingBottom: SPACING.space_10 * 9 }}
-                        vertical
-                    />
-                )}
-
-                <BottomSheetCustom
-                    ref={bottomSheetModalRef}
-                    backdropComponent={renderBackdrop}
-                >
-                    <FormComponent dataUnit={dataUnit} selected={selectedIngridients} />
-                </BottomSheetCustom>
-
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity
-                        style={styles.buttonTambah}
-                        onPress={() => {
-                            openModal()
-                            setSelectedIngridients(null)
-                        }}
-                    >
-                        <CustomIcon
-                            name={'library-add'}
-                            color={COLORS.primaryOrangeHex}
-                            size={FONTSIZE.size_24}
-                        />
-                    </TouchableOpacity>
+        <View style={styles.ScreenContainer}>
+            <StatusBar style='light' />
+            <HeaderBar title="Daftar Bahan Baku" onBack={() => navigation.goBack()} />
+            {ingridients.length < 1 ? (
+                <View style={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <Text style={{ fontSize: FONTSIZE.size_18, color: COLORS.primaryLightGreyHex }}>Tidak ada item yang tersedia</Text>
                 </View>
+            ) : (
+                <FlatList
+                    data={ingridients}
+                    onRefresh={fetchData}
+                    refreshing={refreshing}
+                    showsVerticalScrollIndicator={false}
+                    renderItem={({ item }) => (
+                        <ListItemIngridients
+                            key={item.id}
+                            id={item.id}
+                            name={item.nama}
+                            unit={item.unit}
+                            onPressDelete={() => handleDelete(item.id)}
+                            onPressUpdate={() => {
+                                openModal()
+                                setSelectedIngridients(item)
+                            }}
+                        />
+                    )}
+                    keyExtractor={item => item.id}
+                    contentContainerStyle={{ flexGrow: 1, columnGap: SPACING.space_10, paddingBottom: SPACING.space_10 * 9 }}
+                    vertical
+                />
+            )}
+
+            <BottomSheetCustom
+                ref={bottomSheetModalRef}
+                onClose={closeModal}
+            >
+                <FormComponent dataUnit={dataUnit} selected={selectedIngridients} onCloseModal={closeModal} />
+            </BottomSheetCustom>
+
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                    style={styles.buttonTambah}
+                    onPress={() => {
+                        openModal()
+                        setSelectedIngridients(null)
+                    }}
+                >
+                    <CustomIcon
+                        name={'library-add'}
+                        color={COLORS.primaryOrangeHex}
+                        size={FONTSIZE.size_24}
+                    />
+                </TouchableOpacity>
             </View>
-        </BottomSheetModalProvider >
+        </View>
     )
 }
 

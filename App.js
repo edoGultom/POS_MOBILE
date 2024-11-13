@@ -10,6 +10,7 @@ import Loading from './app/component/Loading';
 import store from './app/redux/store';
 import Router from './app/router';
 import HeaderBar from './app/component/HeaderBar';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 SplashScreens.preventAutoHideAsync();
 
 const MainApp = () => {
@@ -47,11 +48,16 @@ const App = () => {
 
   return (
     <Provider store={store}>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-          <MainApp />
-        </View>
-      </GestureHandlerRootView>
+      <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+        <GestureHandlerRootView
+          style={{
+            flex: 1,
+          }}>
+          <BottomSheetModalProvider>
+            <MainApp />
+          </BottomSheetModalProvider>
+        </GestureHandlerRootView>
+      </View>
     </Provider>
   );
 }

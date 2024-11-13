@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.0",
-    "@gorhom/bottom-sheet": "^4.6.3",
+    "@gorhom/bottom-sheet": "^5",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-community/datetimepicker": "8.0.1",
     "@react-native-picker/picker": "2.7.5",
@@ -39,7 +39,7 @@
     "react-native-date-picker": "^5.0.4",
     "react-native-dotenv": "^3.4.11",
     "react-native-flash-message": "^0.4.2",
-    "react-native-gesture-handler": "~2.16.1",
+    "react-native-gesture-handler": "^2.20.2",
     "react-native-head-tab-view": "^4.0.0-rc.13",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-mask-text": "^0.14.2",

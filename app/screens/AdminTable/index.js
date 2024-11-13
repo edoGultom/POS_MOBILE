@@ -1,4 +1,3 @@
-import { BottomSheetBackdrop, BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { StatusBar } from 'expo-status-bar'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Button, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
@@ -12,16 +11,15 @@ import ListItemTable from '../../component/ListItemTable'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
 import { addTable, deleteTable, getTables, updateTable } from '../../redux/tableSice'
 import { showMessage, useForm } from '../../utils'
-
 // const windowWidth = Dimensions.get('window').width;
 
 const AdminTable = ({ navigation }) => {
-    const bottomSheetModalRef = useRef(null);
     const { tables } = useSelector(state => state.tablesReducer);
     const dispatch = useDispatch();
     const [refreshing, setRefreshing] = useState(false);
     const [selectedMenu, setSelectedMenu] = useState(null);
     const { fetchData: axiosBe } = useAxios();
+    const bottomSheetModalRef = useRef(null);
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', getDataTable);
@@ -56,76 +54,90 @@ const AdminTable = ({ navigation }) => {
         dispatch(deleteTable(param))
     }, []);
 
-    const renderBackdrop = useCallback(
-        props => (
-            <BottomSheetBackdrop
-                {...props}
-                disappearsOnIndex={-1}
-            // appearsOnIndex={0}
-            />
-        ),
-        []
-    );
 
-    useEffect(() => {
-        if (selectedMenu) {
-            bottomSheetModalRef.current.present();
-        }
-    }, [selectedMenu])
+    // Fungsi untuk membuka BottomSheetModal
+    const openModal = useCallback(() => {
+        bottomSheetModalRef.current?.present();
+    }, []);
 
-    const openModal = () => {
-        bottomSheetModalRef.current.present();
-    };
+    // Fungsi untuk menutup BottomSheetModal
+    const closeModal = useCallback(() => {
+        bottomSheetModalRef.current?.dismiss();
+    }, []);
 
-    const closeModal = () => {
-        bottomSheetModalRef.current.dismiss();
-    };
-
-    const FormComponent = ({ selected }) => {
+    const FormComponent = ({ selected, onCloseModal }) => {
         const [form, setForm] = useForm({
             nomor_meja: selected !== null ? selected.nomor_meja : '',
             status: selected !== null ? selected.status : 'Available',
         });
+        const [loading, setLoading] = useState(false)
         const Title = selected !== null ? 'Ubah Meja' : 'Tambah Meja';
-
-        const onSubmit = () => {
+        const toggleLoading = () => {
+            setLoading((prev) => !prev)
+        }
+        const handleSave = () => {
             if (form.nomor_meja === null) {
                 showMessage('Please input table number to continue!', 'danger');
             } else {
+                toggleLoading()
                 const dataInput = new FormData();
                 for (const key in form) {
                     dataInput.append(key, form[key]);
                 }
-                closeModal();
                 const param = { dataInput, setRefreshData, axiosBe };
                 if (selected !== null) {//update
                     const updatedParam = { ...param, id: selected.id };
-                    dispatch(updateTable(updatedParam));
+                    // dispatch(updateTable(updatedParam));
+                    dispatch(updateTable(updatedParam))
+                        .then(() => {
+                            onCloseModal(); // Tutup Bottom Sheet setelah penyimpanan berhasil
+                            toggleLoading()
+
+                        })
+                        .catch((error) => {
+                            showMessage('Update failed!', 'danger');
+                        });
                 } else {//add
-                    dispatch(addTable(param));
+                    dispatch(addTable(param))
+                        .then(() => {
+                            onCloseModal(); // Tutup Bottom Sheet setelah penyimpanan berhasil
+                            toggleLoading()
+                        })
+                        .catch((error) => {
+                            showMessage('Add failed!', 'danger');
+                        });
                 }
             }
         };
         return (
-            <View style={{ marginBottom: 5, gap: 20 }}>
+            <View style={{
+                paddingHorizontal: 20,
+                paddingBottom: 15,
+                paddingTop: 20,
+                gap: 10
+            }}>
                 <Text style={{ color: COLORS.primaryOrangeHex, fontFamily: FONTFAMILY.poppins_bold, fontSize: FONTSIZE.size_20 }}>{Title}</Text>
-                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                    <View style={{ flexShrink: 1, flexGrow: 1, marginRight: SPACING.space_10 }}>
+
+                <View style={{
+                    flexDirection: 'row', // Mengatur layout menjadi horizontal
+                    justifyContent: 'space-between', // Memberikan jarak antar elemen
+                    alignItems: 'center', // Menjaga elemen tetap sejajar di tengah vertikal
+                    gap: 10,
+                }}>
+                    <View style={styles.containerInput}>
                         <MaskedTextInput
                             mask="A-99"
                             placeholder="Masukkan nomor meja"
                             keyboardType='numeric'
                             onChangeText={(text, rawText) => {
-                                // console.log(text, 'text');
-                                // console.log(rawText, 'rawText');//nno dashed
                                 setForm('nomor_meja', text)
                             }}
-                            style={styles.input}
+                            style={[styles.input, { color: 'white' }]}
                             value={form.nomor_meja ? form.nomor_meja : 'T-'}
                             placeholderTextColor={COLORS.secondaryLightGreyHex}
                         />
                     </View>
-                    <View style={{ flexShrink: 1, flexDirection: 'row' }}>
+                    <View style={styles.containerSatus}>
                         <Text style={styles.label}>Status: </Text>
                         <Text style={[
                             styles.label,
@@ -135,74 +147,125 @@ const AdminTable = ({ navigation }) => {
                         ]}>{form.status}</Text>
                     </View>
                 </View>
-                <Button title="Tutup" onPress={() => { closeModal() }} color={COLORS.primaryLightGreyHex} />
-                <Button title="Simpan" onPress={() => { onSubmit() }} color={COLORS.primaryOrangeHex} />
+                <View style={{
+                    marginTop: 20,
+                    gap: 10,
+                }}>
+                    <TouchableOpacity
+                        disabled={loading}
+                        style={{
+                            justifyContent: 'center', // centers vertically
+                            alignItems: 'center',
+                            padding: SPACING.space_10,
+                            backgroundColor: COLORS.primaryLightGreyHex,
+                            height: 40,
+                            borderRadius: BORDERRADIUS.radius_10
+                        }}
+                        onPress={onCloseModal}>
+                        <Text style={{ color: COLORS.primaryWhiteHex }}>Tutup</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        disabled={loading}
+                        style={{
+                            justifyContent: 'center', // centers vertically
+                            alignItems: 'center',
+                            padding: SPACING.space_10,
+                            backgroundColor: COLORS.primaryOrangeHex,
+                            height: 40,
+                            borderRadius: BORDERRADIUS.radius_10
+                        }}
+                        onPress={handleSave}>
+                        <Text>Simpan</Text>
+                    </TouchableOpacity>
+                </View>
             </View >
         );
     }
-
     return (
-        <BottomSheetModalProvider>
-            <View style={styles.ScreenContainer}>
-                <StatusBar style='light' />
-                <HeaderBar title="Meja" onBack={() => navigation.goBack()} />
-                {tables.length < 1 ? (
-                    <View style={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
-                        <Text style={{ fontSize: FONTSIZE.size_18, color: COLORS.primaryLightGreyHex }}>Tidak ada item yang tersedia</Text>
-                    </View>
-                ) : (
-                    <FlatList
-                        data={tables}
-                        onRefresh={fetchData}
-                        refreshing={refreshing}
-                        showsVerticalScrollIndicator={false}
-                        renderItem={({ item }) => (
-                            <ListItemTable
-                                key={item.id}
-                                id={item.id}
-                                name={item.nomor_meja}
-                                onPressDelete={() => handleDelete(item.id)}
-                                onPressUpdate={() => setSelectedMenu(item)}
-                            />
-                        )}
-                        keyExtractor={item => item.id}
-                        contentContainerStyle={{ flexGrow: 1, columnGap: SPACING.space_10, paddingBottom: SPACING.space_10 * 9 }}
-                        vertical
-                    />
-                )}
-
-                <BottomSheetCustom
-                    ref={bottomSheetModalRef}
-                    backdropComponent={renderBackdrop}
-                >
-                    <FormComponent selected={selectedMenu} />
-                </BottomSheetCustom>
-
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity
-                        style={styles.buttonTambah}
-                        onPress={() => {
-                            openModal()
-                            setSelectedMenu(null)
-                        }}
-                    >
-                        <CustomIcon
-                            name={'library-add'}
-                            color={COLORS.primaryOrangeHex}
-                            size={FONTSIZE.size_24}
-                        />
-                    </TouchableOpacity>
+        <View style={styles.ScreenContainer}>
+            <StatusBar style='light' />
+            <HeaderBar title="Meja" onBack={() => navigation.goBack()} />
+            {tables.length < 1 ? (
+                <View style={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <Text style={{ fontSize: FONTSIZE.size_18, color: COLORS.primaryLightGreyHex }}>Tidak ada item yang tersedia</Text>
                 </View>
+            ) : (
+                <FlatList
+                    data={tables}
+                    onRefresh={fetchData}
+                    refreshing={refreshing}
+                    showsVerticalScrollIndicator={false}
+                    renderItem={({ item }) => (
+                        <ListItemTable
+                            key={item.id}
+                            id={item.id}
+                            name={item.nomor_meja}
+                            onPressDelete={() => handleDelete(item.id)}
+                            onPressUpdate={() => {
+                                openModal()
+                                setSelectedMenu(item)
+                            }}
+                        />
+                    )}
+                    keyExtractor={item => item.id}
+                    contentContainerStyle={{ flexGrow: 1, columnGap: SPACING.space_10, paddingBottom: SPACING.space_10 * 9 }}
+                    vertical
+                />
+            )}
+
+            <BottomSheetCustom
+                ref={bottomSheetModalRef}
+                onClose={closeModal}
+            >
+                <FormComponent selected={selectedMenu} onCloseModal={closeModal} />
+            </BottomSheetCustom>
+
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                    style={styles.buttonTambah}
+                    onPress={() => {
+                        openModal()
+                        setSelectedMenu(null)
+                    }}
+                >
+                    <CustomIcon
+                        name={'library-add'}
+                        color={COLORS.primaryOrangeHex}
+                        size={FONTSIZE.size_24}
+                    />
+                </TouchableOpacity>
             </View>
-        </BottomSheetModalProvider >
+        </View>
     )
 }
 
 export default AdminTable
 
 const styles = StyleSheet.create({
-    label: { fontSize: FONTSIZE.size_16, fontFamily: FONTFAMILY.poppins_regular, color: COLORS.secondaryLightGreyHex },
-    input: { borderWidth: 1, borderColor: COLORS.secondaryLightGreyHex, borderRadius: BORDERRADIUS.radius_15, padding: SPACING.space_10, color: COLORS.secondaryLightGreyHex },
+    containerSatus: {
+        flexGrow: 1,
+        flexShrink: 0,
+        flexBasis: 100,
+        flexDirection: 'column',
+    },
+    label: {
+        fontSize: FONTSIZE.size_16,
+        fontFamily: FONTFAMILY.poppins_regular,
+        color: COLORS.secondaryLightGreyHex,
+
+    },
+    containerInput: {
+        flexGrow: 0,
+        flexShrink: 1,
+        flexBasis: 300,
+        height: 'auto'
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: COLORS.secondaryLightGreyHex,
+        borderRadius: BORDERRADIUS.radius_15,
+        padding: SPACING.space_10,
+    },
     ItemContainer: {
         flex: 1,
     },
@@ -222,7 +285,7 @@ const styles = StyleSheet.create({
         gap: SPACING.space_16
     },
     buttonContainer: {
-        position: 'absolute',
+        // position: 'absolute',
         width: '100%',
         height: '8%',
         bottom: 0,
@@ -244,5 +307,23 @@ const styles = StyleSheet.create({
         position: 'relative',
         backgroundColor: COLORS.primaryBlackHex,
         flex: 1,
+    },
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    contentContainer: {
+        flex: 1,
+        alignItems: 'center',
+    },
+    input: {
+        marginTop: 8,
+        marginBottom: 10,
+        borderRadius: 10,
+        fontSize: 16,
+        lineHeight: 20,
+        padding: 8,
+        backgroundColor: 'rgba(151, 151, 151, 0.25)',
     },
 })

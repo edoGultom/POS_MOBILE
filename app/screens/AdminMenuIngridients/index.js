@@ -1,7 +1,7 @@
 import { BottomSheetBackdrop, BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { StatusBar } from 'expo-status-bar'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Button, FlatList, StyleSheet, Text, View } from 'react-native'
+import { Button, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import BottomSheetCustom from '../../component/BottomSheet'
 import HeaderBar from '../../component/HeaderBar'
@@ -61,32 +61,26 @@ const AdminMenuIngridients = ({ navigation }) => {
         dispatch(deleteMenuIngridients(param))
     }, []);
 
-    const renderBackdrop = useCallback(
-        props => (
-            <BottomSheetBackdrop
-                {...props}
-                disappearsOnIndex={-1}
-            // appearsOnIndex={0}
-            />
-        ),
-        []
-    );
-    useEffect(() => {
-        if (selectedMenuIngridients) {
-            bottomSheetModalRef.current.present();
-        }
-    }, [selectedMenuIngridients])
 
-    const openModal = () => {
-        bottomSheetModalRef.current.present();
-    };
-    const closeModal = useCallback(() => {
-        bottomSheetModalRef.current.dismiss();
-        setSelectedMenuIngridients(null)
-        setIsUpdate(false);
+    const openModal = useCallback(() => {
+        bottomSheetModalRef.current?.present();
     }, []);
 
-    const FormComponent = ({ dataBahanBaku, dataSelectdIngridients, selected, isUpdate }) => {
+    // Fungsi untuk menutup BottomSheetModal
+    const closeModal = useCallback(() => {
+        bottomSheetModalRef.current?.dismiss();
+        if (selectedMenuIngridients) {
+            setSelectedMenuIngridients(null)
+        }
+        if (isUpdate) {
+            setIsUpdate(false)
+        }
+        // setSelectedMenuIngridients(null)
+        // setIsUpdate(false);
+    }, []);
+
+
+    const FormComponent = ({ dataBahanBaku, dataSelectdIngridients, selected, isUpdate, onCloseModal }) => {
         const [unit, setUnit] = useState(!isUpdate ? dataBahanBaku[0]?.unit : selected.list_bahan_baku[0]?.unit);
         const existsDataSelected = () => {
             return selected.list_bahan_baku.find((item) => item.id_menu === form.id_menu && item.id_bahan_baku === form.id_bahan_baku)
@@ -99,114 +93,157 @@ const AdminMenuIngridients = ({ navigation }) => {
         });
 
         const Title = !isUpdate ? `Tambah Bahan Baku '${selected?.nama}'` : `Ubah Bahan Baku '${selected?.nama}'`;
-
-        const onSubmit = () => {
+        const [loading, setLoading] = useState(false)
+        const toggleLoading = () => {
+            setLoading((prev) => !prev)
+        }
+        const handleSave = () => {
             if ((!isUpdate && existsDataSelected()) || isUpdate && existsDataIngridient().length > 0) {//jika sudah ada data(ketika input atau update)
                 showMessage('Ingridient already exists', 'danger');
             } else {
+                toggleLoading()
                 const dataInput = new FormData();
                 for (const key in form) {
                     dataInput.append(key, form[key]);
                 }
-                closeModal();
                 const param = { dataInput, setRefreshData, axiosBe };
                 if (isUpdate) {//update
                     const updatedParam = { ...param, id: selected.list_bahan_baku[0].id };
-                    dispatch(updateMenuIngridients(updatedParam));
+                    dispatch(updateMenuIngridients(updatedParam))
+                        .then(() => {
+                            onCloseModal(); // Tutup Bottom Sheet setelah penyimpanan berhasil
+                            toggleLoading()
+
+                        })
+                        .catch((error) => {
+                            showMessage('Update failed!', 'danger');
+                        });
                 } else {//add
-                    dispatch(addMenuIngridients(param));
+                    dispatch(addMenuIngridients(param))
+                        .then(() => {
+                            onCloseModal(); // Tutup Bottom Sheet setelah penyimpanan berhasil
+                            toggleLoading()
+                        })
+                        .catch((error) => {
+                            showMessage('Add failed!', 'danger');
+                        });
                 }
             }
         };
 
         return (
-            <View style={{ marginBottom: 5, gap: 20 }}>
-                <Text style={{ color: COLORS.primaryOrangeHex, fontFamily: FONTFAMILY.poppins_bold, fontSize: FONTSIZE.size_20 }}>{Title}</Text>
-                <Select
-                    label="Bahan Baku"
-                    data={dataBahanBaku}
-                    value={form.id_bahan_baku}
-                    onSelectChange={(value) => {
-                        const unitBahanBaku = dataBahanBaku.find((item) => item.id === value)
-                        setUnit(unitBahanBaku.unit)
-                        setForm('id_bahan_baku', value)
-                    }}
-                />
-                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                    <View style={{ flexShrink: 1, flexGrow: 1, marginRight: SPACING.space_10 }}>
-                        <TextInput
-                            keyboardType="numeric"
-                            label="Quantity"
-                            placeholder="Masukkan quantity"
-                            value={form.quantity}
-                            onChangeText={(value) => setForm('quantity', value ? parseInt(value) : 0)}
-                        />
-                    </View>
-                    <View style={{ flexShrink: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                        <Text style={styles.labelUnit}>Unit Bahan Baku</Text>
-                        <Text style={styles.valUnit}>{unit}</Text>
-                    </View>
+            <View style={{
+                paddingHorizontal: 20,
+                gap: 10
+            }}>
+                <Text style={{ marginTop: 20, color: COLORS.primaryOrangeHex, fontFamily: FONTFAMILY.poppins_bold, fontSize: FONTSIZE.size_20 }}>{Title}</Text>
+                <View>
+                    <Select
+                        label="Bahan Baku"
+                        data={dataBahanBaku}
+                        value={form.id_bahan_baku}
+                        onSelectChange={(value) => {
+                            const unitBahanBaku = dataBahanBaku.find((item) => item.id === value)
+                            setUnit(unitBahanBaku.unit)
+                            setForm('id_bahan_baku', value)
+                        }}
+                    />
                 </View>
-                <Button title="Tutup" onPress={() => { closeModal() }} color={COLORS.primaryLightGreyHex} />
-                <Button title="Simpan" onPress={() => { onSubmit() }} color={COLORS.primaryOrangeHex} />
+                <View>
+                    <TextInput
+                        keyboardType="numeric"
+                        label="Quantity"
+                        placeholder="Masukkan quantity"
+                        value={form.quantity}
+                        onChangeText={(value) => setForm('quantity', value ? parseInt(value) : 0)}
+                    />
+                </View>
+                <View style={{
+                    marginTop: 20,
+                    gap: 10,
+                }}>
+                    <TouchableOpacity
+                        style={{
+                            justifyContent: 'center', // centers vertically
+                            alignItems: 'center',
+                            padding: SPACING.space_10,
+                            backgroundColor: COLORS.primaryLightGreyHex,
+                            height: 40,
+                            borderRadius: BORDERRADIUS.radius_10
+                        }}
+                        onPress={onCloseModal}>
+                        <Text style={{ color: COLORS.primaryWhiteHex }}>Tutup</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        disabled={loading}
+                        style={{
+                            justifyContent: 'center', // centers vertically
+                            alignItems: 'center',
+                            padding: SPACING.space_10,
+                            backgroundColor: COLORS.primaryOrangeHex,
+                            height: 40,
+                            borderRadius: BORDERRADIUS.radius_10,
+                            marginBottom: 20
+                        }}
+                        onPress={handleSave}>
+                        <Text>Simpan</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         );
     }
 
     return (
-        <BottomSheetModalProvider>
-            <View style={styles.ScreenContainer}>
-                <StatusBar style='light' />
-                <HeaderBar title="Daftar Menu Bahan Baku" onBack={() => navigation.goBack()} />
-                {menu_ingridients.length < 1 ? (
-                    <View style={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
-                        <Text style={{ fontSize: FONTSIZE.size_18, color: COLORS.primaryLightGreyHex }}>Tidak ada item yang tersedia</Text>
-                    </View>
-                ) : (
-                    <FlatList
-                        data={menu_ingridients}
-                        onRefresh={fetchData}
-                        refreshing={refreshing}
-                        showsVerticalScrollIndicator={false}
-                        renderItem={({ item }) => (
-                            <ListItemMenuIngridients
-                                key={item.id}
-                                id={item.id}
-                                menu={item.nama}
-                                url={item.path}
-                                list_bahan_baku={item.list_bahan_baku}
-                                onPressDelete={(id) => handleDelete(id)}
-                                onPressUpdate={(idBahanBaku) => {
-                                    openModal()
-                                    setIsUpdate(true)
-                                    const filter = item.list_bahan_baku.filter((item) => item.id === idBahanBaku)
-                                    const filteredItem = {
-                                        ...item,
-                                        list_bahan_baku: filter
-                                    };
-                                    setSelectedMenuIngridients(filteredItem)
-                                }}
-                                onPressAdd={() => {
-                                    setSelectedMenuIngridients(item)
-                                    openModal()
-                                }}
-                            />
-                        )}
-                        keyExtractor={item => item.id}
-                        contentContainerStyle={{ flexGrow: 1, columnGap: SPACING.space_10, paddingBottom: SPACING.space_10 * 9 }}
-                        vertical
-                    />
-                )}
+        <View style={styles.ScreenContainer}>
+            <StatusBar style='light' />
+            <HeaderBar title="Daftar Menu Bahan Baku" onBack={() => navigation.goBack()} />
+            {menu_ingridients.length < 1 ? (
+                <View style={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <Text style={{ fontSize: FONTSIZE.size_18, color: COLORS.primaryLightGreyHex }}>Tidak ada item yang tersedia</Text>
+                </View>
+            ) : (
+                <FlatList
+                    data={menu_ingridients}
+                    onRefresh={fetchData}
+                    refreshing={refreshing}
+                    showsVerticalScrollIndicator={false}
+                    renderItem={({ item }) => (
+                        <ListItemMenuIngridients
+                            key={item.id}
+                            id={item.id}
+                            menu={item.nama}
+                            url={item.path}
+                            list_bahan_baku={item.list_bahan_baku}
+                            onPressDelete={(id) => handleDelete(id)}
+                            onPressUpdate={(idBahanBaku) => {
+                                openModal()
+                                setIsUpdate(true)
+                                const filter = item.list_bahan_baku.filter((item) => item.id === idBahanBaku)
+                                const filteredItem = {
+                                    ...item,
+                                    list_bahan_baku: filter
+                                };
+                                setSelectedMenuIngridients(filteredItem)
+                            }}
+                            onPressAdd={() => {
+                                setSelectedMenuIngridients(item)
+                                openModal()
+                            }}
+                        />
+                    )}
+                    keyExtractor={item => item.id}
+                    contentContainerStyle={{ flexGrow: 1, columnGap: SPACING.space_10, paddingBottom: SPACING.space_10 * 9 }}
+                    vertical
+                />
+            )}
 
-                <BottomSheetCustom
-                    ref={bottomSheetModalRef}
-                    backdropComponent={renderBackdrop}
-                    onDismiss={closeModal}
-                >
-                    <FormComponent dataBahanBaku={ingridients} dataSelectdIngridients={menu_ingridients} selected={selectedMenuIngridients} isUpdate={isUpdate} />
-                </BottomSheetCustom>
-            </View>
-        </BottomSheetModalProvider >
+            <BottomSheetCustom
+                ref={bottomSheetModalRef}
+                onClose={closeModal}
+            >
+                <FormComponent dataBahanBaku={ingridients} dataSelectdIngridients={menu_ingridients} selected={selectedMenuIngridients} onCloseModal={closeModal} />
+            </BottomSheetCustom>
+        </View>
     )
 }
 

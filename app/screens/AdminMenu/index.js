@@ -76,21 +76,18 @@ const AdminMenu = ({ navigation }) => {
         ),
         []
     );
-    useEffect(() => {
-        if (selectedMenu) {
-            bottomSheetModalRef.current.present();
-        }
-    }, [selectedMenu])
 
-    const openModal = () => {
-        bottomSheetModalRef.current.present();
-    };
+    // Fungsi untuk membuka BottomSheetModal
+    const openModal = useCallback(() => {
+        bottomSheetModalRef.current?.present();
+    }, []);
 
-    const closeModal = () => {
-        bottomSheetModalRef.current.dismiss();
-    };
+    // Fungsi untuk menutup BottomSheetModal
+    const closeModal = useCallback(() => {
+        bottomSheetModalRef.current?.dismiss();
+    }, []);
 
-    const FormComponent = ({ selected }) => {
+    const FormComponent = ({ selected, onCloseModal }) => {
         const [dataSubKategori, setDataSubKategori] = useState(subKategori.filter((item) => item.id_kategori == 1));
         const [photo, setPhoto] = useState(null);
         const [form, setForm] = useForm({
@@ -100,6 +97,8 @@ const AdminMenu = ({ navigation }) => {
             harga: selected !== null ? selected.harga.toString() : 0,
             harga_ekstra: selected !== null ? selected.harga_ekstra.toString() : 0,
         });
+        const [loading, setLoading] = useState(false)
+
         const fetchImage = useCallback(async () => {
             const fileUrl = `${BE_API_HOST}/lihat-file/profile?path=${selected.path}`
             fetch(fileUrl)
@@ -138,8 +137,13 @@ const AdminMenu = ({ navigation }) => {
             },
         ]
         const Title = selected !== null ? 'Ubah Menu' : 'Tambah Menu';
+        const toggleLoading = () => {
+            setLoading((prev) => !prev)
+        }
 
-        const onSubmit = () => {
+        const handleSave = () => {
+            onCloseModal(); // Tutup Bottom Sheet setelah penyimpanan berhasil
+            toggleLoading()
             if (photo === null) {
                 showMessage('Please select a file to continue!', 'danger');
             } else {
@@ -154,17 +158,13 @@ const AdminMenu = ({ navigation }) => {
                     type: photo.assets[0].mimeType,
                     name: `menu.${fileExtension}`
                 }
-                // console.log(dataPhoto, 'ssdsds');
-                // return
-
                 dataInput.append('file', dataPhoto)
-                closeModal();
                 const param = { dataInput, setRefreshData, axiosBe };
                 if (selected !== null) {//update
                     const updatedParam = { ...param, id: selected.id };
-                    dispatch(updateMenu(updatedParam));
+                    dispatch(updateMenu(updatedParam))
                 } else {//add
-                    dispatch(addMenu(param));
+                    dispatch(addMenu(param))
                 }
             }
         };
@@ -188,7 +188,12 @@ const AdminMenu = ({ navigation }) => {
 
 
         return (
-            <View style={{ marginBottom: 5, gap: 20 }}>
+            <View style={{
+                paddingHorizontal: 20,
+                paddingBottom: 15,
+                paddingTop: 20,
+                gap: 10
+            }}>
                 <Text style={{ color: COLORS.primaryOrangeHex, fontFamily: FONTFAMILY.poppins_bold, fontSize: FONTSIZE.size_20 }}>{Title}</Text>
                 <TextInput
                     label="Menu"
@@ -223,9 +228,6 @@ const AdminMenu = ({ navigation }) => {
                     minValue={0}
                     label="Harga"
                     placeholder='Masukkan Harga'
-                // onChangeText={(formattedValue) => {
-                //     console.log(formattedValue); // R$ +2.310,46
-                // }}
                 />
 
                 {
@@ -281,69 +283,95 @@ const AdminMenu = ({ navigation }) => {
                         )}
                     </View>
                 </Pressable>
-                <Button title="Tutup" onPress={() => { closeModal() }} color={COLORS.primaryLightGreyHex} />
-                <Button title="Simpan" onPress={() => { onSubmit() }} color={COLORS.primaryOrangeHex} />
+
+                <TouchableOpacity
+                    disabled={loading}
+                    style={{
+                        justifyContent: 'center', // centers vertically
+                        alignItems: 'center',
+                        padding: SPACING.space_10,
+                        backgroundColor: COLORS.primaryLightGreyHex,
+                        height: 40,
+                        borderRadius: BORDERRADIUS.radius_10
+                    }}
+                    onPress={onCloseModal}>
+                    <Text style={{ color: COLORS.primaryWhiteHex }}>Tutup</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    disabled={loading}
+                    style={{
+                        justifyContent: 'center', // centers vertically
+                        alignItems: 'center',
+                        padding: SPACING.space_10,
+                        backgroundColor: COLORS.primaryOrangeHex,
+                        height: 40,
+                        borderRadius: BORDERRADIUS.radius_10
+                    }}
+                    onPress={handleSave}>
+                    <Text>Simpan</Text>
+                </TouchableOpacity>
             </View>
         );
     }
     return (
-        <BottomSheetModalProvider>
-            <View style={styles.ScreenContainer}>
-                <StatusBar style='light' />
-                <HeaderBar title="Menu" onBack={() => navigation.goBack()} />
-                {menus.length < 1 ? (
-                    <View style={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
-                        <Text style={{ fontSize: FONTSIZE.size_18, color: COLORS.primaryLightGreyHex }}>Tidak ada item yang tersedia</Text>
-                    </View>
-                ) : (
-                    <FlatList
-                        data={menus}
-                        onRefresh={fetchDatas}
-                        refreshing={refreshing}
-                        showsVerticalScrollIndicator={false}
-                        renderItem={({ item }) => (
-                            <ListItem
-                                key={item.id}
-                                id={item.id}
-                                name={item.nama}
-                                url={item.path}
-                                kind={item.nama_kategori}
-                                sub_kind={item.nama_sub_kategori}
-                                price={item.harga}
-                                onPressDelete={() => handleDelete(item.id)}
-                                onPressUpdate={() => setSelectedMenu(item)}
-                            />
-                        )}
-                        keyExtractor={item => item.id}
-                        contentContainerStyle={{ flexGrow: 1, columnGap: SPACING.space_10, paddingBottom: SPACING.space_10 * 9 }}
-                        vertical
-                    />
-                )}
-
-                <BottomSheetCustom
-                    ref={bottomSheetModalRef}
-                    backdropComponent={renderBackdrop}
-                >
-                    <FormComponent selected={selectedMenu} />
-                </BottomSheetCustom>
-
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity
-                        style={styles.buttonTambah}
-                        onPress={() => {
-                            openModal()
-                            setSelectedMenu(null)
-                        }}
-                    >
-                        <CustomIcon
-                            name={'library-add'}
-                            color={COLORS.primaryOrangeHex}
-                            size={FONTSIZE.size_24}
-                        />
-                    </TouchableOpacity>
+        <View style={styles.ScreenContainer}>
+            <StatusBar style='light' />
+            <HeaderBar title="Menu" onBack={() => navigation.goBack()} />
+            {menus.length < 1 ? (
+                <View style={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <Text style={{ fontSize: FONTSIZE.size_18, color: COLORS.primaryLightGreyHex }}>Tidak ada item yang tersedia</Text>
                 </View>
+            ) : (
+                <FlatList
+                    data={menus}
+                    onRefresh={fetchDatas}
+                    refreshing={refreshing}
+                    showsVerticalScrollIndicator={false}
+                    renderItem={({ item }) => (
+                        <ListItem
+                            key={item.id}
+                            id={item.id}
+                            name={item.nama}
+                            url={item.path}
+                            kind={item.nama_kategori}
+                            sub_kind={item.nama_sub_kategori}
+                            price={item.harga}
+                            onPressDelete={() => handleDelete(item.id)}
+                            onPressUpdate={() => {
+                                openModal()
+                                setSelectedMenu(item)
+                            }}
+                        />
+                    )}
+                    keyExtractor={item => item.id}
+                    contentContainerStyle={{ flexGrow: 1, columnGap: SPACING.space_10, paddingBottom: SPACING.space_10 * 9 }}
+                    vertical
+                />
+            )}
+
+            <BottomSheetCustom
+                ref={bottomSheetModalRef}
+                onClose={closeModal}
+            >
+                <FormComponent selected={selectedMenu} onCloseModal={closeModal} />
+            </BottomSheetCustom>
+
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                    style={styles.buttonTambah}
+                    onPress={() => {
+                        openModal()
+                        setSelectedMenu(null)
+                    }}
+                >
+                    <CustomIcon
+                        name={'library-add'}
+                        color={COLORS.primaryOrangeHex}
+                        size={FONTSIZE.size_24}
+                    />
+                </TouchableOpacity>
             </View>
-        </BottomSheetModalProvider >
+        </View>
     )
 }
 

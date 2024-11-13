@@ -1,56 +1,66 @@
-import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
-import React, { forwardRef, useCallback, useMemo, useRef, useState } from 'react';
-import { Button, Dimensions, KeyboardAvoidingView, ScrollView, StyleSheet, View } from 'react-native';
-import { BORDERRADIUS, COLORS, SPACING } from '../../config';
+import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
+import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react';
+import { Platform, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { COLORS, SPACING } from '../../config';
 
-const BottomSheetCustom = forwardRef(({ children, ...rest }, ref) => {
-    const [contentHeight, setContentHeight] = useState(0);
-    const contentRef = useRef(null);
+// const BottomSheetCustom = ({ refBtnSheet, onClose, children }) => {
+const BottomSheetCustom = forwardRef(({ children, onClose }, ref) => {
+    // const bottomSheetModalRef = useRef(null);
 
-    const calculateSnapPoints = useCallback(() => {
-        const windowHeight = Dimensions.get('window').height;
-        const percentageHeight = (contentHeight / windowHeight) * 100;
-        const snapHeight = Math.max(percentageHeight, 25); // Ensure the minimum snap point is 25% of the screen height
-        return [`${snapHeight}%`];
-    }, [contentHeight]);
+    // // Membuat fungsi present dan dismiss yang bisa diakses dari komponen induk
+    // useImperativeHandle(ref, () => ({
+    //     present: () => {
+    //         bottomSheetModalRef.current?.present();
+    //     },
+    //     dismiss: () => {
+    //         bottomSheetModalRef.current?.dismiss();
+    //     },
+    // }));
 
-    const onLayoutContent = () => {
-        if (contentRef.current) {
-            contentRef.current.measure((x, y, width, height) => {
-                setContentHeight(height);
-            });
-        }
-    };
+    const renderBackdrop = useCallback(
+        (props) => (
+            <BottomSheetBackdrop
+                {...props}
+                disappearsOnIndex={-1}
+                appearsOnIndex={0}
+                pressBehavior="close"
+                onPress={() => onClose()}
+            />
+        ),
+        []
+    );
+    const { top, bottom } = useSafeAreaInsets();
+
     return (
-        <View style={{
-            position: 'absolute',
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-        }}>
-            <BottomSheetModal
-                ref={ref}
-                snapPoints={calculateSnapPoints()}
-                {...rest}
-            >
-                <BottomSheetView>
-                    <ScrollView>
-                        <KeyboardAvoidingView behavior="padding" >
-                            <View ref={contentRef} onLayout={onLayoutContent} style={styles.content}>
-                                {children}
-                            </View>
-                        </KeyboardAvoidingView>
-                    </ScrollView>
-                </BottomSheetView>
-            </BottomSheetModal >
-        </View >
+        <BottomSheetModal
+            // ref={bottomSheetModalRef}
+            ref={ref}
+            index={0}
+            enableDynamicSizing
+            enablePanDownToClose={false}
+            backdropComponent={renderBackdrop}
+            onDismiss={onClose}
+            topInset={top}
+            keyboardBehavior={Platform.OS === 'android' ? 'extend' : 'interactive'}
+            keyboardBlurBehavior='none'
+        >
+            <BottomSheetView style={[{
+                paddingBottom: bottom,
+                backgroundColor: COLORS.primaryDarkGreyHex
+            }]}>
+                {children}
+            </BottomSheetView>
+        </BottomSheetModal>
     );
 });
+
 const styles = StyleSheet.create({
-    content: {
-        flexGrow: 1,
-        padding: SPACING.space_16,
+    contentContainer: {
+        gap: 8,
+        padding: SPACING.space_12,
         backgroundColor: COLORS.primaryDarkGreyHex,
     },
 });
+
 export default BottomSheetCustom;

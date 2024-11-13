@@ -29,27 +29,8 @@ const Account = () => {
     });
   };
 
-  const bottomSheetModalRef = useRef(null);
-
-  const openModal = () => {
-    bottomSheetModalRef.current.present();
-  };
-
-  const closeModal = () => {
-    bottomSheetModalRef.current.dismiss();
-  };
-
   const tabBarHeight = useBottomTabBarHeight();
-  const renderBackdrop = useCallback(
-    props => (
-      <BottomSheetBackdrop
-        {...props}
-        disappearsOnIndex={-1}
-        appearsOnIndex={0}
-      />
-    ),
-    []
-  );
+
 
   return (
     <>
@@ -61,24 +42,6 @@ const Account = () => {
         <ItemListMenu text="SignOut" onPress={signOut} />
       </View>
 
-      {/* BOTTOM SHEET */}
-      <BottomSheetCustom
-        ref={bottomSheetModalRef}
-        backdropComponent={renderBackdrop}
-      >
-        {/* Render your dynamic content here */}
-        <View style={{ marginBottom: tabBarHeight + 5 }}>
-          <Text style={[styles.text, { color: 'white' }]}>test</Text>
-          {/* <Text style={[styles.text, { color: 'white' }]}>sdsdsdsdsdsdsdsd</Text>
-          <Text style={[styles.text, { color: 'white' }]}>sdsdsdsdsdsdsdsd</Text>
-          <Text style={[styles.text, { color: 'white' }]}>sdsdsdsdsdsdsdsd</Text>
-          <Text style={[styles.text, { color: 'white' }]}>sdsdsdsdsdsdsdsd</Text>
-          <Text style={[styles.text, { color: 'white' }]}>sdsdsdsdsdsdsdsd</Text> */}
-          <View style={styles.containerButton}>
-            <Button title="Tutup" onPress={closeModal} color={COLORS.primaryLightGreyHex} />
-          </View>
-        </View>
-      </BottomSheetCustom>
     </>
   )
 };

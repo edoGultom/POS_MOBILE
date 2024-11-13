@@ -58,30 +58,17 @@ const AdminStock = ({ navigation }) => {
         dispatch(deleteTransaksiStok(param))
     }, []);
 
-    const renderBackdrop = useCallback(
-        props => (
-            <BottomSheetBackdrop
-                {...props}
-                disappearsOnIndex={-1}
-            />
-        ),
-        []
-    );
-
-    useEffect(() => {
-        if (selectedStock) {
-            bottomSheetModalRef.current.present();
-        }
-    }, [selectedStock])
-
-    const openModal = () => {
+    const openModal = useCallback(() => {
         bottomSheetModalRef.current?.present();
-    };
+    }, []);
 
-    const closeModal = () => {
-        setSelectedStock(null)
+    // Fungsi untuk menutup BottomSheetModal
+    const closeModal = useCallback(() => {
         bottomSheetModalRef.current?.dismiss();
-    };
+        if (selectedStock) {
+            setSelectedStock(null)
+        }
+    }, []);
     const convertDateIndo = (date) => {
         if (date) {
             return format(new Date(date), 'dd-MM-yyyy', { locale: id })
@@ -96,7 +83,7 @@ const AdminStock = ({ navigation }) => {
         return new Date(year, month, day);
     }
 
-    const FormComponent = ({ selected }) => {
+    const FormComponent = ({ selected, onCloseModal }) => {
         const tipe = [{ id: 'Masuk', nama: 'Masuk' }, { id: 'Keluar', nama: 'Keluar' }];
         const [form, setForm] = useForm({
             tipe: selected !== null ? selected.tipe : 'Masuk',
@@ -105,14 +92,19 @@ const AdminStock = ({ navigation }) => {
         const [showDate, setShowDate] = useState(false);
 
         const Title = selected !== null ? `Ubah Transaksi Stok ${selected.kode}` : 'Tambah Transaksi Stok';
-
+        const [loading, setLoading] = useState(false)
+        const toggleLoading = () => {
+            setLoading((prev) => !prev)
+        }
         const onChangeStart = (event, selectedDate) => {
             const currentDateStart = selectedDate || date;
             setShowDate(Platform.OS === 'ios');
             setForm('tanggal', currentDateStart)
         };
 
-        const onSubmit = () => {
+        const handleSave = () => {
+            onCloseModal(); // Tutup Bottom Sheet setelah penyimpanan berhasil
+            toggleLoading()
             const dataInput = new FormData();
             for (const key in form) {
                 if (key === 'tanggal') {
@@ -121,20 +113,37 @@ const AdminStock = ({ navigation }) => {
                     dataInput.append(key, form[key]);
                 }
             }
-            closeModal();
             const param = { dataInput, setRefreshData, axiosBe };
             if (selected !== null) {//update
                 const updatedParam = { ...param, id: selected.id };
-                dispatch(updateTransaksiStok(updatedParam));
+                dispatch(updateTransaksiStok(updatedParam))
+                // .then(() => {
+                //     onCloseModal(); // Tutup Bottom Sheet setelah penyimpanan berhasil
+                //     toggleLoading()
+
+                // })
+                // .catch((error) => {
+                //     showMessage('Update failed!', 'danger');
+                // });
             } else {//add
-                dispatch(addTransaksiStok(param));
+                dispatch(addTransaksiStok(param))
+                // .then(() => {
+                //     onCloseModal(); // Tutup Bottom Sheet setelah penyimpanan berhasil
+                //     toggleLoading()
+                // })
+                // .catch((error) => {
+                //     showMessage('Add failed!', 'danger');
+                // });
             }
         };
 
         return (
-            <View style={{ marginBottom: 5, gap: 20 }}>
-                <Text style={{ color: COLORS.primaryOrangeHex, fontFamily: FONTFAMILY.poppins_bold, fontSize: FONTSIZE.size_20 }}>{Title}</Text>
-                <View style={{ flex: 1, flexDirection: 'row', gap: SPACING.space_8 }}>
+            <View style={{
+                paddingHorizontal: 20,
+                gap: 10
+            }}>
+                <Text style={{ marginTop: 20, color: COLORS.primaryOrangeHex, fontFamily: FONTFAMILY.poppins_bold, fontSize: FONTSIZE.size_20 }}>{Title}</Text>
+                <View style={{ flexDirection: 'row', gap: SPACING.space_8 }}>
                     <View style={{ flexShrink: 1, flexGrow: 1 }}>
                         <Select
                             label="Tipe"
@@ -166,70 +175,99 @@ const AdminStock = ({ navigation }) => {
                     </View>
                 </View>
 
-                <Button title="Tutup" onPress={() => { closeModal() }} color={COLORS.primaryLightGreyHex} />
-                <Button title="Simpan" onPress={() => { onSubmit() }} color={COLORS.primaryOrangeHex} />
+                <View style={{
+                    marginTop: 20,
+                    gap: 10,
+                }}>
+                    <TouchableOpacity
+                        style={{
+                            justifyContent: 'center', // centers vertically
+                            alignItems: 'center',
+                            padding: SPACING.space_10,
+                            backgroundColor: COLORS.primaryLightGreyHex,
+                            height: 40,
+                            borderRadius: BORDERRADIUS.radius_10
+                        }}
+                        onPress={onCloseModal}>
+                        <Text style={{ color: COLORS.primaryWhiteHex }}>Tutup</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        disabled={loading}
+                        style={{
+                            justifyContent: 'center', // centers vertically
+                            alignItems: 'center',
+                            padding: SPACING.space_10,
+                            backgroundColor: COLORS.primaryOrangeHex,
+                            height: 40,
+                            borderRadius: BORDERRADIUS.radius_10,
+                            marginBottom: 20
+                        }}
+                        onPress={handleSave}>
+                        <Text>Simpan</Text>
+                    </TouchableOpacity>
+                </View>
             </View >
         );
     }
 
     return (
-        <BottomSheetModalProvider>
-            <View style={styles.ScreenContainer}>
-                <StatusBar style='light' />
-                <HeaderBar title="Tansaksi Stok" onBack={() => navigation.goBack()} />
-                {stocks.length < 1 ? (
-                    <View style={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
-                        <Text style={{ fontSize: FONTSIZE.size_18, color: COLORS.primaryLightGreyHex }}>Tidak ada item yang tersedia</Text>
-                    </View>
-                ) : (
-                    <FlatList
-                        data={stocks}
-                        onRefresh={fetchData}
-                        refreshing={refreshing}
-                        showsVerticalScrollIndicator={false}
-                        renderItem={({ item }) => (
-                            <ListItemStock
-                                key={item.id}
-                                id={item.id}
-                                tanggal={item.tanggal}
-                                kode={item.kode}
-                                tipe={item.tipe}
-                                item={item}
-                                onPressDelete={() => handleDelete(item.id)}
-                                onPressUpdate={() => setSelectedStock(item)}
-                                onPressDetail={() => navigation.navigate('AdminDetailStock', item)}
-                            />
-                        )}
-                        keyExtractor={item => item.id}
-                        contentContainerStyle={{ flexGrow: 1, columnGap: SPACING.space_10, paddingBottom: SPACING.space_10 * 9 }}
-                        vertical
-                    />
-                )}
-
-                <BottomSheetCustom
-                    ref={bottomSheetModalRef}
-                    backdropComponent={renderBackdrop}
-                    onDismiss={closeModal}
-                >
-                    <FormComponent selected={selectedStock} />
-                </BottomSheetCustom>
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity
-                        style={styles.buttonTambah}
-                        onPress={() => {
-                            openModal()
-                            setSelectedStock(null)
-                        }}
-                    >
-                        <CustomIcon
-                            name={'library-add'}
-                            color={COLORS.primaryOrangeHex}
-                            size={FONTSIZE.size_24}
-                        />
-                    </TouchableOpacity>
+        <View style={styles.ScreenContainer}>
+            <StatusBar style='light' />
+            <HeaderBar title="Tansaksi Stok" onBack={() => navigation.goBack()} />
+            {stocks.length < 1 ? (
+                <View style={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <Text style={{ fontSize: FONTSIZE.size_18, color: COLORS.primaryLightGreyHex }}>Tidak ada item yang tersedia</Text>
                 </View>
+            ) : (
+                <FlatList
+                    data={stocks}
+                    onRefresh={fetchData}
+                    refreshing={refreshing}
+                    showsVerticalScrollIndicator={false}
+                    renderItem={({ item }) => (
+                        <ListItemStock
+                            key={item.id}
+                            id={item.id}
+                            tanggal={item.tanggal}
+                            kode={item.kode}
+                            tipe={item.tipe}
+                            item={item}
+                            onPressDelete={() => handleDelete(item.id)}
+                            onPressUpdate={() => {
+                                openModal()
+                                setSelectedStock(item)
+                            }}
+                            onPressDetail={() => navigation.navigate('AdminDetailStock', item)}
+                        />
+                    )}
+                    keyExtractor={item => item.id}
+                    contentContainerStyle={{ flexGrow: 1, columnGap: SPACING.space_10, paddingBottom: SPACING.space_10 * 9 }}
+                    vertical
+                />
+            )}
+
+            <BottomSheetCustom
+                ref={bottomSheetModalRef}
+                onClose={closeModal}
+            >
+                <FormComponent selected={selectedStock} onCloseModal={closeModal} />
+            </BottomSheetCustom>
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                    style={styles.buttonTambah}
+                    onPress={() => {
+                        openModal()
+                        setSelectedStock(null)
+                    }}
+                >
+                    <CustomIcon
+                        name={'library-add'}
+                        color={COLORS.primaryOrangeHex}
+                        size={FONTSIZE.size_24}
+                    />
+                </TouchableOpacity>
             </View>
-        </BottomSheetModalProvider >
+        </View>
     )
 }
 
