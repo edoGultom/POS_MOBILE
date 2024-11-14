@@ -32,17 +32,6 @@ const PosOrder = ({ route, navigation }) => {
         dispatch(decrementCartItemQuantity(data))
     };
 
-    const renderBackdrop = useCallback(
-        props => (
-            <BottomSheetBackdrop
-                {...props}
-                disappearsOnIndex={-1}
-            // appearsOnIndex={0}
-            />
-        ),
-        []
-    );
-
     const renderItem = ({ item }) => {
         return (
             <OrderItem
@@ -64,13 +53,15 @@ const PosOrder = ({ route, navigation }) => {
             />
         );
     };
-    const openModal = () => {
-        bottomSheetModalRef.current.present();
-    };
-    const closeModal = () => {
-        bottomSheetModalRef.current.dismiss();
-    };
 
+    const openModal = useCallback(() => {
+        bottomSheetModalRef.current?.present();
+    }, []);
+
+    // Fungsi untuk menutup BottomSheetModal
+    const closeModal = useCallback(() => {
+        bottomSheetModalRef.current?.dismiss();
+    }, []);
     const onOrdered = () => {
         try {
             const formData = {
@@ -92,60 +83,59 @@ const PosOrder = ({ route, navigation }) => {
     };
 
     return (
-        <BottomSheetModalProvider>
-            <View style={styles.ScreenContainer}>
-                <StatusBar style='light' />
-                <HeaderBar title="Order Detail" onBack={() => navigation.goBack()} />
-                {/* {isShowSuccess && (
+        <View style={styles.ScreenContainer}>
+            <StatusBar style='light' />
+            <HeaderBar title="Order Detail" onBack={() => navigation.goBack()} />
+            {/* {isShowSuccess && (
                     <PopUpAnimation
                         style={styles.LottieAnimation}
                         source={IlSuccesFully}
                     />
                 )} */}
-                <View style={[styles.orderContainer, { marginBottom: SPACING.space_2 }]}>
-                    <View style={styles.orderItemFlatlist}>
-                        <FlatList
-                            ref={ListRef}
-                            showsHorizontalScrollIndicator={false}
-                            data={CartList}
-                            contentContainerStyle={styles.FlatListContainer}
-                            ListEmptyComponent={
-                                <View style={styles.EmptyListContainer}>
-                                    <IcNoMenu />
-                                    <Text style={styles.EmptyText}>No Ordered Menu</Text>
-                                </View>
-                            }
-                            keyExtractor={item => `${item.id}-${item.temperatur}`}
-                            renderItem={renderItem}
-                        />
-                    </View>
-                    <PaymentFooter
-                        buttonPressHandler={() => openModal()}
-                        buttonTitle="Checkout"
-                        price={{
-                            totalPesanan: CartList.reduce((sum, item) => sum + item.qty, 0),
-                            totalBayar: totalBayar,
-                            currency: 'Rp'
-                        }}
-                        pembayaran={pembayaran}
-                        setPembayaran={setPembayaran}
+            <View style={[styles.orderContainer, { marginBottom: SPACING.space_2 }]}>
+                <View style={styles.orderItemFlatlist}>
+                    <FlatList
+                        ref={ListRef}
+                        showsHorizontalScrollIndicator={false}
+                        data={CartList}
+                        contentContainerStyle={styles.FlatListContainer}
+                        ListEmptyComponent={
+                            <View style={styles.EmptyListContainer}>
+                                <IcNoMenu />
+                                <Text style={styles.EmptyText}>No Ordered Menu</Text>
+                            </View>
+                        }
+                        keyExtractor={item => `${item.id}-${item.temperatur}`}
+                        renderItem={renderItem}
                     />
                 </View>
-                <BottomSheetCustom
-                    ref={bottomSheetModalRef}
-                    backdropComponent={renderBackdrop}
-                >
-                    <OrderSummary
-                        item={{
-                            status: 'ordered',
-                            table: table,
-                            ordered: CartList
-                        }}
-                        onAddOrder={onOrdered}
-                    />
-                </BottomSheetCustom>
+                <PaymentFooter
+                    buttonPressHandler={() => openModal()}
+                    buttonTitle="Checkout"
+                    price={{
+                        totalPesanan: CartList.reduce((sum, item) => sum + item.qty, 0),
+                        totalBayar: totalBayar,
+                        currency: 'Rp'
+                    }}
+                    pembayaran={pembayaran}
+                    setPembayaran={setPembayaran}
+                />
             </View>
-        </BottomSheetModalProvider >
+
+            <BottomSheetCustom
+                ref={bottomSheetModalRef}
+                onClose={closeModal}
+            >
+                <OrderSummary
+                    item={{
+                        status: 'ordered',
+                        table: table,
+                        ordered: CartList
+                    }}
+                    onAddOrder={onOrdered}
+                />
+            </BottomSheetCustom>
+        </View>
     )
 }
 

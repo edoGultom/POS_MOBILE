@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Animated, Dimensions, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import useAxios from '../../api/useAxios'
@@ -10,6 +10,7 @@ import ItemListOrder from '../../component/ItemListOrder'
 import { COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
 import { getOrders, processOrder, readyOrder } from '../../redux/orderSlice'
 import ModalCustom from '../../component/Modal'
+import ItemOrderChef from './ItemOrderChef'
 
 const ChefHome = ({ navigation }) => {
     const CARD_WIDTH = Dimensions.get('window').width;
@@ -99,125 +100,38 @@ const ChefHome = ({ navigation }) => {
     const closeModal = () => {
         setIsVisible(false);
     };
-    // console.log(expandedState, 'expandedState')
-    // console.log(expandedKeys, 'expandedKeys')
-    const touchableOpacityRef = useRef(null);
+
+    const [contentHeight, setContentHeight] = useState(0);
+    const handleHeight = useCallback(
+        (event) => {
+            // const height = event.nativeEvent.layout.height;
+            setContentHeight(350); // Simpan tinggi total dari kon
+        },
+        [],
+    )
+
     const renderItem = ({ item }) => {
-        // console.log(item, 'xxxx')
         const itemState = expandedState[item.id];
-        if (!itemState) {
-            return null; // Ensure itemState is defined before rendering
-        }
+
         const animatedHeight = itemState.animation.interpolate({
             inputRange: [0, 1],
-            outputRange: [0, 300], // Sesuaikan tinggi konten Anda
+            outputRange: [0, contentHeight], // Sesuaikan tinggi konten Anda
         });
-        return (
-            <>
-                <View style={{
-                    borderWidth: 1,
-                    borderColor: COLORS.primaryWhiteHex,
-                    backgroundColor: COLORS.primaryLightGreyHex,
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    paddingHorizontal: 15,
-                    paddingVertical: 15,
-                    borderTopStartRadius: 25,
-                    borderTopEndRadius: 25,
-                    zIndex: 1
-                }}>
-                    <View style={{
-                        // backgroundColor: 'red',
-                        gap: 4
-                    }}>
-                        <Text style={styles.HeaderName}>Order-ID : #{item.id}</Text>
-                        <Text style={styles.HeaderName}>Table : {item.meja.nomor_meja}</Text>
-                    </View>
-                    <View style={{
-                        // backgroundColor: 'yellow',
-                        gap: 4,
-                        justifyContent: 'flex-end',
-                        alignItems: 'flex-end'
-                    }}>
-                        <Text style={styles.HeaderName}>Waktu : {item.waktu}</Text>
-                        <Text style={styles.HeaderName}>Waiter : {item.pelayan}</Text>
-                    </View>
-                    <TouchableOpacity
-                        // ref={touchableOpacityRef}
-                        onPress={() => toggleContent(item.id)}
-                        style={{
-                            backgroundColor: COLORS.primaryOrangeHex,
-                            position: 'absolute',
-                            bottom: -14,
-                            left: '50%',
-                            borderRadius: 50,
-                            zIndex: 2
-                        }}>
-                        <CustomIcon
-                            name={itemState.expanded ? 'keyboard-arrow-down' : 'keyboard-arrow-up'}
-                            color={COLORS.primaryWhiteHex}
-                            size={FONTSIZE.size_30}
-                        />
-                    </TouchableOpacity>
-                </View>
-                {
-                    itemState.expanded && (
-                        <Animated.View style={[{ height: animatedHeight }]}>
-                            <View style={{
-                                borderWidth: 1,
-                                borderColor: COLORS.primaryWhiteHex,
-                                backgroundColor: COLORS.primaryBlackHex,
-                                flexDirection: 'column',
-                                paddingHorizontal: 15,
-                                paddingVertical: 15,
-                                gap: SPACING.space_10,
-                                borderBottomStartRadius: 25,
-                                borderBottomEndRadius: 25,
-                            }}>
-                                {item.order_detail.map((detail, idx) => (//content order detail
-                                    <ItemListOrder
-                                        kind={detail.menu.nama_kategori}
-                                        key={idx}
-                                        name={detail.menu.nama}
-                                        table={item.meja.nomor_meja}
-                                        type="chef_detail_order"
-                                        price={detail.menu.harga}
-                                        priceExtra={detail.menu.harga_ekstra}
-                                        temperatur={detail.temperatur}
-                                        image={detail.menu.path}
-                                        qty={detail.quantity}
-                                        bahanBaku={detail.menu.list_bahan_baku}
-                                        status={detail.status}
-                                        onProcess={() => onProcess(detail)}
-                                    />
-                                ))}
+        if (!itemState) {
+            return null; // Pastikan itemState terdefinisi
+        }
 
-                                {item.status === 'In Progress' && (//Button ketika seluruh pesanan di process
-                                    <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                                        <TouchableOpacity
-                                            onPress={openModal}
-                                            disabled={isVisible}
-                                            style={{
-                                                justifyContent: 'center',
-                                                alignItems: 'center',
-                                                width: 150,
-                                                padding: 15,
-                                                backgroundColor: COLORS.primaryOrangeHex,
-                                                borderRadius: 10
-                                            }}>
-                                            <Text style={{ color: COLORS.primaryWhiteHex }}>Ready to Waiters</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                )}
-                            </View>
-                        </Animated.View>
-                    )
-                }
-            </>
-        )
+        return <ItemOrderChef
+            item={item}
+            itemState={itemState}
+            animatedHeight={animatedHeight}
+            handleHeight={handleHeight}
+            openModal={openModal}
+            onProcess={onProcess}
+            toggleContent={toggleContent}
+            isVisible={isVisible}
+        />
     }
-
     return (
         <>
             <View style={styles.ScreenContainer}>
@@ -246,7 +160,7 @@ const ChefHome = ({ navigation }) => {
                             marginTop: 12,
                             flexGrow: 1,
                             gap: SPACING.space_18,
-                            paddingHorizontal: 15
+                            paddingHorizontal: 10,
                         }}
                         showsHorizontalScrollIndicator={false}
                         data={orders}

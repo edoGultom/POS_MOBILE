@@ -60,12 +60,15 @@ const CashierDetailOrder = ({ route, navigation }) => {
         if (Midtrans !== null) openModal();
     }, [Midtrans])
 
-    const openModal = () => {
-        bottomSheetModalRef.current.present();
-    };
-    const closeModal = () => {
-        bottomSheetModalRef.current.dismiss();
-    };
+    const openModal = useCallback(() => {
+        bottomSheetModalRef.current?.present();
+    }, []);
+
+    // Fungsi untuk menutup BottomSheetModal
+    const closeModal = useCallback(() => {
+        bottomSheetModalRef.current?.dismiss();
+    }, []);
+
     const renderBackdrop = useCallback(
         props => (
             <BottomSheetBackdrop
@@ -137,20 +140,20 @@ const CashierDetailOrder = ({ route, navigation }) => {
         const debounceKembalian = useDebounce(tempKembalian, 500);
         const [form, setForm] = useForm({
             totalBayar: totalBayar,
-            jumlah_diberikan: 35000,
-            jumlah_diberikan: 35000,
-            jumlah_kembalian: (35000 > totalBayar) ? 35000 - totalBayar : 0
+            jumlah_diberikan: 15000,
+            jumlah_diberikan: 15000,
+            jumlah_kembalian: (15000 > totalBayar) ? 15000 - totalBayar : 0
         });
 
         const [currencyMenu, setCurrencyMenu] = useState({
             index: 0,
-            value: formatCurrency(35000, 'IDR')
+            value: formatCurrency(15000, 'IDR')
         });
         const arrCurrency = [
             {
                 key: 0,
-                label: formatCurrency(35000, 'IDR'),
-                value: 35000
+                label: formatCurrency(15000, 'IDR'),
+                value: 15000
             },
             {
                 key: 1,
@@ -224,58 +227,57 @@ const CashierDetailOrder = ({ route, navigation }) => {
         }, [debounceKembalian]);
 
         return (
-            <KeyboardAvoidingView style={{ flex: 1 }} behavior={"padding"} >
-                <ScrollView>
-                    <View style={{ marginBottom: 5, gap: 20 }}>
-                        <Text style={{ color: COLORS.secondaryLightGreyHex, fontSize: FONTSIZE.size_16, fontFamily: FONTFAMILY.poppins_semibold }}>Total Pembayaran - <Text style={{ color: COLORS.primaryOrangeHex, fontSize: FONTSIZE.size_20, fontFamily: FONTFAMILY.poppins_semibold }}>{formatCurrency(totalBayar, 'IDR')}</Text></Text>
-                        <CurrencyInput
-                            value={form.jumlah_diberikan}
-                            onChangeValue={(value) => {
-                                setForm('jumlah_diberikan', value)
-                                setCurrencyMenu({ index: undefined, value: '' })
+            <View style={{
+                paddingHorizontal: 20,
+                gap: 10
+            }}>
+                <Text style={{ marginTop: 20, color: COLORS.secondaryLightGreyHex, fontSize: FONTSIZE.size_16, fontFamily: FONTFAMILY.poppins_semibold }}>Total Pembayaran - <Text style={{ color: COLORS.primaryOrangeHex, fontSize: FONTSIZE.size_20, fontFamily: FONTFAMILY.poppins_semibold }}>{formatCurrency(totalBayar, 'IDR')}</Text></Text>
+                <CurrencyInput
+                    value={form.jumlah_diberikan}
+                    onChangeValue={(value) => {
+                        setForm('jumlah_diberikan', value)
+                        setCurrencyMenu({ index: undefined, value: '' })
+                    }}
+                    onBlur={handleBlur}
+                    renderTextInput={textInputProps => <TextInput {...textInputProps} variant='filled' />}
+                    prefix="Rp "
+                    delimiter="."
+                    precision={0}
+                    minValue={0}
+                />
+                <View style={styles.KindOuterContainer}>
+                    {arrCurrency.map((item, index) => (
+                        <TouchableOpacity
+                            key={item.key}
+                            onPress={() => {
+                                setCurrencyMenu({ index: item.key, value: item.label })
+                                setForm('jumlah_diberikan', parseInt(item.value))
+                                setTempKembalian(item.value)
                             }}
-                            onBlur={handleBlur}
-                            renderTextInput={textInputProps => <TextInput {...textInputProps} variant='filled' />}
-                            prefix="Rp "
-                            delimiter="."
-                            precision={0}
-                            minValue={0}
-                        />
-                        <View style={styles.KindOuterContainer}>
-                            {arrCurrency.map((item, index) => (
-                                <TouchableOpacity
-                                    key={item.key}
-                                    onPress={() => {
-                                        setCurrencyMenu({ index: item.key, value: item.label })
-                                        setForm('jumlah_diberikan', parseInt(item.value))
-                                        setTempKembalian(item.value)
-                                    }}
-                                    style={[
-                                        styles.KindBox,
-                                        currencyMenu.index === item.key
-                                            ? { borderColor: COLORS.primaryOrangeHex } : { borderColor: COLORS.primaryLightGreyHex },
-                                    ]}>
-                                    {currencyMenu.index === item.key ? item.iconOn : item.iconOff}
-                                    <Text
-                                        style={[
-                                            styles.SizeText,
-                                            {
-                                                fontSize: FONTSIZE.size_16,
-                                            },
-                                            currencyMenu.index === item.key
-                                                ? { color: COLORS.primaryOrangeHex } : { color: COLORS.primaryWhiteHex },
-                                        ]}>
-                                        {item.label}
-                                    </Text>
-                                </TouchableOpacity>
-                            ))}
-                        </View>
-                        <TouchableOpacity style={styles.processBtn} onPress={handleProcessPaymentCash}>
-                            <Text style={styles.processBtnTitle}>PROCESS</Text>
+                            style={[
+                                styles.KindBox,
+                                currencyMenu.index === item.key
+                                    ? { borderColor: COLORS.primaryOrangeHex } : { borderColor: COLORS.primaryLightGreyHex },
+                            ]}>
+                            {currencyMenu.index === item.key ? item.iconOn : item.iconOff}
+                            <Text
+                                style={[
+                                    styles.SizeText,
+                                    {
+                                        fontSize: FONTSIZE.size_16,
+                                    },
+                                    currencyMenu.index === item.key
+                                        ? { color: COLORS.primaryOrangeHex } : { color: COLORS.primaryWhiteHex },
+                                ]}>
+                                {item.label}
+                            </Text>
                         </TouchableOpacity>
-                    </View>
-                </ScrollView>
-            </KeyboardAvoidingView>
+                    ))}
+                </View>
+                <TouchableOpacity style={styles.processBtn} onPress={handleProcessPaymentCash}>
+                    <Text style={styles.processBtnTitle}>PROCESS</Text>
+                </TouchableOpacity>
+            </View>
         );
     }
 
@@ -316,65 +318,67 @@ const CashierDetailOrder = ({ route, navigation }) => {
     }
 
     return (
-        <BottomSheetModalProvider>
-            <View style={styles.ScreenContainer}>
-                <StatusBar style='light' />
-                {showAnimation && (
-                    <PopUpAnimation
-                        style={styles.LottieAnimation}
-                        source={IlSuccesFully}
+        <View style={styles.ScreenContainer}>
+            <StatusBar style='light' />
+            {showAnimation && (
+                <PopUpAnimation
+                    style={styles.LottieAnimation}
+                    source={IlSuccesFully}
+                />
+            )}
+            <HeaderBar title="Order Detail" onBack={() => navigation.goBack()} />
+            <View style={[styles.orderContainer, { marginBottom: 2 }]}>
+                <View style={styles.orderItemFlatlist}>
+                    <FlatList
+                        ref={ListRef}
+                        showsHorizontalScrollIndicator={false}
+                        data={item.order_detail}
+                        contentContainerStyle={styles.FlatListContainer}
+                        ListEmptyComponent={
+                            <View style={styles.EmptyListContainer}>
+                                <Text style={styles.EmptyText}>No Ordered Coffee</Text>
+                            </View>
+                        }
+                        keyExtractor={item => `${item.id}-${item.temperatur}`}
+                        renderItem={renderItem}
                     />
-                )}
-                <HeaderBar title="Order Detail" onBack={() => navigation.goBack()} />
-                <View style={[styles.orderContainer, { marginBottom: 2 }]}>
-                    <View style={styles.orderItemFlatlist}>
-                        <FlatList
-                            ref={ListRef}
-                            showsHorizontalScrollIndicator={false}
-                            data={item.order_detail}
-                            contentContainerStyle={styles.FlatListContainer}
-                            ListEmptyComponent={
-                                <View style={styles.EmptyListContainer}>
-                                    <Text style={styles.EmptyText}>No Ordered Coffee</Text>
-                                </View>
-                            }
-                            keyExtractor={item => `${item.id}-${item.temperatur}`}
-                            renderItem={renderItem}
-                        />
-                    </View>
-                    <CashierPaymentFooter
-                        buttonPressHandler={buttonPressHandler}
-                        buttonTitle="Bayar"
-                        price={{
-                            totalPesanan: item.order_detail.reduce((sum, item) => sum + parseInt(item.quantity), 0),
-                            totalBayar: totalBayar,
-                            currency: 'IDR'
-                        }}
-                        pembayaran={pembayaran}
-                        setPembayaran={setPembayaran}
-                    />
-
                 </View>
-                {Midtrans && pembayaran === 'qris' ? (
-                    <BottomSheetCustom
-                        ref={bottomSheetModalRef}
-                        backdropComponent={renderBackdropQris}
-                        enablePanDownToClose={false} // Disable swipe down to close
-                    >
-                        <FormComponentQris dataMidtrans={Midtrans} />
-                    </BottomSheetCustom>
-                )
-                    :
-                    <BottomSheetCustom
-                        ref={bottomSheetModalRef}
-                        backdropComponent={renderBackdrop}
-                    >
-                        <FormComponentCash />
-                    </BottomSheetCustom>
-                }
+                <CashierPaymentFooter
+                    buttonPressHandler={buttonPressHandler}
+                    buttonTitle="Bayar"
+                    price={{
+                        totalPesanan: item.order_detail.reduce((sum, item) => sum + parseInt(item.quantity), 0),
+                        totalBayar: totalBayar,
+                        currency: 'IDR'
+                    }}
+                    pembayaran={pembayaran}
+                    setPembayaran={setPembayaran}
+                />
 
             </View>
-        </BottomSheetModalProvider >
+            {Midtrans && pembayaran === 'qris' ? (
+                <BottomSheetCustom
+                    // backdropComponent={renderBackdropQris}
+                    // enablePanDownToClose={false} // Disable swipe down to close
+                    ref={bottomSheetModalRef}
+                    onClose={closeModal}
+                    appearsOnIndex={0}
+                >
+                    <FormComponentQris dataMidtrans={Midtrans} />
+                </BottomSheetCustom>
+            )
+                :
+                <BottomSheetCustom
+                    // backdropComponent={renderBackdrop}
+                    ref={bottomSheetModalRef}
+                    onClose={closeModal}
+                    disappearsOnIndex={-1}
+                >
+                    <FormComponentCash />
+                </BottomSheetCustom>
+            }
+
+        </View>
     )
 }
 
@@ -391,7 +395,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: BORDERRADIUS.radius_15,
         height: 50,
-        backgroundColor: COLORS.primaryOrangeHex
+        backgroundColor: COLORS.primaryOrangeHex,
+        marginBottom: 10
     },
     SizeText: {
         fontFamily: FONTFAMILY.poppins_medium,

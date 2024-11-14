@@ -70,12 +70,15 @@ const AdminOrder = ({ navigation }) => {
         if (Midtrans !== null) openModal();
     }, [Midtrans])
 
-    const openModal = () => {
-        bottomSheetModalRef.current.present();
-    };
-    const closeModal = () => {
-        bottomSheetModalRef.current.dismiss();
-    };
+    const openModal = useCallback(() => {
+        bottomSheetModalRef.current?.present();
+    }, []);
+
+    // Fungsi untuk menutup BottomSheetModal
+    const closeModal = useCallback(() => {
+        bottomSheetModalRef.current?.dismiss();
+    }, []);
+
     const renderBackdrop = useCallback(
         props => (
             <BottomSheetBackdrop
@@ -130,21 +133,21 @@ const AdminOrder = ({ navigation }) => {
     const FormComponentCash = () => {
         const [form, setForm] = useForm({
             totalBayar: totalBayar,
-            jumlah_diberikan: 35000,
-            jumlah_kembalian: (35000 > totalBayar) ? 35000 - totalBayar : 0
+            jumlah_diberikan: 15000,
+            jumlah_kembalian: (15000 > totalBayar) ? 15000 - totalBayar : 0
         });
         const [tempKembalian, setTempKembalian] = useState(0);
         const debounceKembalian = useDebounce(tempKembalian, 500);
 
         const [currencyMenu, setCurrencyMenu] = useState({
             index: 0,
-            value: formatCurrency(35000, 'IDR')
+            value: formatCurrency(15000, 'IDR')
         });
         const arrCurrency = [
             {
                 key: 0,
-                label: formatCurrency(35000, 'IDR'),
-                value: 35000
+                label: formatCurrency(15000, 'IDR'),
+                value: 15000
             },
             {
                 key: 1,
@@ -326,67 +329,69 @@ const AdminOrder = ({ navigation }) => {
     }
 
     return (
-        <BottomSheetModalProvider>
-            <View style={styles.ScreenContainer}>
-                <StatusBar style='light' />
-                {showAnimation && (
-                    <PopUpAnimation
-                        style={styles.LottieAnimation}
-                        source={IlSuccesFully}
-                    />
-                )}
+        <View style={styles.ScreenContainer}>
+            <StatusBar style='light' />
+            {showAnimation && (
+                <PopUpAnimation
+                    style={styles.LottieAnimation}
+                    source={IlSuccesFully}
+                />
+            )}
 
-                <HeaderBar title="Order Detail" onBack={() => navigation.goBack()} />
-                <View style={[styles.orderContainer, { marginBottom: SPACING.space_2 }]}>
-                    <View style={styles.orderItemFlatlist}>
-                        <FlatList
-                            ref={ListRef}
-                            showsHorizontalScrollIndicator={false}
-                            data={CartList}
-                            contentContainerStyle={styles.FlatListContainer}
-                            ListEmptyComponent={
-                                <View style={styles.EmptyListContainer}>
-                                    <IcNoMenu />
-                                    <Text style={styles.EmptyText}>No Ordered Menu</Text>
-                                </View>
-                            }
-                            keyExtractor={item => `${item.id}-${item.temperatur}`}
-                            renderItem={renderItem}
-                        />
-                    </View>
-                    <PaymentFooter
-                        buttonPressHandler={buttonPressHandler}
-                        buttonTitle="Pesan Sekarang"
-                        price={{
-                            totalPesanan: CartList.reduce((sum, item) => sum + item.qty, 0),
-                            totalBayar: totalBayar,
-                            currency: 'Rp'
-                        }}
-                        pembayaran={pembayaran}
-                        setPembayaran={setPembayaran}
+            <HeaderBar title="Order Detail" onBack={() => navigation.goBack()} />
+            <View style={[styles.orderContainer, { marginBottom: SPACING.space_2 }]}>
+                <View style={styles.orderItemFlatlist}>
+                    <FlatList
+                        ref={ListRef}
+                        showsHorizontalScrollIndicator={false}
+                        data={CartList}
+                        contentContainerStyle={styles.FlatListContainer}
+                        ListEmptyComponent={
+                            <View style={styles.EmptyListContainer}>
+                                <IcNoMenu />
+                                <Text style={styles.EmptyText}>No Ordered Menu</Text>
+                            </View>
+                        }
+                        keyExtractor={item => `${item.id}-${item.temperatur}`}
+                        renderItem={renderItem}
                     />
-
                 </View>
-                {Midtrans && pembayaran === 'qris' ? (
-                    <BottomSheetCustom
-                        ref={bottomSheetModalRef}
-                        backdropComponent={renderBackdropQris}
-                        enablePanDownToClose={false} // Disable swipe down to close
-                    >
-                        <FormComponentQris dataMidtrans={Midtrans} />
-                    </BottomSheetCustom>
-                ) :
-
-                    <BottomSheetCustom
-                        ref={bottomSheetModalRef}
-                        backdropComponent={renderBackdrop}
-                    >
-                        <FormComponentCash />
-                    </BottomSheetCustom>
-                }
+                <PaymentFooter
+                    buttonPressHandler={buttonPressHandler}
+                    buttonTitle="Pesan Sekarang"
+                    price={{
+                        totalPesanan: CartList.reduce((sum, item) => sum + item.qty, 0),
+                        totalBayar: totalBayar,
+                        currency: 'Rp'
+                    }}
+                    pembayaran={pembayaran}
+                    setPembayaran={setPembayaran}
+                />
 
             </View>
-        </BottomSheetModalProvider >
+            {Midtrans && pembayaran === 'qris' ? (
+                // <BottomSheetCustom
+                //     ref={bottomSheetModalRef}
+                //     backdropComponent={renderBackdropQris}
+                //     enablePanDownToClose={false} // Disable swipe down to close
+                // >
+                <BottomSheetCustom
+                    ref={bottomSheetModalRef}
+                    onClose={closeModal}
+                >
+                    <FormComponentQris dataMidtrans={Midtrans} />
+                </BottomSheetCustom>
+            ) :
+
+                <BottomSheetCustom
+                    ref={bottomSheetModalRef}
+                    backdropComponent={renderBackdrop}
+                >
+                    <FormComponentCash />
+                </BottomSheetCustom>
+            }
+
+        </View>
     )
 }
 

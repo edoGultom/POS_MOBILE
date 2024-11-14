@@ -192,18 +192,6 @@ const ItemListOrder = ({ image, name, onPress, qty, temperatur, kind, price, pri
                         : (
                             <Image source={{ uri: photo }} style={styles.image} />)
                     }
-                    {/* <View style={styles.ContainerTable}>
-                    <View style={[styles.ContainerTableNumber, { zIndex: 1 }]}>
-                        <IcTableActive width={60} />
-                    </View>
-                    <View style={[styles.ContainerTableNumber, { zIndex: 2 }]}>
-                        <Text style={[
-                            styles.NameTable,
-                            { color: COLORS.primaryOrangeHex }
-                        ]}>{name}</Text>
-                    </View>
-                </View> */}
-
                     {renderContent()}
                 </View>
             </LinearGradient>
@@ -215,10 +203,8 @@ export default ItemListOrder
 
 const styles = StyleSheet.create({
     ItemSingleLinearGradient: {
-        flexDirection: 'row',
-        alignItems: 'center',
         padding: SPACING.space_12,
-        // gap: SPACING.space_12,
+        marginBottom: SPACING.space_18,
         borderRadius: BORDERRADIUS.radius_25,
         // marginHorizontal: SPACING.space_15,
         // marginVertical: SPACING.space_10
@@ -246,7 +232,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-evenly',
         alignItems: 'center',
         gap: SPACING.space_10,
-        paddingHorizontal: SPACING.space_2
+        paddingHorizontal: SPACING.space_2,
     },
     StatusName: {
         color: COLORS.secondaryDarkGreyHex,

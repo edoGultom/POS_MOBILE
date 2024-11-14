@@ -177,7 +177,6 @@ const styles = StyleSheet.create({
         alignItems: 'flex-end'
     },
     OrderHeader2: {
-        // backgroundColor: 'blue',
         flexGrow: 1,
         flexShrink: 0,
         flexBasis: 'auto',

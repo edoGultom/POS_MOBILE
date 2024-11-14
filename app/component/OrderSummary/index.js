@@ -13,7 +13,11 @@ const OrderSummary = ({ item, onAddOrder }) => {
     const totalBayar = ordered.reduce((acc, curr) => acc + curr.totalHarga, 0);
 
     return (
-        <>
+        <View
+            style={{
+                paddingHorizontal: 20,
+                gap: 10
+            }}>
             <Text style={{ fontSize: FONTSIZE.size_20, color: COLORS.primaryOrangeHex }}>Summary</Text>
             <Text style={{ fontSize: FONTSIZE.size_12 + 1, color: COLORS.secondaryLightGreyHex }}>Silahkan periksa kembali pesanan Anda!</Text>
 
@@ -44,7 +48,7 @@ const OrderSummary = ({ item, onAddOrder }) => {
             <View style={styles.button}>
                 <Button text="Pesan Sekarang" onPress={onAddOrder} />
             </View>
-        </>
+        </View>
     )
 }
 
