@@ -1,5 +1,5 @@
 import { BE_API_HOST } from '@env';
-import { BottomSheetBackdrop, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import debounce from 'lodash.debounce';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Dimensions, FlatList, Image, KeyboardAvoidingView, ScrollView, StatusBar, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
@@ -15,10 +15,10 @@ import OrderItem from '../../component/OrderItem';
 import PaymentFooter from '../../component/PaymentFooter';
 import PopUpAnimation from '../../component/PopUpAnimation';
 import TextInput from '../../component/TextInput';
+import useDebounce from '../../component/UseDebounce';
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
 import { addPembayaran, addStateMidtrans, addToOrderHistoryListFromCart, decrementCartItemQuantity, incrementCartItemQuantity } from '../../redux/orderSlice';
 import { getData, useForm } from '../../utils';
-import useDebounce from '../../component/UseDebounce';
 
 const AdminOrder = ({ navigation }) => {
     const { CartList, Midtrans } = useSelector(state => state.orderReducer);

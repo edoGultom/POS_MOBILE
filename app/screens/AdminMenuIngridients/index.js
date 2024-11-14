@@ -1,8 +1,8 @@
-import { BottomSheetBackdrop, BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { StatusBar } from 'expo-status-bar'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Button, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
+import useAxios from '../../api/useAxios'
 import BottomSheetCustom from '../../component/BottomSheet'
 import HeaderBar from '../../component/HeaderBar'
 import ListItemMenuIngridients from '../../component/ListItemMenuIngridients'
@@ -13,7 +13,6 @@ import { getIngridients } from '../../redux/ingridientsSlice'
 import { addMenuIngridients, deleteMenuIngridients, getMenuIngridients, updateMenuIngridients } from '../../redux/menuIngridientsSlice'
 import { getMenu } from '../../redux/menuSlice'
 import { showMessage, useForm } from '../../utils'
-import useAxios from '../../api/useAxios'
 
 const AdminMenuIngridients = ({ navigation }) => {
     const { menu_ingridients } = useSelector(state => state.menuIngridientsReducer);

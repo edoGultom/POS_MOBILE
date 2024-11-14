@@ -1,9 +1,8 @@
-import { BottomSheetBackdrop, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { Dimensions, FlatList, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import useAxios from '../../api/useAxios';
-import { IcNoMenu, IlSuccesFully } from '../../assets';
+import { IcNoMenu } from '../../assets';
 import BottomSheetCustom from '../../component/BottomSheet';
 import HeaderBar from '../../component/HeaderBar';
 import OrderItem from '../../component/OrderItem';
@@ -11,7 +10,6 @@ import OrderSummary from '../../component/OrderSummary';
 import PaymentFooter from '../../component/PaymentFooter';
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
 import { addOrder, decrementCartItemQuantity, incrementCartItemQuantity } from '../../redux/orderSlice';
-import PopUpAnimation from '../../component/PopUpAnimation';
 
 const PosOrder = ({ route, navigation }) => {
     const { table } = route.params?.order;

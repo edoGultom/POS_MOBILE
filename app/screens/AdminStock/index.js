@@ -1,11 +1,11 @@
-import { BottomSheetBackdrop, BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import RNDateTimePicker from '@react-native-community/datetimepicker'
 import { format } from 'date-fns'
 import { id } from 'date-fns/locale'
 import { StatusBar } from 'expo-status-bar'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Button, FlatList, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { FlatList, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
+import useAxios from '../../api/useAxios'
 import BottomSheetCustom from '../../component/BottomSheet'
 import CustomIcon from '../../component/CustomIcon'
 import HeaderBar from '../../component/HeaderBar'
@@ -14,7 +14,6 @@ import Select from '../../component/Select'
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config'
 import { addTransaksiStok, deleteTransaksiStok, getTransaksiStok, updateTransaksiStok } from '../../redux/stockSlice'
 import { useForm } from '../../utils'
-import useAxios from '../../api/useAxios'
 
 const AdminStock = ({ navigation }) => {
     const bottomSheetModalRef = useRef(null);
