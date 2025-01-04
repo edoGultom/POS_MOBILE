@@ -21,7 +21,7 @@
     "ios": {
       "jsEngine": "jsc",
       "supportsTablet": true,
-      "bundleIdentifier": "com.edo10395.LANGITCOFFEE"
+      "bundleIdentifier": "com.langitcoffee.app"
     },
     "jsEngine": "hermes",
     "android": {
@@ -32,14 +32,14 @@
       "permissions": [
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.edo10395.LANGITCOFFEE"
+      "package": "com.langitcoffee.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "5af589dd-2a2c-4152-83ad-90995f7bb1be"
+
       }
     }
   }

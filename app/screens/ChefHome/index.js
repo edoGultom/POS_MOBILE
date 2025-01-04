@@ -113,7 +113,7 @@ const ChefHome = ({ navigation }) => {
     const renderItem = ({ item }) => {
         const itemState = expandedState[item.id];
 
-        const animatedHeight = itemState.animation.interpolate({
+        const animatedHeight = itemState?.animation.interpolate({
             inputRange: [0, 1],
             outputRange: [0, contentHeight], // Sesuaikan tinggi konten Anda
         });
@@ -157,7 +157,7 @@ const ChefHome = ({ navigation }) => {
                     <FlatList
                         ref={ListRef}
                         contentContainerStyle={{
-                            marginTop: 12,
+                            paddingBottom: 28,
                             flexGrow: 1,
                             gap: SPACING.space_18,
                             paddingHorizontal: 10,
@@ -223,6 +223,7 @@ const styles = StyleSheet.create({
     ContainerButtonRefresh: {
         alignItems: 'flex-end',
         paddingHorizontal: 20,
+        paddingVertical:20
     },
     ButtonRefresh: {
         backgroundColor: COLORS.primaryOrangeHex,

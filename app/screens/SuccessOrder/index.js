@@ -1,13 +1,23 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
-import { StatusBar } from 'expo-status-bar'
-import PopUpAnimation from '../../component/PopUpAnimation'
-import { COLORS, FONTFAMILY, FONTSIZE } from '../../config'
-import Button from '../../component/Button'
 import { Image } from 'expo-image'
+import { StatusBar } from 'expo-status-bar'
+import React from 'react'
+import { StyleSheet, Text, View } from 'react-native'
+import { useDispatch } from 'react-redux'
 import { IcWaitingOrder } from '../../assets'
+import Button from '../../component/Button'
+import { COLORS, FONTFAMILY, FONTSIZE } from '../../config'
+import { addToChartList } from '../../redux/orderSlice'
 
 const SuccessOrder = ({ navigation }) => {
+    const dispatch = useDispatch();
+    const handleReorder = ()=>{
+        dispatch(addToChartList([]))
+        navigation.replace('MainAppAdmin', { screen: 'PosTable' })
+    }
+    const handleListOrder =()=>{
+        dispatch(addToChartList([]))
+        navigation.replace('MainAppAdmin', { screen: 'Orders' })
+    }
     return (
         <View style={styles.ScreenContainer}>
             <StatusBar style='light' />
@@ -32,13 +42,13 @@ const SuccessOrder = ({ navigation }) => {
                         <View style={styles.buttonContainer}>
                             <Button
                                 text="Pesan Lagi"
-                                onPress={() => navigation.replace('MainAppAdmin', { screen: 'PosTable' })}
+                                onPress={handleReorder}
                             />
                         </View>
                         <View style={styles.buttonContainer}>
                             <Button
                                 text="Lihat Pesanan"
-                                onPress={() => navigation.replace('MainAppAdmin', { screen: 'Orders' })}
+                                onPress={handleListOrder}
                                 color={COLORS.secondaryLightGreyHex}
                                 textColor='white'
 
