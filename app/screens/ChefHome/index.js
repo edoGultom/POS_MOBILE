@@ -113,7 +113,7 @@ const ChefHome = ({ navigation }) => {
     const renderItem = ({ item }) => {
         const itemState = expandedState[item.id];
 
-        const animatedHeight = itemState.animation.interpolate({
+        const animatedHeight = itemState?.animation.interpolate({
             inputRange: [0, 1],
             outputRange: [0, contentHeight], // Sesuaikan tinggi konten Anda
         });
