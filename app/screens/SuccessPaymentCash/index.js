@@ -2,15 +2,16 @@ import { StatusBar } from 'expo-status-bar';
 import LottieView from 'lottie-react-native';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { IlSuccesFully } from '../../assets';
-import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE } from '../../config';
+import { IcPrint, IlSuccesFully } from '../../assets';
+import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
+import * as Print from 'expo-print';
+import { generateBill } from '../../pdf/generateBill';
 
 const SuccessPaymentCash = ({ navigation, route }) => {
     const {
         cash,
         redirect
     } = route.params;
-
     const { tipe_pembayaran, jumlah, jumlah_diberikan, jumlah_kembalian, waktu_pembayaran } = cash;
     const formatCurrency = (amount, currency) => {
         return new Intl.NumberFormat('id-ID', {
@@ -23,6 +24,19 @@ const SuccessPaymentCash = ({ navigation, route }) => {
     const handleDone = () => {
         navigation.reset({ index: redirect.index, routes: [{ name: redirect.name }] })
     }
+    const printBill = async (data) => {
+        console.log(data, 'datammmm')
+        try {
+            await Print.printAsync({
+                html: generateBill(data),
+                options: {
+                    orientation: "portrait",
+                },
+            });
+        } catch (error) {
+            console.error("Error saat mencetak:", error);
+        }
+    };
     return (
         <View style={styles.ScreenContainer}>
             <StatusBar style='light' />
@@ -35,7 +49,7 @@ const SuccessPaymentCash = ({ navigation, route }) => {
                 </View>
                 <View style={{ gap: 5 }}>
                     <Text style={{ fontFamily: FONTFAMILY.poppins_light, fontSize: FONTSIZE.size_16, color: COLORS.secondaryLightGreyHex }}>PAYMENT METHOD</Text>
-                    <Text style={{ fontFamily: FONTFAMILY.poppins_semibold, fontSize: FONTSIZE.size_14, color: COLORS.primaryWhiteHex }}>{tipe_pembayaran}</Text>
+                    <Text style={{ textTransform: 'capitalize', fontFamily: FONTFAMILY.poppins_semibold, fontSize: FONTSIZE.size_14, color: COLORS.primaryWhiteHex }}>{tipe_pembayaran}</Text>
                     <View style={{ borderBottomColor: COLORS.primaryLightGreyHex, borderWidth: 2, height: 5 }} />
                 </View>
                 <View style={{ gap: 5 }}>
@@ -59,7 +73,11 @@ const SuccessPaymentCash = ({ navigation, route }) => {
                     <View style={{ borderBottomColor: COLORS.primaryLightGreyHex, borderWidth: 2, height: 5 }} />
                 </View>
                 <TouchableOpacity style={{ alignItems: 'center', justifyContent: 'center', borderRadius: BORDERRADIUS.radius_15, height: 50, backgroundColor: COLORS.primaryOrangeHex }} onPress={handleDone}>
-                    <Text style={{ fontSize: FONTSIZE.size_14, fontFamily: FONTFAMILY.poppins_semibold, color: COLORS.primaryWhiteHex }}>DONE</Text>
+                    <Text style={{ fontSize: FONTSIZE.size_14, fontFamily: FONTFAMILY.poppins_semibold, color: COLORS.primaryWhiteHex }}>Done</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={{ flexDirection: 'row', gap: SPACING.space_8, alignItems: 'center', justifyContent: 'center', borderRadius: BORDERRADIUS.radius_15, height: 50, backgroundColor: COLORS.primaryWhiteHex }} onPress={() => printBill(cash)}>
+                    <IcPrint />
+                    <Text style={{ fontSize: FONTSIZE.size_14, fontFamily: FONTFAMILY.poppins_semibold, color: COLORS.secondaryBlackRGBA }}>Print</Text>
                 </TouchableOpacity>
             </View >
         </View>

@@ -4,7 +4,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import AdminBottomNavigator from '../component/AdminBottomNavigator';
 import UserBottomNavigator from '../component/UserBottomNavigator';
-import { Admin, AdminHistory, AdminMenu, AdminReportPenjualan, AdminReportStok, AdminStock, Cashier, CashierDetailOrder, Orders, PosMenu, PosOrder, Profile, SignIn, SignUp, SplashScreen, SuccessOrder, SuccessSignUp } from '../screens';
+import { Admin, AdminHistory, AdminMenu, AdminReportPenjualan, AdminReportStok, AdminStock, Cashier, CashierDetailOrder, Orders, PosMenu, PosOrder, Profile, SignIn, SignUp, SplashScreen, SuccessOrder, SuccessPaymentQris, SuccessSignUp } from '../screens';
 import AdminDetailStock from '../screens/AdminDetailStock';
 import AdminIngridients from '../screens/AdminIngridients';
 import AdminMenuIngridients from '../screens/AdminMenuIngridients';
@@ -161,6 +161,11 @@ const RoleBasedNavigator = () => {
                 name="AdminReportPenjualan"
                 component={AdminReportPenjualan}
                 options={{ headerShown: false, }}
+            />
+            <Stack.Screen
+                name="SuccessPaymentQris"
+                component={SuccessPaymentQris}
+                options={{ headerShown: false }}
             />
         </Stack.Navigator>
     );

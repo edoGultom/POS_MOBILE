@@ -7,7 +7,16 @@
           "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
       ],
-      "expo-build-properties"
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 34,
+            "targetSdkVersion": 34,
+            "buildToolsVersion": "34.0.0"
+          }
+        }
+      ]
     ],
     "name": "LANGIT-COFFEE",
     "slug": "LANGIT-COFFEE",
@@ -39,7 +48,7 @@
     },
     "extra": {
       "eas": {
-
+        "projectId": "2a2f9354-5520-40f4-becf-82964e0f734e"
       }
     }
   }

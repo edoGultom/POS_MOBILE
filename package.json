@@ -28,6 +28,7 @@
     "expo-image": "~1.12.13",
     "expo-image-picker": "~15.0.7",
     "expo-linear-gradient": "~13.0.2",
+    "expo-print": "~13.0.1",
     "expo-splash-screen": "^0.27.5",
     "expo-status-bar": "~1.12.1",
     "lodash.debounce": "^4.0.8",
