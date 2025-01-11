@@ -1,15 +1,17 @@
-import React, { useCallback, useRef, useState } from 'react';
+import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Dimensions, FlatList, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import useAxios from '../../api/useAxios';
 import { IcNoMenu } from '../../assets';
-import BottomSheetCustom from '../../component/BottomSheet';
 import HeaderBar from '../../component/HeaderBar';
+import ItemListOrder from '../../component/ItemListOrder';
 import OrderItem from '../../component/OrderItem';
-import OrderSummary from '../../component/OrderSummary';
 import PaymentFooter from '../../component/PaymentFooter';
 import { BORDERRADIUS, COLORS, FONTFAMILY, FONTSIZE, SPACING } from '../../config';
 import { addOrder, decrementCartItemQuantity, incrementCartItemQuantity } from '../../redux/orderSlice';
+import ItemValue from '../../component/ItemValue';
+import Button from '../../component/Button';
 
 const PosOrder = ({ route, navigation }) => {
     const { table } = route.params?.order;
@@ -53,7 +55,8 @@ const PosOrder = ({ route, navigation }) => {
     };
 
     const openModal = useCallback(() => {
-        bottomSheetModalRef.current?.present();
+        // bottomSheetModalRef.current?.present();
+        sheetRef.current?.present();
     }, []);
 
     // Fungsi untuk menutup BottomSheetModal
@@ -79,17 +82,14 @@ const PosOrder = ({ route, navigation }) => {
             console.error("Failed to fetch data:", error);
         }
     };
+    const sheetRef = useRef(null);
+    const snapPoints = useMemo(() => ["25%", "50%", "90%"], []);
+    const total = CartList.reduce((acc, curr) => acc + curr.totalHarga, 0);
 
     return (
         <View style={styles.ScreenContainer}>
             <StatusBar style='light' />
             <HeaderBar title="Order Detail" onBack={() => navigation.goBack()} />
-            {/* {isShowSuccess && (
-                    <PopUpAnimation
-                        style={styles.LottieAnimation}
-                        source={IlSuccesFully}
-                    />
-                )} */}
             <View style={[styles.orderContainer, { marginBottom: SPACING.space_2 }]}>
                 <View style={styles.orderItemFlatlist}>
                     <FlatList
@@ -119,20 +119,54 @@ const PosOrder = ({ route, navigation }) => {
                     setPembayaran={setPembayaran}
                 />
             </View>
+            {/* SUMMARY */}
+            <BottomSheetModal
+                ref={sheetRef}
+                index={1}
+                snapPoints={snapPoints}
+                enableDynamicSizing={false}
+                style={{
+                    backgroundColor: 'red'
+                }}
+            >
+                <View style={{ padding: 20 ,backgroundColor:COLORS.primaryDarkGreyHex}}>
+                    <Text style={{ fontSize: FONTSIZE.size_20, color: COLORS.primaryOrangeHex }}>Summary</Text>
+                    <Text style={{ fontSize: FONTSIZE.size_12 + 1, color: COLORS.secondaryLightGreyHex }}>Silahkan periksa kembali pesanan Anda!</Text>
+                </View>
+                <BottomSheetScrollView contentContainerStyle={styles.contentContainer}>
+                    {CartList.map((item, idx) => (
+                        <ItemListOrder
+                            key={idx}
+                            name={item.nama}
+                            type="order_summary"
+                            price={item.harga}
+                            priceExtra={item.harga_ekstra}
+                            temperatur={item.temperatur}
+                            image={item.path}
+                            qty={item.qty}
+                        />
+                    ))}
+                </BottomSheetScrollView>
+                <View style={{ padding: 20, gap:10,backgroundColor:COLORS.primaryDarkGreyHex }}>
+                    <ItemValue label="Total Harga" value={total} valueColor='#1ABC9C' type='currency' />
+                    <Button text="Pesan Sekarang" onPress={onOrdered} />
+                </View>
+            </BottomSheetModal>
+            {/* END SUMMARY */}
 
-            <BottomSheetCustom
+            {/* <BottomSheetCustom
                 ref={bottomSheetModalRef}
                 onClose={closeModal}
             >
                 <OrderSummary
-                    item={{
+                    data={{
                         status: 'ordered',
                         table: table,
                         ordered: CartList
                     }}
                     onAddOrder={onOrdered}
                 />
-            </BottomSheetCustom>
+            </BottomSheetCustom> */}
         </View>
     )
 }
@@ -140,6 +174,11 @@ const PosOrder = ({ route, navigation }) => {
 export default PosOrder
 
 const styles = StyleSheet.create({
+    contentContainer: {
+        flexGrow: 1,
+        backgroundColor: COLORS.primaryDarkGreyHex,
+        padding: 20
+    },
     processBtnTitle: {
         fontSize: FONTSIZE.size_14,
         fontFamily: FONTFAMILY.poppins_semibold,
