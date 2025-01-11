@@ -1,4 +1,4 @@
-import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Dimensions, FlatList, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -20,7 +20,6 @@ const PosOrder = ({ route, navigation }) => {
     const ListRef = useRef();
     const dispatch = useDispatch();
     const totalBayar = CartList.reduce((acc, curr) => acc + (curr.harga + curr.harga_ekstra) * curr.qty, 0);
-    const bottomSheetModalRef = useRef(null);
     const { fetchData: axiosBe } = useAxios();
 
     const incrementCartItemQuantityHandler = (id, temperatur) => {
@@ -61,7 +60,7 @@ const PosOrder = ({ route, navigation }) => {
 
     // Fungsi untuk menutup BottomSheetModal
     const closeModal = useCallback(() => {
-        bottomSheetModalRef.current?.dismiss();
+        sheetRef.current?.present();
     }, []);
     const onOrdered = () => {
         try {
@@ -83,9 +82,20 @@ const PosOrder = ({ route, navigation }) => {
         }
     };
     const sheetRef = useRef(null);
-    const snapPoints = useMemo(() => ["25%", "50%", "90%"], []);
+    const snapPoints = useMemo(() => ["55%", "90%"], []);
     const total = CartList.reduce((acc, curr) => acc + curr.totalHarga, 0);
-
+    const renderBackdrop = useCallback(
+        (props) => (
+            <BottomSheetBackdrop
+                {...props}
+                disappearsOnIndex={-1}
+                appearsOnIndex={0}
+                pressBehavior="close"
+                onPress={() => closeModal()}
+            />
+        ),
+        []
+    );
     return (
         <View style={styles.ScreenContainer}>
             <StatusBar style='light' />
@@ -122,12 +132,10 @@ const PosOrder = ({ route, navigation }) => {
             {/* SUMMARY */}
             <BottomSheetModal
                 ref={sheetRef}
-                index={1}
+                index={0}
                 snapPoints={snapPoints}
                 enableDynamicSizing={false}
-                style={{
-                    backgroundColor: 'red'
-                }}
+                backdropComponent={renderBackdrop}
             >
                 <View style={{ padding: 20 ,backgroundColor:COLORS.primaryDarkGreyHex}}>
                     <Text style={{ fontSize: FONTSIZE.size_20, color: COLORS.primaryOrangeHex }}>Summary</Text>
@@ -153,20 +161,6 @@ const PosOrder = ({ route, navigation }) => {
                 </View>
             </BottomSheetModal>
             {/* END SUMMARY */}
-
-            {/* <BottomSheetCustom
-                ref={bottomSheetModalRef}
-                onClose={closeModal}
-            >
-                <OrderSummary
-                    data={{
-                        status: 'ordered',
-                        table: table,
-                        ordered: CartList
-                    }}
-                    onAddOrder={onOrdered}
-                />
-            </BottomSheetCustom> */}
         </View>
     )
 }
