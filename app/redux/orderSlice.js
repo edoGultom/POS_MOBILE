@@ -171,27 +171,22 @@ export const addPembayaran = createAsyncThunk('pembayaran/addPembayaran', async 
                 'Content-Type': 'application/json', // Adjust content type if necessary
             },
         })
-        // console.log(response, 'xxx'); return
-
         if (response.status) {
             const { midtrans, cash } = response
             if (midtrans) {
-                // console.log(response.data.midtrans.actions, 'responseMidtrans')
-                console.log(midtrans, 'responseMidtrans')
                 dispatch(addStateMidtrans(midtrans))
             } else if (cash) {
                 setTimeout(() => {
                     dispatch(addToOrderHistoryListFromCart())
                 }, 1000);
                 const params = {
-                    cash: cash,
+                    cash,
                     redirect: {
                         index: 21,
                         name: 'MainAppCashier'
                     }
                 }
                 navigation.reset({ index: 5, routes: [{ name: 'SuccessPaymentCash', params }] });
-                console.log(response.data, 'cash')
             }
             dispatch(addLoading(false));
         } else {

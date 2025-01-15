@@ -157,7 +157,7 @@ const ChefHome = ({ navigation }) => {
                     <FlatList
                         ref={ListRef}
                         contentContainerStyle={{
-                            marginTop: 12,
+                            paddingBottom: 28,
                             flexGrow: 1,
                             gap: SPACING.space_18,
                             paddingHorizontal: 10,
@@ -223,6 +223,7 @@ const styles = StyleSheet.create({
     ContainerButtonRefresh: {
         alignItems: 'flex-end',
         paddingHorizontal: 20,
+        paddingVertical:20
     },
     ButtonRefresh: {
         backgroundColor: COLORS.primaryOrangeHex,

@@ -18,6 +18,7 @@ import IcReadyOrder from './ic-ready-order.png';
 import IcReservedOrder from './ic-reserved-order.png';
 import IcProgressOrger from './ic-progress-order.png';
 import IcPayOrder from './ic-pay-order.png';
+import IcPrint from './ic-print.svg';
 export {
     IcHomeOn,
     IcHomeOff,
@@ -38,5 +39,6 @@ export {
     IcReadyOrder,
     IcReservedOrder,
     IcProgressOrger,
-    IcPayOrder
+    IcPayOrder,
+    IcPrint
 };

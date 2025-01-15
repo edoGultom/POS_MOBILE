@@ -18,6 +18,7 @@ import PosOrder from "./PosOrder";
 import ChefHome from "./ChefHome";
 import Cashier from "./Cashier";
 import CashierDetailOrder from "./CashierDetailOrder";
+import SuccessPaymentQris from "./SuccessPaymentQris";
 
 export {
     SignIn,
@@ -39,5 +40,6 @@ export {
     PosOrder,
     ChefHome,
     Cashier,
-    CashierDetailOrder
+    CashierDetailOrder,
+    SuccessPaymentQris
 };

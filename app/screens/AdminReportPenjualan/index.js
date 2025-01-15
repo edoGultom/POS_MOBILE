@@ -112,7 +112,6 @@ const AdminReportPenjualan = ({ navigation }) => {
             setData(null)
             return;
         }
-        // console.log(data, 'dataxxx')
         getFilter(url, data)
     }
 

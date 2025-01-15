@@ -27,7 +27,7 @@ const SignIn = ({ navigation }) => {
             <StatusBar style='light' />
             <View style={styles.HeaderContainer}>
                 <Text style={styles.HeaderText}>Sign In</Text>
-                <Text style={styles.HeaderTextSubtitle}>Find your best drink!</Text>
+                <Text style={styles.HeaderTextSubtitle}>Find your best food & drink!</Text>
             </View>
             <View style={styles.container}>
                 <TextInput
