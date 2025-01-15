@@ -2,6 +2,15 @@
   "expo": {
     "plugins": [
       [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ],
+      [
         "expo-image-picker",
         {
           "photosPermission": "The app accesses your photos to let you share them with your friends."
@@ -11,26 +20,23 @@
         "expo-build-properties",
         {
           "android": {
-            "compileSdkVersion": 34,
-            "targetSdkVersion": 34,
-            "buildToolsVersion": "34.0.0"
+            "compileSdkVersion": 35,
+            "targetSdkVersion": 35,
+            "buildToolsVersion": "35.0.0"
           }
         }
       ]
     ],
-    "name": "LANGIT-COFFEE",
-    "slug": "LANGIT-COFFEE",
+    "name": "POS-APP",
+    "slug": "POS-APP",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "splash": {
-      "backgroundColor": "#ffffff"
-    },
     "ios": {
       "jsEngine": "jsc",
       "supportsTablet": true,
-      "bundleIdentifier": "com.langitcoffee.app"
+      "bundleIdentifier": "com.pos_app.app"
     },
     "jsEngine": "hermes",
     "android": {
@@ -41,14 +47,14 @@
       "permissions": [
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.langitcoffee.app"
+      "package": "com.pos_app.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "2a2f9354-5520-40f4-becf-82964e0f734e"
+        "projectId": "4ac13e28-adca-41f0-837c-32992f901a18"
       }
     }
   }
